@@ -321,7 +321,20 @@
         </div>
     </div>
 
-    <script>
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
+            }
+        }
+    </script>
+    <script type="module">
+        import { initializeApp } from 'firebase/app';
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+
         // Set current year
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -339,37 +352,89 @@
             }
         });
 
-        // Dummy Data - In Memory State
-        let properties = [
+        // Config Database Realtime Cloud
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "dummy" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let currentUser = null;
+        let properties = [];
+
+        // Auth
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+            }
+        };
+        initAuth();
+
+        let isInitialLoad = true;
+        const initialDummyData = [
             {
-                id: 1, title: 'Rumah Minimalis Modern Dago', location: 'Dago, Bandung',
+                id: '1', title: 'Rumah Minimalis Modern Dago', location: 'Dago, Bandung',
                 price: 'Rp 2.500.000.000', beds: 4, baths: 3, area: '150 m²',
                 type: 'Dijual', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Populer'
             },
             {
-                id: 2, title: 'Apartemen Mewah Ciumbuleuit', location: 'Ciumbuleuit, Bandung',
+                id: '2', title: 'Apartemen Mewah Ciumbuleuit', location: 'Ciumbuleuit, Bandung',
                 price: 'Rp 1.200.000.000', beds: 2, baths: 1, area: '65 m²',
                 type: 'Dijual', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Baru'
             },
             {
-                id: 3, title: 'Paviliun Disewakan Pasteur', location: 'Pasteur, Bandung',
+                id: '3', title: 'Paviliun Disewakan Pasteur', location: 'Pasteur, Bandung',
                 price: 'Rp 45.000.000 / thn', beds: 2, baths: 1, area: '50 m²',
                 type: 'Disewa', image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Disewakan'
             }
         ];
 
+        // Database Listener (Mendengarkan Perubahan Data secara Live)
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (!user) return;
+            
+            const propertiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'properties');
+            onSnapshot(propertiesRef, (snapshot) => {
+                if (isInitialLoad && snapshot.empty) {
+                    // Jika database kosong, unggah data awal otomatis
+                    initialDummyData.forEach(async (p) => {
+                        await setDoc(doc(propertiesRef, p.id), p);
+                    });
+                } else {
+                    properties = snapshot.docs.map(document => ({ id: document.id, ...document.data() }));
+                    // Urutkan data berdasarkan ID (data terbaru di atas)
+                    properties.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+                    
+                    renderPublicGrid();
+                    if (!document.getElementById('admin-modal').classList.contains('hidden')) {
+                        renderAdminList();
+                    }
+                }
+                isInitialLoad = false;
+            }, (error) => {
+                console.error("Firestore Error:", error);
+            });
+        });
+
         // Render Public Grid
         function renderPublicGrid() {
             const grid = document.getElementById('properties-grid');
             if (properties.length === 0) {
-                grid.innerHTML = '<div class="col-span-3 text-center py-10 text-gray-500">Belum ada properti tersedia.</div>';
+                grid.innerHTML = '<div class="col-span-3 text-center py-10 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengambil data properti dari database...</div>';
                 return;
             }
 
             grid.innerHTML = properties.map(p => `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer">
                     <div class="relative h-64 overflow-hidden">
-                        <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"/>
                         <div class="absolute top-4 left-4 flex gap-2">
                             <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${p.type === 'Dijual' ? 'bg-blue-600' : 'bg-orange-500'}">${p.type}</span>
                             ${p.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${p.badge}</span>` : ''}
@@ -414,17 +479,17 @@
             propertyListAdmin.innerHTML = properties.map(p => `
                 <div class="flex justify-between items-center p-4 bg-white border border-gray-200 rounded-xl hover:shadow-md transition">
                     <div class="flex items-center space-x-4 w-full">
-                        <img src="${p.image}" alt="${p.title}" class="w-16 h-16 object-cover rounded-lg shadow-sm" onerror="this.src='https://via.placeholder.com/150'" />
+                        <img src="${p.image}" alt="${p.title}" class="w-16 h-16 object-cover rounded-lg shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" />
                         <div class="flex-1 pr-4">
                             <p class="font-bold text-gray-900 line-clamp-1">${p.title}</p>
                             <p class="text-sm text-gray-500">${p.price} &bull; <span class="${p.type === 'Dijual' ? 'text-blue-600' : 'text-orange-500'} font-medium">${p.type}</span></p>
                         </div>
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="editProperty(${p.id})" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition" title="Edit">
+                        <button onclick="editProperty('${p.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition" title="Edit">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
-                        <button onclick="deleteProperty(${p.id})" class="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition" title="Hapus">
+                        <button onclick="deleteProperty('${p.id}')" class="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition" title="Hapus">
                             <i class="fa-solid fa-trash"></i>
                         </button>
                     </div>
@@ -432,17 +497,15 @@
             `).join('');
         }
 
-        // Open Modal
+        // Open/Close Modal Logics
         adminTrigger.addEventListener('click', (e) => {
             e.preventDefault();
             renderAdminList();
             adminModal.classList.remove('hidden');
             adminModal.classList.add('flex');
-            // Trigger animation
             setTimeout(() => modalContent.classList.add('modal-enter-active'), 10);
         });
 
-        // Close Modal
         closeModalBtn.addEventListener('click', () => {
             modalContent.classList.remove('modal-enter-active');
             setTimeout(() => {
@@ -452,7 +515,6 @@
             }, 300);
         });
 
-        // View Toggles
         function showFormView(isEdit = false) {
             listView.classList.add('hidden');
             formView.classList.remove('hidden');
@@ -469,17 +531,19 @@
         addNewBtn.addEventListener('click', () => showFormView(false));
         backToListBtn.addEventListener('click', showListView);
 
-        // CRUD Operations
-        window.deleteProperty = function(id) {
-            if(confirm('Yakin ingin menghapus properti ini?')) {
-                properties = properties.filter(p => p.id !== id);
-                renderPublicGrid();
-                renderAdminList();
+        // CRUD Operations - Realtime Database Cloud
+        window.deleteProperty = async function(id) {
+            if(!currentUser) return;
+            // Menghapus dari database cloud
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'properties', id.toString()));
+            } catch(e) {
+                console.error("Delete Error", e);
             }
         };
 
         window.editProperty = function(id) {
-            const prop = properties.find(p => p.id === id);
+            const prop = properties.find(p => p.id === id.toString());
             if(prop) {
                 document.getElementById('form-id').value = prop.id;
                 document.getElementById('form-title-input').value = prop.title;
@@ -495,12 +559,15 @@
             }
         };
 
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if(!currentUser) return;
             
-            const id = document.getElementById('form-id').value;
+            const formId = document.getElementById('form-id').value;
+            const docId = formId ? formId : Date.now().toString(); // Buat ID unik jika nambah baru
+            
             const newProp = {
-                id: id ? parseInt(id) : Date.now(),
+                id: docId,
                 title: document.getElementById('form-title-input').value,
                 location: document.getElementById('form-location-input').value,
                 price: document.getElementById('form-price-input').value,
@@ -512,21 +579,18 @@
                 badge: document.getElementById('form-badge-input').value
             };
 
-            if (id) {
-                // Update
-                const index = properties.findIndex(p => p.id === parseInt(id));
-                properties[index] = newProp;
-            } else {
-                // Add new
-                properties.unshift(newProp);
+            const propertiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'properties');
+            
+            try {
+                // Simpan/Edit ke database cloud (Realtime)
+                await setDoc(doc(propertiesRef, docId), newProp, { merge: true });
+                showListView();
+            } catch(error) {
+                console.error("Save error", error);
             }
-
-            renderPublicGrid();
-            renderAdminList();
-            showListView();
         });
 
-        // Initialize App
+        // Initialize Loading State
         renderPublicGrid();
     </script>
 </body>
