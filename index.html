@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jual Beli Properti Bandung</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Animasi kustom untuk Modal */
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen relative">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-house text-3xl text-blue-600"></i>
+                    <div class="ml-3 flex flex-col">
+                        <span class="font-bold text-xl leading-tight text-gray-900">Properti Bandung</span>
+                        <span class="text-xs text-gray-500 font-medium tracking-wide">& Sekitarnya</span>
+                    </div>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition">Beranda</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-600 transition">Beli</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-600 transition">Sewa</a>
+                    <a href="#" class="text-gray-600 font-medium hover:text-blue-600 transition">Tentang Kami</a>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg">
+                        Hubungi Agen
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel (Hidden by default) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full">
+            <a href="#" class="block px-3 py-2 text-base font-medium text-blue-600 bg-blue-50 rounded-md">Beranda</a>
+            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli</a>
+            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Sewa</a>
+            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Tentang Kami</a>
+            <button class="w-full mt-4 bg-blue-600 text-white px-3 py-3 rounded-md font-medium">
+                Hubungi Agen
+            </button>
+        </div>
+    </nav>
+
+    <div class="relative">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1605276374104-a628b0ac4029?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
+                 alt="Bandung Cityscape" 
+                 class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-gray-900/60 mix-blend-multiply"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 flex flex-col items-center text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-lg">
+                Temukan Rumah Impian Anda di <span class="text-blue-400">Bandung</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl drop-shadow-md">
+                Pusat jual beli properti terpercaya di Bandung Raya. Dari rumah mewah di Dago hingga apartemen strategis di pusat kota.
+            </p>
+
+            <!-- Search Box -->
+            <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-2 md:p-4">
+                <form id="search-form" class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1 flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
+                        <i class="fa-solid fa-location-dot text-gray-400 mr-3"></i>
+                        <input type="text" placeholder="Ketik lokasi (misal: Dago, Lembang, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" id="search-input" />
+                    </div>
+                    <div class="flex gap-3">
+                        <select class="bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 md:w-40 outline-none">
+                            <option>Tipe Properti</option>
+                            <option>Rumah</option>
+                            <option>Apartemen</option>
+                            <option>Tanah</option>
+                            <option>Ruko</option>
+                        </select>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 flex items-center justify-center font-semibold transition">
+                            <i class="fa-solid fa-magnifying-glass md:mr-2"></i>
+                            <span class="hidden md:inline">Cari</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Properti Pilihan di Bandung</h2>
+                <p class="text-gray-500">Rekomendasi terbaik kami untuk Anda minggu ini.</p>
+            </div>
+            <a href="#" class="hidden md:flex items-center text-blue-600 font-semibold hover:text-blue-800 transition">
+                Lihat Semua <i class="fa-solid fa-chevron-right ml-2 text-sm"></i>
+            </a>
+        </div>
+
+        <!-- Property Grid Container (Will be populated by JS) -->
+        <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="col-span-3 text-center py-10 text-gray-500">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-500"></i>
+                <p>Memuat properti dari database...</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center md:hidden">
+            <button class="bg-white border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium w-full shadow-sm hover:bg-gray-50">
+                Lihat Semua Properti
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-blue-600 py-16 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">Mengapa Memilih Kami?</h2>
+                <p class="text-blue-100 max-w-2xl mx-auto">Kami berkomitmen memberikan layanan terbaik untuk membantu Anda menemukan properti idaman di wilayah Bandung dan sekitarnya.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
+                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-magnifying-glass text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Pilihan Terlengkap</h3>
+                    <p class="text-blue-100 text-sm leading-relaxed">Ratusan listing properti valid dan terupdate setiap hari, mulai dari perumahan baru hingga properti sekunder.</p>
+                </div>
+                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
+                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-house text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Agen Berpengalaman</h3>
+                    <p class="text-blue-100 text-sm leading-relaxed">Tim ahli kami sangat mengenal seluk-beluk daerah Bandung untuk memberikan rekomendasi paling akurat.</p>
+                </div>
+                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
+                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-phone text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Layanan Terpadu</h3>
+                    <p class="text-blue-100 text-sm leading-relaxed">Dari survey lokasi, negosiasi harga, hingga bantuan KPR dan notaris, kami dampingi sampai tuntas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer with Admin Trigger -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-house text-3xl text-blue-500"></i>
+                        <div class="ml-3 flex flex-col">
+                            <span class="font-bold text-xl leading-tight text-white">Properti Bandung</span>
+                            <span class="text-xs text-gray-400 font-medium tracking-wide">& Sekitarnya</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed mt-4">
+                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya. Kami menjadikan proses pencarian rumah lebih mudah dan aman.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Tautan Cepat</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-blue-400 transition">Beranda</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Properti Dijual</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Properti Disewa</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Tentang Kami</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Area Populer</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-blue-400 transition">Rumah di Dago</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Rumah di Buah Batu</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Villa di Lembang</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Tanah di Pasteur</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Hubungi Kami</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 mr-3 text-blue-500 shrink-0"></i>
+                            <span>Jl. Ir. H. Juanda No. 123, Dago, Coblong, Kota Bandung</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-3 text-blue-500 shrink-0"></i>
+                            <span>+62 812 3456 7890</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center md:flex md:justify-between md:text-left text-sm text-gray-500">
+                <p>
+                    <button id="admin-trigger" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-lg mx-1" title="Buka Panel Admin">
+                        &copy;
+                    </button> 
+                    <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.
+                </p>
+                <div class="mt-4 md:mt-0 space-x-4">
+                    <a href="#" class="hover:text-gray-300">Syarat & Ketentuan</a>
+                    <a href="#" class="hover:text-gray-300">Kebijakan Privasi</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Admin Panel Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-[100] bg-black/60 items-center justify-center p-4 backdrop-blur-sm hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col modal-enter">
+            
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h2 class="text-2xl font-bold text-gray-900">Panel Admin Properti</h2>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                
+                <!-- LIST VIEW -->
+                <div id="admin-list-view">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-700">Daftar Properti Tersimpan</h3>
+                        <button id="add-new-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center text-sm font-medium transition">
+                            <i class="fa-solid fa-plus mr-2"></i> Tambah Baru
+                        </button>
+                    </div>
+                    <div id="admin-property-list" class="space-y-3">
+                        <!-- Admin list will be populated here -->
+                    </div>
+                </div>
+
+                <!-- FORM VIEW -->
+                <form id="admin-form-view" class="space-y-5 hidden">
+                    <input type="hidden" id="form-id" value="">
+                    
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold" id="form-title">Tambah Properti Baru</h3>
+                        <button type="button" id="back-to-list-btn" class="text-sm text-gray-500 hover:text-gray-800 font-medium">Kembali</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Properti</label>
+                            <input required type="text" id="form-title-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: Rumah Minimalis Dago">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                            <input required type="text" id="form-location-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: Dago, Bandung">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Teks, cth: Rp 1 Milyar)</label>
+                            <input required type="text" id="form-price-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Rp ...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL Gambar</label>
+                            <input required type="url" id="form-image-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://...">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">K. Tidur</label>
+                                <input type="number" id="form-beds-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">K. Mandi</label>
+                                <input type="number" id="form-baths-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Luas (m²)</label>
+                                <input type="text" id="form-area-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="100 m²">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="form-type-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <option value="Dijual">Dijual</option>
+                                    <option value="Disewa">Disewa</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Badge</label>
+                                <input type="text" id="form-badge-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Populer / Baru">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center transition shadow-md">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan Properti
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Firebase Modules directly from Google CDN (No NPM required!)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Konfigurasi Database Real-time
+        // Jika Anda upload ke GitHub Pages, ganti "dummy" object ini dengan Firebase Config Anda sendiri
+        const fallbackConfig = { apiKey: "dummy_key", projectId: "dummy_project" };
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : fallbackConfig;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'properti-bandung-app';
+
+        // Inisialisasi Aplikasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // State & Variabel Global
+        let currentProperties = [];
+        const propertiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'properties');
+        
+        // Setup UI Sederhana (Tahun)
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Data awal (Dummy) untuk seeding pertama kali
+        const initialData = [
+            { id: 'prop_1', title: 'Rumah Minimalis Modern Dago', location: 'Dago, Bandung', price: 'Rp 2.500.000.000', beds: 4, baths: 3, area: '150 m²', type: 'Dijual', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Populer' },
+            { id: 'prop_2', title: 'Apartemen Mewah Ciumbuleuit', location: 'Ciumbuleuit, Bandung', price: 'Rp 1.200.000.000', beds: 2, baths: 1, area: '65 m²', type: 'Dijual', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Baru' },
+            { id: 'prop_3', title: 'Villa Asri View Gunung', location: 'Lembang, Bandung', price: 'Rp 5.500.000.000', beds: 5, baths: 4, area: '400 m²', type: 'Dijual', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: '' }
+        ];
+
+        // Menampilkan data dummy secara default terlebih dahulu 
+        // sehingga jika koneksi firebase error, tampilan tetap berjalan normal
+        currentProperties = [...initialData];
+        renderPublicProperties();
+        renderAdminProperties();
+
+        // --- AUTENTIKASI & DATABASE LISTENER ---
+        async function initApp() {
+            try {
+                // Auth
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Listen to Database Realtime
+                onSnapshot(propertiesRef, (snapshot) => {
+                    const data = snapshot.docs.map(document => ({ id: document.id, ...document.data() }));
+                    
+                    if (data.length === 0) {
+                        // Seeding data jika database kosong
+                        initialData.forEach(async (prop) => {
+                            const newDocRef = doc(propertiesRef, prop.id); 
+                            await setDoc(newDocRef, prop);
+                        });
+                    } else {
+                        currentProperties = data;
+                        renderPublicProperties();
+                        renderAdminProperties();
+                    }
+                }, (error) => {
+                    console.error("Firestore Error:", error);
+                    // Jika error Firebase, hapus loading dan biarkan data dummy tampil
+                });
+            } catch (err) {
+                console.error("Initialization Error:", err);
+            }
+        }
+
+        // Jalankan init
+        initApp();
+
+        // --- STREAMING_CHUNK:RENDERING FUNGSI DOM ---
+        
+        function renderPublicProperties() {
+            const grid = document.getElementById('properties-grid');
+            if (currentProperties.length === 0) {
+                grid.innerHTML = `<div class="col-span-3 text-center py-10 text-gray-500">Belum ada properti terdaftar.</div>`;
+                return;
+            }
+
+            grid.innerHTML = currentProperties.map(property => `
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer">
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="${property.image || 'https://placehold.co/800x600/eee/999?text=No+Image'}" alt="${property.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${property.type === 'Dijual' ? 'bg-blue-600' : 'bg-orange-500'}">${property.type}</span>
+                            ${property.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${property.badge}</span>` : ''}
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-900 flex items-center shadow-sm">
+                            <i class="fa-solid fa-location-dot mr-1 text-blue-600"></i> ${property.location}
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">${property.title}</h3>
+                        <p class="text-2xl font-extrabold text-blue-600 mb-4">${property.price}</p>
+                        <div class="flex items-center justify-between py-4 border-t border-gray-100 text-gray-500">
+                            <div class="flex items-center"><i class="fa-solid fa-bed mr-2 text-gray-400"></i><span class="text-sm">${property.beds || 0} K. Tidur</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-bath mr-2 text-gray-400"></i><span class="text-sm">${property.baths || 0} K. Mandi</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-maximize mr-2 text-gray-400"></i><span class="text-sm">${property.area || '-'}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminProperties() {
+            const list = document.getElementById('admin-property-list');
+            if (currentProperties.length === 0) {
+                list.innerHTML = `<div class="text-center py-10 text-gray-500">Belum ada data properti tersimpan.</div>`;
+                return;
+            }
+
+            list.innerHTML = currentProperties.map(p => `
+                <div class="flex justify-between items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition">
+                    <div class="flex items-center space-x-4">
+                        <img src="${p.image}" alt="Img" class="w-16 h-16 object-cover rounded-lg shadow-sm" onerror="this.src='https://placehold.co/100x100/eee/999?text=IMG'"/>
+                        <div>
+                            <p class="font-bold text-gray-900 line-clamp-1">${p.title}</p>
+                            <p class="text-sm text-gray-500">${p.price} &bull; ${p.type}</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="window.editProperty('${p.id}')" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="window.deleteProperty('${p.id}')" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition" title="Hapus">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- STREAMING_CHUNK:EVENT LISTENERS & LOGIKA INTERAKTIF ---
+
+        // UI Navbar Mobile
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuIcon.classList.remove('fa-xmark');
+                menuIcon.classList.add('fa-bars');
+            } else {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-xmark');
+            }
+        });
+
+        // Search Form (Pencegah reload page)
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log("Mencari:", document.getElementById('search-input').value);
+        });
+
+        // Admin Modal Controls
+        const adminModal = document.getElementById('admin-modal');
+        const adminTrigger = document.getElementById('admin-trigger');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        const listView = document.getElementById('admin-list-view');
+        const formView = document.getElementById('admin-form-view');
+        
+        // Membuka Modal Admin
+        adminTrigger.addEventListener('click', () => {
+            adminModal.classList.remove('hidden');
+            adminModal.classList.add('flex');
+            showAdminList();
+        });
+
+        // Menutup Modal
+        closeModalBtn.addEventListener('click', () => {
+            adminModal.classList.add('hidden');
+            adminModal.classList.remove('flex');
+        });
+        
+        // Navigasi Internal Admin
+        document.getElementById('add-new-btn').addEventListener('click', () => {
+            resetForm();
+            document.getElementById('form-title').textContent = "Tambah Properti Baru";
+            showAdminForm();
+        });
+        document.getElementById('back-to-list-btn').addEventListener('click', showAdminList);
+
+        function showAdminList() {
+            formView.classList.add('hidden');
+            listView.classList.remove('hidden');
+        }
+
+        function showAdminForm() {
+            listView.classList.add('hidden');
+            formView.classList.remove('hidden');
+        }
+
+        function resetForm() {
+            document.getElementById('form-id').value = '';
+            document.getElementById('form-title-input').value = '';
+            document.getElementById('form-location-input').value = '';
+            document.getElementById('form-price-input').value = '';
+            document.getElementById('form-image-input').value = '';
+            document.getElementById('form-beds-input').value = '0';
+            document.getElementById('form-baths-input').value = '0';
+            document.getElementById('form-area-input').value = '';
+            document.getElementById('form-type-input').value = 'Dijual';
+            document.getElementById('form-badge-input').value = '';
+        }
+
+        // --- FUNGSI CRUD (Global Scope for inline onclick) ---
+        
+        window.editProperty = function(id) {
+            const property = currentProperties.find(p => p.id === id);
+            if (!property) return;
+            
+            document.getElementById('form-id').value = property.id || '';
+            document.getElementById('form-title-input').value = property.title || '';
+            document.getElementById('form-location-input').value = property.location || '';
+            document.getElementById('form-price-input').value = property.price || '';
+            document.getElementById('form-image-input').value = property.image || '';
+            document.getElementById('form-beds-input').value = property.beds || 0;
+            document.getElementById('form-baths-input').value = property.baths || 0;
+            document.getElementById('form-area-input').value = property.area || '';
+            document.getElementById('form-type-input').value = property.type || 'Dijual';
+            document.getElementById('form-badge-input').value = property.badge || '';
+            
+            document.getElementById('form-title').textContent = "Edit Properti";
+            showAdminForm();
+        };
+
+        window.deleteProperty = async function(id) {
+            // Update UI lokal segera (Optimistic UI)
+            currentProperties = currentProperties.filter(p => p.id !== id);
+            renderPublicProperties();
+            renderAdminProperties();
+
+            try {
+                // Hapus data dari firestore
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'properties', id));
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+            }
+        };
+
+        // Submit Form (Tambah / Edit)
+        document.getElementById('admin-form-view').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const propId = document.getElementById('form-id').value;
+            
+            const newProperty = {
+                title: document.getElementById('form-title-input').value,
+                location: document.getElementById('form-location-input').value,
+                price: document.getElementById('form-price-input').value,
+                image: document.getElementById('form-image-input').value,
+                beds: parseInt(document.getElementById('form-beds-input').value) || 0,
+                baths: parseInt(document.getElementById('form-baths-input').value) || 0,
+                area: document.getElementById('form-area-input').value,
+                type: document.getElementById('form-type-input').value,
+                badge: document.getElementById('form-badge-input').value,
+            };
+
+            // Update UI lokal segera (Optimistic UI) agar tetap berfungsi jika database error
+            if (propId) {
+                const index = currentProperties.findIndex(p => p.id === propId);
+                if(index > -1) currentProperties[index] = { ...currentProperties[index], ...newProperty, id: propId };
+            } else {
+                newProperty.id = 'prop_' + Date.now(); // ID sementara jika offline
+                currentProperties.unshift(newProperty); // Tambahkan di atas
+            }
+            
+            renderPublicProperties();
+            renderAdminProperties();
+            showAdminList();
+
+            try {
+                if (propId) {
+                    // Update Exisiting
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'properties', propId), newProperty, { merge: true });
+                } else {
+                    // Buat Baru 
+                    await setDoc(doc(propertiesRef), newProperty);
+                }
+            } catch (error) {
+                console.error("Error saving document: ", error);
+            }
+        });
+    </script>
+</body>
+</html>
