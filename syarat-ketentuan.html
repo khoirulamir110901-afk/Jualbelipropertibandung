@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syarat & Ketentuan - Properti Bandung & Sekitarnya</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center group">
+                    <i class="fa-solid fa-house text-3xl text-blue-600"></i>
+                    <div class="ml-3 flex flex-col">
+                        <span class="font-bold text-xl leading-tight text-slate-900 group-hover:text-blue-600 transition">Properti Bandung</span>
+                        <span class="text-xs text-slate-500 font-medium tracking-wide">& Sekitarnya</span>
+                    </div>
+                </a>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-slate-600 font-medium hover:text-blue-600 transition">Beranda</a>
+                    <a href="katalog.html" class="text-slate-600 font-medium hover:text-blue-600 transition">Katalog</a>
+                    <a href="katalog.html?status=Dijual" class="text-slate-600 font-medium hover:text-blue-600 transition">Beli</a>
+                    <a href="katalog.html?status=Disewa" class="text-slate-600 font-medium hover:text-blue-600 transition">Sewa</a>
+                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Agen
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-slate-900 focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 pt-2 pb-5 space-y-2 shadow-lg">
+            <a href="index.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beranda</a>
+            <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Katalog Semua Properti</a>
+            <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beli (Dijual)</a>
+            <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Sewa (Disewa)</a>
+            <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-3 bg-blue-600 text-white px-4 py-3 rounded-xl font-medium shadow-sm">
+                Hubungi Agen via WhatsApp
+            </a>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-slate-900 text-white py-14 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-blue-200 text-xs font-semibold backdrop-blur-md mb-4">
+                <i class="fa-solid fa-scale-balanced"></i> Ketentuan Penggunaan Layanan
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-4">Syarat & Ketentuan</h1>
+            <p class="text-blue-100 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+                Pedoman dan aturan penggunaan layanan platform Properti Bandung & Sekitarnya untuk kenyamanan serta keamanan bersama.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 mb-16 relative z-10 w-full">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200/70 p-6 sm:p-10 space-y-8">
+            
+            <!-- Preamble Callout -->
+            <div class="p-5 sm:p-6 bg-blue-50/70 border border-blue-100 rounded-2xl flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 text-lg shadow-sm">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <div class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    <span class="font-bold text-slate-900 block mb-1">Pemberitahuan Umum</span>
+                    Selamat datang di <strong>Properti Bandung & Sekitarnya</strong>. Dengan mengakses dan menggunakan situs web ini, Anda dianggap telah memahami dan menyetujui syarat serta ketentuan berikut:
+                </div>
+            </div>
+
+            <!-- 1. Layanan Kami -->
+            <div class="space-y-3 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center shrink-0">1</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Layanan Kami</h2>
+                </div>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed pl-11">
+                    Situs web ini berfungsi sebagai platform katalog dan media informasi jual, beli, dan sewa properti di wilayah Bandung dan sekitarnya, serta memfasilitasi komunikasi antara calon pembeli/penyewa dengan pemilik properti atau agen.
+                </p>
+            </div>
+
+            <!-- 2. Informasi Properti -->
+            <div class="space-y-3 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center shrink-0">2</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Informasi Properti</h2>
+                </div>
+                <div class="pl-11 space-y-2.5 text-slate-600 text-sm sm:text-base leading-relaxed">
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-blue-600 text-xs mt-1.5 shrink-0"></i>
+                        <span>Kami berupaya menjaga keakuratan data properti (harga, ketersediaan unit, spesifikasi, dan foto). Namun, informasi dapat berubah sewaktu-waktu tanpa pemberitahuan sebelumnya.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-blue-600 text-xs mt-1.5 shrink-0"></i>
+                        <span>Ketersediaan unit dan kepastian harga final tetap mengacu pada kesepakatan langsung saat survei lokasi bersama agen atau pemilik properti.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Penggunaan Situs -->
+            <div class="space-y-3 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center shrink-0">3</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Penggunaan Situs</h2>
+                </div>
+                <div class="pl-11 space-y-2.5 text-slate-600 text-sm sm:text-base leading-relaxed">
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-ban text-rose-500 text-xs mt-1.5 shrink-0"></i>
+                        <span>Pengguna dilarang menyalin, menduplikasi, atau menggunakan materi foto dan deskripsi di situs ini untuk tujuan komersial lain tanpa izin tertulis.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-share-nodes text-blue-600 text-xs mt-1.5 shrink-0"></i>
+                        <span>Fitur berbagi tautan (<em>share link</em>) dan kontak WhatsApp disediakan untuk mempermudah komunikasi dan transaksi secara wajar.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Batasan Tanggung Jawab -->
+            <div class="space-y-3 pb-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center shrink-0">4</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Batasan Tanggung Jawab</h2>
+                </div>
+                <div class="pl-11 space-y-2.5 text-slate-600 text-sm sm:text-base leading-relaxed">
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-file-contract text-blue-600 text-xs mt-1.5 shrink-0"></i>
+                        <span>Transaksi finansial, legalitas dokumen (sertifikat, IMB/PBG), dan perjanjian jual-beli/sewa resmi dilakukan langsung oleh para pihak dengan pendampingan notaris/PPAT yang sah.</span>
+                    </div>
+                    <div class="flex items-start gap-2.5">
+                        <i class="fa-solid fa-shield-halved text-blue-600 text-xs mt-1.5 shrink-0"></i>
+                        <span>Kami tidak bertanggung jawab atas kerugian yang timbul akibat kelalaian atau kesepakatan di luar jalur resmi yang telah ditentukan.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Perubahan Ketentuan -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-sm flex items-center justify-center shrink-0">5</span>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-slate-900">Perubahan Ketentuan</h2>
+                </div>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed pl-11">
+                    Kami berhak memperbarui Syarat & Ketentuan ini sewaktu-waktu untuk penyesuaian layanan dan peraturan yang berlaku.
+                </p>
+            </div>
+
+            <div class="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <a href="index.html" class="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-800 transition">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+                <a href="kebijakan-privasi.html" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 transition">
+                    Lihat Kebijakan Privasi <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-house text-3xl text-blue-500"></i>
+                        <div class="ml-3 flex flex-col">
+                            <span class="font-bold text-xl leading-tight text-white">Properti Bandung</span>
+                            <span class="text-xs text-gray-400 font-medium tracking-wide">& Sekitarnya</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed mt-4">
+                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya. Kami menjadikan proses pencarian rumah lebih mudah dan aman.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Tautan Cepat</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="index.html" class="hover:text-blue-400 transition">Beranda</a></li>
+                        <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
+                        <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
+                        <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Area Populer</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="katalog.html?q=Dago" class="hover:text-blue-400 transition">Rumah di Dago</a></li>
+                        <li><a href="katalog.html?q=Buah Batu" class="hover:text-blue-400 transition">Rumah di Buah Batu</a></li>
+                        <li><a href="katalog.html?q=Lembang" class="hover:text-blue-400 transition">Villa di Lembang</a></li>
+                        <li><a href="katalog.html?q=Pasteur" class="hover:text-blue-400 transition">Tanah di Pasteur</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Hubungi Kami</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope mr-3 text-blue-500 shrink-0"></i>
+                            <a href="mailto:khoirul.amir110901@gmail.com" class="hover:text-white transition break-all">khoirul.amir110901@gmail.com</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-3 text-blue-500 shrink-0"></i>
+                            <a href="tel:085179756031" class="hover:text-white transition">0851-7975-6031</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center md:flex md:justify-between md:text-left text-sm text-gray-500">
+                <p>
+                    <a href="admin.html" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-lg mx-1" title="Masuk ke Panel Admin">
+                        &copy;
+                    </a> 
+                    <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.
+                </p>
+                <div class="mt-4 md:mt-0 space-x-4">
+                    <a href="syarat-ketentuan.html" class="text-blue-400 font-medium">Syarat & Ketentuan</a>
+                    <a href="kebijakan-privasi.html" class="hover:text-gray-300">Kebijakan Privasi</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if(mobileMenu.classList.contains('hidden')){
+                menuIcon.classList.replace('fa-xmark', 'fa-bars');
+            } else {
+                menuIcon.classList.replace('fa-bars', 'fa-xmark');
+            }
+        });
+    </script>
+</body>
+</html>
