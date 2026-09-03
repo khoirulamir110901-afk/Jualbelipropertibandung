@@ -214,18 +214,23 @@
             <!-- Konten Spesifikasi & Deskripsi -->
             <div class="p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
-                    <div>
-                        <div class="flex items-center text-sm text-blue-600 font-semibold mb-1">
-                            <i class="fa-solid fa-location-dot mr-2"></i>
-                            <span id="modal-location">Bandung</span>
+                        <div>
+                            <div class="flex items-center gap-3 text-sm text-blue-600 font-semibold mb-1 flex-wrap">
+                                <span class="flex items-center"><i class="fa-solid fa-location-dot mr-1.5"></i><span id="modal-location">Bandung</span></span>
+                                <span id="modal-views-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+                                    <i class="fa-solid fa-eye text-amber-500 animate-pulse"></i> <span id="modal-views-count">0</span>x dilihat
+                                </span>
+                            </div>
+                            <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight"></h2>
                         </div>
-                        <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight"></h2>
+                        <div class="md:text-right shrink-0">
+                            <span class="text-xs font-bold uppercase text-gray-400 block tracking-wider">Harga Penawaran</span>
+                            <div class="flex flex-col md:items-end">
+                                <span id="modal-original-price" class="hidden text-sm sm:text-base text-rose-500 line-through font-semibold"></span>
+                                <span id="modal-price" class="text-2xl sm:text-3xl font-black text-blue-600"></span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="md:text-right shrink-0">
-                        <span class="text-xs font-bold uppercase text-gray-400 block tracking-wider">Harga Penawaran</span>
-                        <span id="modal-price" class="text-2xl sm:text-3xl font-black text-blue-600"></span>
-                    </div>
-                </div>
 
                 <!-- Tombol Aksi Bagikan di dalam Modal -->
                 <div class="flex flex-wrap gap-2.5 items-center p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl">
@@ -267,6 +272,16 @@
                     <p id="modal-desc" class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-2xl border border-gray-100">
                         Tidak ada deskripsi tambahan untuk properti ini.
                     </p>
+                </div>
+
+                <!-- Video Tur Properti (Google Drive) -->
+                <div id="modal-video-section" class="hidden space-y-3 pt-2 border-t border-gray-100">
+                    <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
+                    </h3>
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200">
+                        <iframe id="modal-video-iframe" class="w-full h-full" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+                    </div>
                 </div>
 
                 <!-- Fasilitas Lengkap dengan Ikon Otomatis (Tersusun Berdasarkan Kategori) -->
@@ -393,7 +408,7 @@
     <!-- Integrasi Firebase Realtime untuk Tampilan Publik -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
@@ -498,6 +513,8 @@
         const modalTitle = document.getElementById('modal-title');
         const modalLocation = document.getElementById('modal-location');
         const modalPrice = document.getElementById('modal-price');
+        const modalOriginalPrice = document.getElementById('modal-original-price');
+        const modalViewsCount = document.getElementById('modal-views-count');
         const modalBeds = document.getElementById('modal-beds');
         const modalBaths = document.getElementById('modal-baths');
         const modalArea = document.getElementById('modal-area');
@@ -507,6 +524,19 @@
         const modalShareWaBtn = document.getElementById('modal-share-wa-btn');
         const modalFacilitiesSection = document.getElementById('modal-facilities-section');
         const modalFacilitiesContainer = document.getElementById('modal-facilities-container');
+        const modalVideoSection = document.getElementById('modal-video-section');
+        const modalVideoIframe = document.getElementById('modal-video-iframe');
+
+        // Helper URL Video Google Drive Embed
+        function formatDriveVideoEmbedUrl(input) {
+            if (!input) return '';
+            let val = input.trim();
+            if (val.includes('drive.google.com') && val.includes('/preview')) return val;
+            let id = val;
+            const match = val.match(/\/d\/([a-zA-Z0-9_-]+)/) || val.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match) id = match[1];
+            return `https://drive.google.com/file/d/${id}/preview`;
+        }
 
         // Helper Toast & Share
         function showShareToast(message) {
@@ -559,16 +589,18 @@
             modalImgCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
 
             // Highlight thumbnail aktif
-            const thumbs = modalThumbnailsStrip.querySelectorAll('.modal-thumb-item');
-            thumbs.forEach((th, i) => {
-                if (i === modalActiveIndex) {
-                    th.classList.add('ring-2', 'ring-blue-600', 'opacity-100');
-                    th.classList.remove('opacity-60');
-                } else {
-                    th.classList.remove('ring-2', 'ring-blue-600', 'opacity-100');
-                    th.classList.add('opacity-60');
-                }
-            });
+            if (modalThumbnailsStrip) {
+                const thumbs = modalThumbnailsStrip.querySelectorAll('.modal-thumb-item');
+                thumbs.forEach((th, i) => {
+                    if (i === modalActiveIndex) {
+                        th.classList.add('ring-2', 'ring-blue-600', 'opacity-100');
+                        th.classList.remove('opacity-60');
+                    } else {
+                        th.classList.remove('ring-2', 'ring-blue-600', 'opacity-100');
+                        th.classList.add('opacity-60');
+                    }
+                });
+            }
         }
 
         modalSlidePrev.addEventListener('click', () => updateModalSlide(modalActiveIndex - 1));
@@ -577,6 +609,15 @@
         function openPropertyModal(id) {
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
+
+            // Catat View Realtime ke Firestore (Dicegah spam dengan session cache)
+            const sessionViewKey = 'viewed_prop_' + id;
+            if (!sessionStorage.getItem(sessionViewKey)) {
+                sessionStorage.setItem(sessionViewKey, 'true');
+                updateDoc(doc(db, "properti", id), {
+                    views: increment(1)
+                }).catch(err => console.warn("Gagal update view count:", err));
+            }
 
             // Sinkronkan ID ke URL tanpa reload
             try {
@@ -592,21 +633,34 @@
             modalActiveIndex = 0;
 
             // Thumbnail Strip
-            modalThumbnailsStrip.innerHTML = modalActiveImages.map((imgUrl, i) => `
-                <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this, '${imgUrl}', false)">
-            `).join('');
+            if (modalThumbnailsStrip) {
+                modalThumbnailsStrip.innerHTML = modalActiveImages.map((imgUrl, i) => `
+                    <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this, '${imgUrl}', false)">
+                `).join('');
 
-            modalThumbnailsStrip.querySelectorAll('.modal-thumb-item').forEach(thumb => {
-                thumb.addEventListener('click', () => {
-                    const idx = Number(thumb.getAttribute('data-index'));
-                    updateModalSlide(idx);
+                modalThumbnailsStrip.querySelectorAll('.modal-thumb-item').forEach(thumb => {
+                    thumb.addEventListener('click', () => {
+                        const idx = Number(thumb.getAttribute('data-index'));
+                        updateModalSlide(idx);
+                    });
                 });
-            });
+            }
 
             // Isi Data Modal
             modalTitle.textContent = p.title || 'Tanpa Judul';
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
+            modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
+
+            // Tampilkan Harga Coret / Diskon jika ada
+            if (p.originalPrice) {
+                modalOriginalPrice.textContent = p.originalPrice;
+                modalOriginalPrice.classList.remove('hidden');
+            } else {
+                modalOriginalPrice.textContent = '';
+                modalOriginalPrice.classList.add('hidden');
+            }
+
             modalBeds.textContent = p.beds || 0;
             modalBaths.textContent = p.baths || 0;
             modalArea.textContent = p.area || '-';
@@ -658,8 +712,16 @@
                 modalFacilitiesSection.classList.add('hidden');
             }
 
-            modalTypeBadge.textContent = p.type || 'Dijual';
-            modalTypeBadge.className = `px-3 py-1 text-xs font-bold rounded-full text-white shadow-md ${p.type === 'Disewa' ? 'bg-orange-500' : 'bg-blue-600'}`;
+            // Atur Status Badge (Dijual, Disewa, Telah Terjual)
+            const pType = p.type || 'Dijual';
+            modalTypeBadge.textContent = pType;
+            if (pType === 'Telah Terjual') {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-rose-600';
+            } else if (pType === 'Disewa') {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-orange-500';
+            } else {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600';
+            }
 
             if (p.badge) {
                 modalCustomBadge.textContent = p.badge;
@@ -668,10 +730,19 @@
                 modalCustomBadge.classList.add('hidden');
             }
 
+            // Tampilkan Video Google Drive jika ada
+            if (p.video) {
+                modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
+                modalVideoSection.classList.remove('hidden');
+            } else {
+                modalVideoIframe.src = '';
+                modalVideoSection.classList.add('hidden');
+            }
+
             // WhatsApp Owner Khusus Produk Ini
             const ownerPhone = sanitizeWhatsappNumber(p.waNumber || p.whatsapp);
             const message = encodeURIComponent(
-                `Halo, saya melihat properti ini di website:\n\n*${p.title || 'Properti'}*\nHarga: ${p.price || '-'}\nLokasi: ${p.location || 'Bandung'}\n\nApakah unit ini masih tersedia untuk disurvei? Terima kasih!`
+                `Halo, saya melihat properti ini di website:\n\n*${p.title || 'Properti'}*\nStatus: ${pType}\nHarga: ${p.price || '-'}\nLokasi: ${p.location || 'Bandung'}\n\nApakah unit ini masih tersedia untuk disurvei? Terima kasih!`
             );
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
@@ -698,6 +769,9 @@
 
         function closePropertyModal() {
             modalContentCard.classList.remove('modal-enter-active');
+            // Hentikan pemutaran video saat modal ditutup
+            modalVideoIframe.src = '';
+
             // Hapus parameter id dari URL saat modal ditutup
             try {
                 if (window.location.protocol.startsWith('http')) {
@@ -745,6 +819,8 @@
             grid.innerHTML = displayData.map(p => {
                 const photos = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
                 const totalPhotos = photos.length;
+                const pType = p.type || 'Dijual';
+                const badgeColorClass = pType === 'Telah Terjual' ? 'bg-rose-600' : (pType === 'Disewa' ? 'bg-orange-500' : 'bg-blue-600');
 
                 return `
                 <div class="property-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer flex flex-col relative" data-id="${p.id}">
@@ -754,9 +830,11 @@
                         <img src="${formatMediaUrl(photos[0])}" alt="${p.title}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${photos[0] || ''}', false)"/>
                         
                         <!-- Badges -->
-                        <div class="absolute top-4 left-4 flex gap-2 z-10 pointer-events-none">
-                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${p.type === 'Dijual' ? 'bg-blue-600' : 'bg-orange-500'}">${p.type || 'Dijual'}</span>
+                        <div class="absolute top-4 left-4 flex flex-wrap gap-1.5 z-10 pointer-events-none">
+                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
+                            ${p.originalPrice ? `<span class="bg-rose-500 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-percent text-[9px]"></i> Diskon</span>` : ''}
                             ${p.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${p.badge}</span>` : ''}
+                            ${p.video ? `<span class="bg-red-600 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-play text-[9px]"></i> Video</span>` : ''}
                         </div>
 
                         <!-- Tombol Cepat Share di Kartu -->
@@ -787,12 +865,16 @@
                         <div>
                             <h3 class="text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">${p.title || 'Tanpa Judul'}</h3>
                             <p class="text-xs text-gray-500 line-clamp-2 mb-3">${p.description || 'Hunian strategis di Bandung dengan fasilitas lengkap.'}</p>
-                            <p class="text-2xl font-extrabold text-blue-600 mb-4">${p.price || '-'}</p>
+                            
+                            <div class="flex items-baseline gap-2 mb-4 flex-wrap">
+                                <p class="text-2xl font-extrabold text-blue-600">${p.price || '-'}</p>
+                                ${p.originalPrice ? `<p class="text-xs sm:text-sm text-rose-500 line-through font-semibold">${p.originalPrice}</p>` : ''}
+                            </div>
                         </div>
                         <div class="flex items-center justify-between py-3 border-t border-gray-100 text-gray-500">
                             <div class="flex items-center"><i class="fa-solid fa-bed mr-1.5 text-gray-400"></i><span class="text-xs">${p.beds || 0} K. Tidur</span></div>
                             <div class="flex items-center"><i class="fa-solid fa-bath mr-1.5 text-gray-400"></i><span class="text-xs">${p.baths || 0} K. Mandi</span></div>
-                            <div class="flex items-center"><i class="fa-solid fa-maximize mr-1.5 text-gray-400"></i><span class="text-xs">${p.area || '-'}</span></div>
+                            <div class="flex items-center text-blue-600 font-semibold"><i class="fa-regular fa-eye mr-1.5"></i><span class="text-xs">${p.views || 0}</span></div>
                         </div>
                     </div>
                 </div>
