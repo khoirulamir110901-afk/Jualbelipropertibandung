@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Panel -->
+        <!-- Mobile Menu Panel (Hidden by default) -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-40">
             <a href="#" class="block px-3 py-2 text-base font-medium text-blue-600 bg-blue-50 rounded-md">Beranda</a>
             <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli</a>
@@ -72,7 +72,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <div class="relative">
         <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1605276374104-a628b0ac4029?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" 
@@ -89,11 +88,12 @@
                 Pusat jual beli properti terpercaya di Bandung Raya. Dari rumah mewah di Dago hingga apartemen strategis di pusat kota.
             </p>
 
+            <!-- Search Box -->
             <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-2 md:p-4">
-                <form id="search-form" class="flex flex-col md:flex-row gap-3" onsubmit="event.preventDefault()">
+                <form id="search-form" class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1 flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
                         <i class="fa-solid fa-location-dot text-gray-400 mr-3"></i>
-                        <input type="text" placeholder="Ketik lokasi (misal: Dago, Lembang, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" />
+                        <input type="text" placeholder="Ketik lokasi (misal: Dago, Lembang, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" id="search-input" />
                     </div>
                     <div class="flex gap-3">
                         <select class="bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 md:w-40 outline-none">
@@ -101,8 +101,9 @@
                             <option>Rumah</option>
                             <option>Apartemen</option>
                             <option>Tanah</option>
+                            <option>Ruko</option>
                         </select>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 flex items-center justify-center font-semibold transition">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 flex items-center justify-center font-semibold transition" onclick="event.preventDefault();">
                             <i class="fa-solid fa-magnifying-glass md:mr-2"></i>
                             <span class="hidden md:inline">Cari</span>
                         </button>
@@ -112,7 +113,6 @@
         </div>
     </div>
 
-    <!-- Properties Grid -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="flex justify-between items-end mb-10">
             <div>
@@ -124,12 +124,21 @@
             </a>
         </div>
 
+        <!-- Property Grid Container (Will be populated by JS) -->
         <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Diisi oleh JavaScript -->
+            <div class="col-span-3 text-center py-10 text-gray-500">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-500"></i>
+                <p>Memuat properti dari database...</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center md:hidden">
+            <button class="bg-white border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium w-full shadow-sm hover:bg-gray-50">
+                Lihat Semua Properti
+            </button>
         </div>
     </div>
 
-    <!-- Features -->
     <div class="bg-blue-600 py-16 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
@@ -163,7 +172,7 @@
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer with Admin Trigger -->
     <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -186,6 +195,7 @@
                         <li><a href="#" class="hover:text-blue-400 transition">Beranda</a></li>
                         <li><a href="#" class="hover:text-blue-400 transition">Properti Dijual</a></li>
                         <li><a href="#" class="hover:text-blue-400 transition">Properti Disewa</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Tentang Kami</a></li>
                     </ul>
                 </div>
 
@@ -195,6 +205,7 @@
                         <li><a href="#" class="hover:text-blue-400 transition">Rumah di Dago</a></li>
                         <li><a href="#" class="hover:text-blue-400 transition">Rumah di Buah Batu</a></li>
                         <li><a href="#" class="hover:text-blue-400 transition">Villa di Lembang</a></li>
+                        <li><a href="#" class="hover:text-blue-400 transition">Tanah di Pasteur</a></li>
                     </ul>
                 </div>
 
@@ -218,7 +229,7 @@
                     <button id="admin-trigger" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-lg mx-1" title="Buka Panel Admin">
                         &copy;
                     </button> 
-                    <span id="year"></span> Jual Beli Properti Bandung.
+                    <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.
                 </p>
                 <div class="mt-4 md:mt-0 space-x-4">
                     <a href="#" class="hover:text-gray-300">Syarat & Ketentuan</a>
@@ -230,115 +241,164 @@
 
     <!-- Admin Panel Modal -->
     <div id="admin-modal" class="fixed inset-0 z-[100] bg-black/60 items-center justify-center p-4 backdrop-blur-sm hidden">
-        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col modal-enter overflow-hidden">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col modal-enter">
             
-            <div class="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
                 <h2 class="text-2xl font-bold text-gray-900">Panel Admin Properti</h2>
-                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 focus:outline-none bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800 focus:outline-none">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
                 </button>
             </div>
             
-            <div class="p-6 overflow-y-auto flex-1 bg-gray-50/50">
+            <div class="p-6 overflow-y-auto flex-1">
                 
                 <!-- LIST VIEW -->
                 <div id="admin-list-view">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-700">Daftar Properti</h3>
-                        <button id="add-new-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center text-sm font-bold transition shadow-sm">
+                        <h3 class="text-lg font-semibold text-gray-700">Daftar Properti Tersimpan</h3>
+                        <button id="add-new-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center text-sm font-medium transition">
                             <i class="fa-solid fa-plus mr-2"></i> Tambah Baru
                         </button>
                     </div>
                     <div id="admin-property-list" class="space-y-3">
-                        <!-- Diisi oleh JS -->
+                        <!-- Admin list will be populated here -->
                     </div>
                 </div>
 
                 <!-- FORM VIEW -->
-                <form id="admin-form-view" class="space-y-5 hidden bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <form id="admin-form-view" class="space-y-5 hidden">
                     <input type="hidden" id="form-id" value="">
                     
-                    <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4">
-                        <h3 class="text-xl font-bold text-gray-800" id="form-title">Tambah Properti Baru</h3>
-                        <button type="button" id="back-to-list-btn" class="text-sm bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 font-medium transition">
-                            <i class="fa-solid fa-arrow-left mr-1"></i> Kembali
-                        </button>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold" id="form-title">Tambah Properti Baru</h3>
+                        <button type="button" id="back-to-list-btn" class="text-sm text-gray-500 hover:text-gray-800 font-medium bg-gray-100 px-3 py-1.5 rounded-lg">Kembali</button>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Judul Properti</label>
-                            <input required type="text" id="form-title-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="Contoh: Rumah Minimalis Dago">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Judul Properti</label>
+                            <input required type="text" id="form-title-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: Rumah Minimalis Dago">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Lokasi</label>
-                            <input required type="text" id="form-location-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="Contoh: Dago, Bandung">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
+                            <input required type="text" id="form-location-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Contoh: Dago, Bandung">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Harga</label>
-                            <input required type="text" id="form-price-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="Contoh: Rp 1.500.000.000">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Teks, cth: Rp 1 Milyar)</label>
+                            <input required type="text" id="form-price-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Rp ...">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1.5">URL Gambar</label>
-                            <input required type="url" id="form-image-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" placeholder="https://...">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL Gambar / ID GDrive</label>
+                            <input required type="text" id="form-image-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://... ATAU ID Gdrive Anda">
                         </div>
-                        
                         <div class="grid grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">K. Tidur</label>
-                                <input type="number" id="form-beds-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" value="1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">K. Tidur</label>
+                                <input type="number" id="form-beds-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">K. Mandi</label>
-                                <input type="number" id="form-baths-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" value="1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">K. Mandi</label>
+                                <input type="number" id="form-baths-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" value="0">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Luas</label>
-                                <input type="text" id="form-area-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="100 m²">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Luas (m²)</label>
+                                <input type="text" id="form-area-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="100 m²">
                             </div>
                         </div>
-                        
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Status</label>
-                                <select id="form-type-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <select id="form-type-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                                     <option value="Dijual">Dijual</option>
                                     <option value="Disewa">Disewa</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1.5">Badge Promo</label>
-                                <input type="text" id="form-badge-input" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Baru / Turun Harga">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Badge</label>
+                                <input type="text" id="form-badge-input" class="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Populer / Baru">
                             </div>
                         </div>
                     </div>
                     
-                    <button type="submit" class="w-full mt-8 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center transition shadow-lg hover:shadow-xl">
-                        <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Data Properti
+                    <button type="submit" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl flex items-center justify-center transition shadow-md">
+                        <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan Properti
                     </button>
                 </form>
             </div>
         </div>
     </div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js"
-            }
-        }
-    </script>
+    <!-- Integrasi Firebase Resmi Anda -->
     <script type="module">
-        import { initializeApp } from 'firebase/app';
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-        import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Set current year
+        // Konfigurasi resmi proyek web-properti-bandung Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
+            authDomain: "web-properti-bandung.firebaseapp.com",
+            projectId: "web-properti-bandung",
+            storageBucket: "web-properti-bandung.firebasestorage.app",
+            messagingSenderId: "684311108489",
+            appId: "1:684311108489:web:02e334723acd536656df58"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const propertiRef = collection(db, "properti");
+        
+        let properties = []; // Menyimpan data di memori sementara untuk admin
+        
+        // 1. Membaca & Memperbarui Tampilan secara Realtime
+        onSnapshot(propertiRef, (snapshot) => {
+            const listProperti = [];
+            snapshot.forEach((dokumen) => {
+                listProperti.push({ id: dokumen.id, ...dokumen.data() });
+            });
+            
+            properties = listProperti; // Simpan ke variabel global agar bisa diedit
+            renderProperti(properties);
+            
+            // Refresh admin list jika modal sedang terbuka
+            if (!document.getElementById('admin-modal').classList.contains('hidden')) {
+                renderAdminList();
+            }
+        }, (error) => {
+            console.error("Kesalahan Firestore:", error);
+            // Tangani Error CORS atau Permission
+            const grid = document.getElementById('properties-grid');
+            if (error.code === 'permission-denied') {
+                grid.innerHTML = '<div class="col-span-3 text-center py-10 text-red-500 font-bold">Akses Ditolak: Pastikan Aturan Firestore Anda (Rules) diset menjadi <code>allow read, write: if true;</code> untuk Testing.</div>';
+            }
+        });
+
+        // UI & Interaksi (DOM Manipulations)
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Mobile Menu Toggle
+        // Fungsi Helper untuk URL Gambar Utama (Google Drive lh3 format atau URL biasa)
+        function formatMediaUrl(input) {
+            if (!input) return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            if (input.startsWith('http://') || input.startsWith('https://')) return input;
+            // Gunakan format lh3 yang lebih stabil & cepat
+            return `https://lh3.googleusercontent.com/d/${input}`;
+        }
+
+        // Fungsi Helper untuk Fallback Gambar Bertingkat
+        window.handleImageError = function(img, input, isAdmin = false) {
+            if (!img.dataset.triedBackup && input && !input.startsWith('http')) {
+                img.dataset.triedBackup = 'true';
+                // Backup 1: Gunakan format thumbnail Google Drive
+                img.src = `https://drive.google.com/thumbnail?id=${input}&sz=w800`;
+            } else {
+                // Backup 2 (Fallback Akhir): Unsplash atau Placeholder
+                if (isAdmin) {
+                    img.src = 'https://via.placeholder.com/150?text=Rusak';
+                } else {
+                    img.src = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+                }
+            }
+        };
+
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('menu-icon');
@@ -352,111 +412,45 @@
             }
         });
 
-        // Config Database Realtime Cloud
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "dummy" };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        let currentUser = null;
-        let properties = [];
-
-        // Auth
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Auth Error:", error);
-            }
-        };
-        initAuth();
-
-        let isInitialLoad = true;
-        const initialDummyData = [
-            {
-                id: '1', title: 'Rumah Minimalis Modern Dago', location: 'Dago, Bandung',
-                price: 'Rp 2.500.000.000', beds: 4, baths: 3, area: '150 m²',
-                type: 'Dijual', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Populer'
-            },
-            {
-                id: '2', title: 'Apartemen Mewah Ciumbuleuit', location: 'Ciumbuleuit, Bandung',
-                price: 'Rp 1.200.000.000', beds: 2, baths: 1, area: '65 m²',
-                type: 'Dijual', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Baru'
-            },
-            {
-                id: '3', title: 'Paviliun Disewakan Pasteur', location: 'Pasteur, Bandung',
-                price: 'Rp 45.000.000 / thn', beds: 2, baths: 1, area: '50 m²',
-                type: 'Disewa', image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', badge: 'Disewakan'
-            }
-        ];
-
-        // Database Listener (Mendengarkan Perubahan Data secara Live)
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            if (!user) return;
-            
-            const propertiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'properties');
-            onSnapshot(propertiesRef, (snapshot) => {
-                if (isInitialLoad && snapshot.empty) {
-                    // Jika database kosong, unggah data awal otomatis
-                    initialDummyData.forEach(async (p) => {
-                        await setDoc(doc(propertiesRef, p.id), p);
-                    });
-                } else {
-                    properties = snapshot.docs.map(document => ({ id: document.id, ...document.data() }));
-                    // Urutkan data berdasarkan ID (data terbaru di atas)
-                    properties.sort((a, b) => parseInt(b.id) - parseInt(a.id));
-                    
-                    renderPublicGrid();
-                    if (!document.getElementById('admin-modal').classList.contains('hidden')) {
-                        renderAdminList();
-                    }
-                }
-                isInitialLoad = false;
-            }, (error) => {
-                console.error("Firestore Error:", error);
-            });
-        });
-
-        // Render Public Grid
-        function renderPublicGrid() {
+        // Fungsi Render Kartu Properti di Halaman Utama
+        function renderProperti(data) {
             const grid = document.getElementById('properties-grid');
-            if (properties.length === 0) {
-                grid.innerHTML = '<div class="col-span-3 text-center py-10 text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengambil data properti dari database...</div>';
+            if (data.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-3 text-center py-12">
+                        <div class="text-gray-400 mb-3"><i class="fa-regular fa-folder-open text-5xl"></i></div>
+                        <p class="text-gray-500">Belum ada properti di Database Anda.</p>
+                        <p class="text-sm text-gray-400">Gunakan Panel Admin (©) untuk menambahkannya.</p>
+                    </div>`;
                 return;
             }
 
-            grid.innerHTML = properties.map(p => `
+            grid.innerHTML = data.map(p => `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer">
                     <div class="relative h-64 overflow-hidden">
-                        <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'"/>
+                        <img src="${formatMediaUrl(p.image)}" alt="${p.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${p.image || ''}', false)"/>
                         <div class="absolute top-4 left-4 flex gap-2">
-                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${p.type === 'Dijual' ? 'bg-blue-600' : 'bg-orange-500'}">${p.type}</span>
+                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${p.type === 'Dijual' ? 'bg-blue-600' : 'bg-orange-500'}">${p.type || 'Dijual'}</span>
                             ${p.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${p.badge}</span>` : ''}
                         </div>
                         <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-sm font-semibold text-gray-900 flex items-center shadow-sm">
-                            <i class="fa-solid fa-location-dot mr-1 text-blue-600"></i> ${p.location}
+                            <i class="fa-solid fa-location-dot mr-1 text-blue-600"></i> ${p.location || 'Lokasi Belum Ditentukan'}
                         </div>
                     </div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">${p.title}</h3>
-                        <p class="text-2xl font-extrabold text-blue-600 mb-4">${p.price}</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">${p.title || 'Tanpa Judul'}</h3>
+                        <p class="text-2xl font-extrabold text-blue-600 mb-4">${p.price || '-'}</p>
                         <div class="flex items-center justify-between py-4 border-t border-gray-100 text-gray-500">
-                            <div class="flex items-center"><i class="fa-solid fa-bed mr-2 text-gray-400"></i><span class="text-sm">${p.beds} K. Tidur</span></div>
-                            <div class="flex items-center"><i class="fa-solid fa-bath mr-2 text-gray-400"></i><span class="text-sm">${p.baths} K. Mandi</span></div>
-                            <div class="flex items-center"><i class="fa-solid fa-maximize mr-2 text-gray-400"></i><span class="text-sm">${p.area}</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-bed mr-2 text-gray-400"></i><span class="text-sm">${p.beds || 0} K. Tidur</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-bath mr-2 text-gray-400"></i><span class="text-sm">${p.baths || 0} K. Mandi</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-maximize mr-2 text-gray-400"></i><span class="text-sm">${p.area || '-'}</span></div>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Admin DOM Elements
+        // --- Logika Panel Admin ---
         const adminTrigger = document.getElementById('admin-trigger');
         const adminModal = document.getElementById('admin-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
@@ -469,35 +463,6 @@
         const backToListBtn = document.getElementById('back-to-list-btn');
         const form = document.getElementById('admin-form-view');
 
-        // Render Admin List
-        function renderAdminList() {
-            if(properties.length === 0){
-                propertyListAdmin.innerHTML = '<div class="text-center py-10 text-gray-500">Belum ada data properti.</div>';
-                return;
-            }
-
-            propertyListAdmin.innerHTML = properties.map(p => `
-                <div class="flex justify-between items-center p-4 bg-white border border-gray-200 rounded-xl hover:shadow-md transition">
-                    <div class="flex items-center space-x-4 w-full">
-                        <img src="${p.image}" alt="${p.title}" class="w-16 h-16 object-cover rounded-lg shadow-sm" onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'" />
-                        <div class="flex-1 pr-4">
-                            <p class="font-bold text-gray-900 line-clamp-1">${p.title}</p>
-                            <p class="text-sm text-gray-500">${p.price} &bull; <span class="${p.type === 'Dijual' ? 'text-blue-600' : 'text-orange-500'} font-medium">${p.type}</span></p>
-                        </div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <button onclick="editProperty('${p.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition" title="Edit">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button onclick="deleteProperty('${p.id}')" class="p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition" title="Hapus">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Open/Close Modal Logics
         adminTrigger.addEventListener('click', (e) => {
             e.preventDefault();
             renderAdminList();
@@ -531,43 +496,78 @@
         addNewBtn.addEventListener('click', () => showFormView(false));
         backToListBtn.addEventListener('click', showListView);
 
-        // CRUD Operations - Realtime Database Cloud
-        window.deleteProperty = async function(id) {
-            if(!currentUser) return;
-            // Menghapus dari database cloud
-            try {
-                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'properties', id.toString()));
-            } catch(e) {
-                console.error("Delete Error", e);
+        function renderAdminList() {
+            if(properties.length === 0){
+                propertyListAdmin.innerHTML = '<div class="text-center py-10 text-gray-500 border border-dashed border-gray-300 rounded-xl">Belum ada data. Silakan klik "Tambah Baru".</div>';
+                return;
             }
-        };
 
-        window.editProperty = function(id) {
-            const prop = properties.find(p => p.id === id.toString());
-            if(prop) {
-                document.getElementById('form-id').value = prop.id;
-                document.getElementById('form-title-input').value = prop.title;
-                document.getElementById('form-location-input').value = prop.location;
-                document.getElementById('form-price-input').value = prop.price;
-                document.getElementById('form-image-input').value = prop.image;
-                document.getElementById('form-beds-input').value = prop.beds;
-                document.getElementById('form-baths-input').value = prop.baths;
-                document.getElementById('form-area-input').value = prop.area;
-                document.getElementById('form-type-input').value = prop.type;
-                document.getElementById('form-badge-input').value = prop.badge || '';
-                showFormView(true);
+            propertyListAdmin.innerHTML = properties.map(p => `
+                <div class="flex justify-between items-center p-4 bg-white border border-gray-200 rounded-xl hover:shadow-md transition">
+                    <div class="flex items-center space-x-4 w-full overflow-hidden">
+                        <img src="${formatMediaUrl(p.image)}" alt="${p.title}" class="w-16 h-16 object-cover rounded-lg shadow-sm shrink-0" onerror="handleImageError(this, '${p.image || ''}', true)" />
+                        <div class="flex-1 min-w-0 pr-4">
+                            <p class="font-bold text-gray-900 truncate">${p.title || 'Tanpa Judul'}</p>
+                            <p class="text-sm text-gray-500 truncate">${p.price} &bull; <span class="${p.type === 'Dijual' ? 'text-blue-600' : 'text-orange-500'} font-medium">${p.type}</span></p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2 shrink-0">
+                        <button class="edit-btn p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition" data-id="${p.id}" title="Edit">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="delete-btn p-2.5 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition" data-id="${p.id}" title="Hapus">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Memasang Event Listener untuk tombol Edit dan Delete secara dinamis
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    hapusPropertiDariCloud(this.getAttribute('data-id'));
+                });
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const prop = properties.find(p => p.id === id);
+                    if(prop) {
+                        document.getElementById('form-id').value = prop.id;
+                        document.getElementById('form-title-input').value = prop.title || '';
+                        document.getElementById('form-location-input').value = prop.location || '';
+                        document.getElementById('form-price-input').value = prop.price || '';
+                        document.getElementById('form-image-input').value = prop.image || '';
+                        document.getElementById('form-beds-input').value = prop.beds || 0;
+                        document.getElementById('form-baths-input').value = prop.baths || 0;
+                        document.getElementById('form-area-input').value = prop.area || '';
+                        document.getElementById('form-type-input').value = prop.type || 'Dijual';
+                        document.getElementById('form-badge-input').value = prop.badge || '';
+                        showFormView(true);
+                    }
+                });
+            });
+        }
+
+        // 2 & 3: Integrasi Penyimpanan ke Cloud
+        window.hapusPropertiDariCloud = async function(id) {
+            if(confirm("Apakah Anda yakin ingin menghapus properti ini dari sistem?")) {
+                try {
+                    await deleteDoc(doc(db, "properti", id));
+                    // Tidak perlu render ulang manual, onSnapshot akan menangani otomatis
+                } catch (err) {
+                    console.error("Gagal menghapus:", err);
+                    alert("Gagal menghapus. Pastikan Rules Firestore mengizinkan Write.");
+                }
             }
         };
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(!currentUser) return;
+            const id = document.getElementById('form-id').value;
             
-            const formId = document.getElementById('form-id').value;
-            const docId = formId ? formId : Date.now().toString(); // Buat ID unik jika nambah baru
-            
-            const newProp = {
-                id: docId,
+            const dataBaru = {
                 title: document.getElementById('form-title-input').value,
                 location: document.getElementById('form-location-input').value,
                 price: document.getElementById('form-price-input').value,
@@ -579,19 +579,21 @@
                 badge: document.getElementById('form-badge-input').value
             };
 
-            const propertiesRef = collection(db, 'artifacts', appId, 'public', 'data', 'properties');
-            
             try {
-                // Simpan/Edit ke database cloud (Realtime)
-                await setDoc(doc(propertiesRef, docId), newProp, { merge: true });
-                showListView();
-            } catch(error) {
-                console.error("Save error", error);
+                if (id) {
+                    // Jika ada ID (Artinya ini fungsi UPDATE / Edit)
+                    await updateDoc(doc(db, "properti", id), dataBaru);
+                } else {
+                    // Jika ID kosong (Artinya ini fungsi ADD / Tambah Baru)
+                    await addDoc(propertiRef, dataBaru);
+                }
+                showListView(); // Tutup form dan kembali ke list
+            } catch (err) {
+                console.error("Gagal menyimpan:", err);
+                alert("Gagal menyimpan data ke Firestore! \n\nPesan Error: " + err.message + "\n\nPastikan 'Firestore Security Rules' Anda diatur ke Mode Uji Coba (Test Mode).");
             }
         });
 
-        // Initialize Loading State
-        renderPublicGrid();
     </script>
 </body>
 </html>
