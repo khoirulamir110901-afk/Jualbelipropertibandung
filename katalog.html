@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Properti - Properti Bandung & Sekitarnya</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Synchronous Global Helper Script to prevent ReferenceError during image load -->
+    <script>
+        function formatMediaUrl(input) {
+            if (!input) return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            if (input.startsWith('http://') || input.startsWith('https://')) return input;
+            return 'https://lh3.googleusercontent.com/d/' + input;
+        }
+
+        function handleImageError(img, input, isAdmin) {
+            if (!img) return;
+            if (!img.dataset.triedBackup && input && !input.startsWith('http')) {
+                img.dataset.triedBackup = 'true';
+                img.src = 'https://drive.google.com/thumbnail?id=' + input + '&sz=w800';
+            } else {
+                img.src = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            }
+        }
+
+        window.formatMediaUrl = formatMediaUrl;
+        window.handleImageError = handleImageError;
+    </script>
+
+    <style>
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen flex flex-col justify-between relative">
+
+    <!-- Toast Notifikasi Share -->
+    <div id="toast-share" class="fixed bottom-6 right-6 z-[200] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-share-msg">Tautan berhasil disalin!</span>
+    </div>
+
+    <!-- Header / Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center group">
+                    <i class="fa-solid fa-house text-3xl text-blue-600"></i>
+                    <div class="ml-3 flex flex-col">
+                        <span class="font-bold text-xl leading-tight text-gray-900 group-hover:text-blue-600 transition">Properti Bandung</span>
+                        <span class="text-xs text-gray-500 font-medium tracking-wide">& Sekitarnya</span>
+                    </div>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-blue-600 font-medium transition">Beranda</a>
+                    <a href="katalog.html" class="text-blue-600 font-bold transition">Semua Properti</a>
+                    <a href="katalog.html?status=Dijual" class="text-gray-600 hover:text-blue-600 font-medium transition">Dijual</a>
+                    <a href="katalog.html?status=Disewa" class="text-gray-600 hover:text-blue-600 font-medium transition">Disewa</a>
+                    <a href="https://wa.me/6281234567890" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition flex items-center shadow-sm">
+                        <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Hubungi Kami
+                    </a>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <a href="index.html" class="text-sm font-semibold text-blue-600 flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-1.5"></i> Beranda
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Filter & Search Bar Section -->
+    <section class="bg-blue-700 text-white py-10 px-4 sm:px-6 lg:px-8 shadow-inner">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Eksplorasi Properti Bandung</h1>
+            <p class="text-blue-100 text-sm mb-6">Temukan hunian, tanah, atau ruko ideal sesuai preferensi dan anggaran Anda.</p>
+
+            <!-- Filter Panel -->
+            <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xl text-gray-800">
+                <form id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    
+                    <!-- Search Text -->
+                    <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-blue-500">
+                        <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2.5"></i>
+                        <input type="text" id="filter-keyword" placeholder="Nama properti atau lokasi..." class="w-full bg-transparent outline-none text-sm">
+                    </div>
+                    
+                    <!-- Tipe / Status (Dijual / Disewa / Telah Terjual) -->
+                    <div>
+                        <select id="filter-status" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Status Transaksi</option>
+                            <option value="Dijual">Dijual</option>
+                            <option value="Disewa">Disewa</option>
+                            <option value="Telah Terjual">Telah Terjual</option>
+                        </select>
+                    </div>
+
+                    <!-- Kategori Bangunan -->
+                    <div>
+                        <select id="filter-category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Semua Kategori Bangunan</option>
+                            <option value="Rumah">Rumah</option>
+                            <option value="Apartemen">Apartemen</option>
+                            <option value="Tanah">Tanah</option>
+                            <option value="Ruko">Ruko / Rukan</option>
+                            <option value="Villa">Villa</option>
+                        </select>
+                    </div>
+
+                    <!-- Tombol Reset / Terapkan -->
+                    <div class="flex gap-2">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl text-sm transition flex items-center justify-center">
+                            <i class="fa-solid fa-filter mr-2"></i> Filter
+                        </button>
+                        <button type="button" id="reset-btn" class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-medium transition" title="Reset Pencarian">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Katalog Grid Section -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
+        
+        <!-- Info Hasil Pencarian & Urutan -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-gray-200">
+            <div>
+                <p class="text-gray-500 text-sm">Menampilkan <span id="property-count" class="font-bold text-gray-900">0</span> properti</p>
+                <p id="active-query-tag" class="text-xs text-blue-600 font-medium mt-0.5 hidden"></p>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <label for="sort-select" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Urutkan:</label>
+                <select id="sort-select" class="bg-white border border-gray-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="default">Terbaru</option>
+                    <option value="title-asc">Nama (A - Z)</option>
+                    <option value="beds-desc">Kamar Tidur Terbanyak</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- State Loading -->
+        <div id="loading-state" class="text-center py-24">
+            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-600 mb-4"></i>
+            <p class="text-gray-500 font-medium">Mengambil daftar properti...</p>
+        </div>
+
+        <!-- State Empty (Tidak Ada Data) -->
+        <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+            <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Tidak Ada Properti yang Sesuai</h3>
+            <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">Kami tidak menemukan listing yang cocok dengan kata kunci atau filter Anda. Coba ubah pencarian Anda.</p>
+            <button id="empty-reset-btn" class="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm">
+                Lihat Semua Listing
+            </button>
+        </div>
+
+        <!-- Grid Container -->
+        <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </main>
+
+    <!-- POP-UP MODAL DETAIL PRODUK KATALOG LENGKAP -->
+    <div id="property-modal" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-gray-100" id="property-modal-card">
+            
+            <!-- Tombol Tutup Pop-Up -->
+            <button id="modal-close-btn" class="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Slider Gambar Manual di dalam Modal -->
+            <div class="relative w-full h-72 sm:h-96 md:h-[420px] bg-slate-900 shrink-0 overflow-hidden select-none group">
+                <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300">
+                
+                <!-- Navigasi Slide Manual Prev / Next -->
+                <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button id="modal-slide-next" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <!-- Status & Counter Foto -->
+                <div class="absolute top-4 left-4 flex gap-2 items-center">
+                    <span id="modal-type-badge" class="px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600">Dijual</span>
+                    <span id="modal-custom-badge" class="hidden px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-emerald-500"></span>
+                </div>
+
+                <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-camera"></i> <span id="modal-img-counter">1 / 1</span>
+                </div>
+            </div>
+
+            <!-- Thumbnail Foto Strip -->
+            <div id="modal-thumbnails-strip" class="flex gap-2 p-3 bg-slate-100 overflow-x-auto border-b border-gray-100 shrink-0"></div>
+
+            <!-- Konten Spesifikasi & Deskripsi -->
+            <div class="p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
+                    <div>
+                        <div class="flex items-center gap-3 text-sm text-blue-600 font-semibold mb-1 flex-wrap">
+                            <span class="flex items-center"><i class="fa-solid fa-location-dot mr-1.5"></i><span id="modal-location">Bandung</span></span>
+                            <span id="modal-views-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+                                <i class="fa-solid fa-eye text-amber-500 animate-pulse"></i> <span id="modal-views-count">0</span>x dilihat
+                            </span>
+                        </div>
+                        <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight"></h2>
+                    </div>
+                    <div class="md:text-right shrink-0">
+                        <span class="text-xs font-bold uppercase text-gray-400 block tracking-wider">Harga Penawaran</span>
+                        <div class="flex flex-col md:items-end">
+                            <span id="modal-original-price" class="hidden text-sm sm:text-base text-rose-500 line-through font-semibold"></span>
+                            <span id="modal-price" class="text-2xl sm:text-3xl font-black text-blue-600"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi Bagikan di dalam Modal -->
+                <div class="flex flex-wrap gap-2.5 items-center p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl">
+                    <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
+                        <i class="fa-solid fa-share-nodes text-blue-600"></i> Bagikan Properti Ini:
+                    </span>
+                    <button type="button" id="modal-copy-link-btn" class="px-3.5 py-1.5 bg-white hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-semibold rounded-xl border border-blue-200 transition shadow-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-link"></i> Salin Tautan
+                    </button>
+                    <a id="modal-share-wa-btn" href="#" target="_blank" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl transition shadow-xs flex items-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp"></i> Share ke WA
+                    </a>
+                </div>
+
+                <!-- Spesifikasi Ringkas -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-4 text-center">
+                    <div class="p-3 sm:p-4 bg-blue-50/60 rounded-2xl border border-blue-100/60">
+                        <i class="fa-solid fa-bed text-blue-600 text-xl mb-1 block"></i>
+                        <span id="modal-beds" class="font-bold text-gray-900 text-base sm:text-lg">0</span>
+                        <span class="text-[11px] text-gray-500 block">K. Tidur</span>
+                    </div>
+                    <div class="p-3 sm:p-4 bg-blue-50/60 rounded-2xl border border-blue-100/60">
+                        <i class="fa-solid fa-bath text-blue-600 text-xl mb-1 block"></i>
+                        <span id="modal-baths" class="font-bold text-gray-900 text-base sm:text-lg">0</span>
+                        <span class="text-[11px] text-gray-500 block">K. Mandi</span>
+                    </div>
+                    <div class="p-3 sm:p-4 bg-blue-50/60 rounded-2xl border border-blue-100/60">
+                        <i class="fa-solid fa-maximize text-blue-600 text-xl mb-1 block"></i>
+                        <span id="modal-area" class="font-bold text-gray-900 text-base sm:text-lg">-</span>
+                        <span class="text-[11px] text-gray-500 block">Luas Tanah/Bgn</span>
+                    </div>
+                </div>
+
+                <!-- Deskripsi Lengkap -->
+                <div>
+                    <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-600"></i> Deskripsi Properti
+                    </h3>
+                    <p id="modal-desc" class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        Tidak ada deskripsi tambahan untuk properti ini.
+                    </p>
+                </div>
+
+                <!-- Video Tur Properti (Google Drive) -->
+                <div id="modal-video-section" class="hidden space-y-3 pt-2 border-t border-gray-100">
+                    <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
+                    </h3>
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200">
+                        <iframe id="modal-video-iframe" class="w-full h-full" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Fasilitas Lengkap dengan Ikon Otomatis -->
+                <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
+                    <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
+                    </h3>
+                    <div id="modal-facilities-container" class="space-y-4"></div>
+                </div>
+
+                <!-- Aksi Hubungi WhatsApp Owner -->
+                <div class="pt-2">
+                    <a id="modal-wa-btn" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-600/25 transition active:scale-[0.99] text-base">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i> Hubungi Owner / PIC via WhatsApp
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 text-sm py-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK & Logika Filter Realtime -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
+            authDomain: "web-properti-bandung.firebaseapp.com",
+            projectId: "web-properti-bandung",
+            storageBucket: "web-properti-bandung.firebasestorage.app",
+            messagingSenderId: "684311108489",
+            appId: "1:684311108489:web:02e334723acd536656df58"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const propertiRef = collection(db, "properti");
+
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        let allProperties = [];
+        let modalActiveImages = [];
+        let modalActiveIndex = 0;
+        let currentModalPropId = null;
+
+        function getFacilityIcon(name) {
+            if (!name) return 'fa-solid fa-circle-check';
+            const n = name.toLowerCase();
+            if (n.includes('ac') || n.includes('pendingin')) return 'fa-solid fa-fan';
+            if (n.includes('kasur') || n.includes('bed') || n.includes('ranjang') || n.includes('springbed')) return 'fa-solid fa-bed';
+            if (n.includes('meja') || n.includes('desk') || n.includes('kerja')) return 'fa-solid fa-table';
+            if (n.includes('lemari') || n.includes('wardrobe') || n.includes('storage') || n.includes('kabinet')) return 'fa-solid fa-door-closed';
+            if (n.includes('jendela') || n.includes('window') || n.includes('ventilasi')) return 'fa-solid fa-border-all';
+            if (n.includes('cermin') || n.includes('mirror') || n.includes('kaca')) return 'fa-solid fa-circle-notch';
+            if (n.includes('bantal') || n.includes('guling') || n.includes('sprei')) return 'fa-solid fa-couch';
+            if (n.includes('kursi') || n.includes('chair') || n.includes('sofa')) return 'fa-solid fa-chair';
+            if (n.includes('shower')) return 'fa-solid fa-shower';
+            if (n.includes('k. mandi') || n.includes('kamar mandi') || n.includes('bath')) return 'fa-solid fa-bath';
+            if (n.includes('kloset') || n.includes('toilet') || n.includes('wc')) return 'fa-solid fa-toilet';
+            if (n.includes('ember') || n.includes('gayung')) return 'fa-solid fa-bucket';
+            if (n.includes('wifi') || n.includes('internet') || n.includes('hotspot')) return 'fa-solid fa-wifi';
+            if (n.includes('dapur') || n.includes('kitchen') || n.includes('kompor') || n.includes('pantry')) return 'fa-solid fa-kitchen-set';
+            if (n.includes('kolam') || n.includes('renang') || n.includes('pool')) return 'fa-solid fa-water-ladder';
+            if (n.includes('garasi') || n.includes('carport') || n.includes('parkir') || n.includes('mobil') || n.includes('motor')) return 'fa-solid fa-car';
+            if (n.includes('taman') || n.includes('garden') || n.includes('halaman')) return 'fa-solid fa-tree';
+            if (n.includes('keamanan') || n.includes('security') || n.includes('satpam') || n.includes('cctv')) return 'fa-solid fa-shield-halved';
+            if (n.includes('balkon') || n.includes('balcony') || n.includes('teras')) return 'fa-solid fa-sun';
+            if (n.includes('water heater') || n.includes('pemanas air')) return 'fa-solid fa-fire-flame-curved';
+            if (n.includes('listrik') || n.includes('pln') || n.includes('token') || n.includes('watt')) return 'fa-solid fa-bolt';
+            if (n.includes('air') || n.includes('pam') || n.includes('sumur') || n.includes('toren')) return 'fa-solid fa-faucet-drip';
+            if (n.includes('tv') || n.includes('televisi')) return 'fa-solid fa-tv';
+            if (n.includes('kulkas') || n.includes('refrigerator')) return 'fa-solid fa-box';
+            if (n.includes('mesin cuci') || n.includes('laundry')) return 'fa-solid fa-soap';
+            if (n.includes('lift') || n.includes('elevator')) return 'fa-solid fa-elevator';
+            if (n.includes('gym') || n.includes('fitness')) return 'fa-solid fa-dumbbell';
+            return 'fa-solid fa-circle-check';
+        }
+
+        const propertyModal = document.getElementById('property-modal');
+        const modalContentCard = document.getElementById('property-modal-card');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const modalMainImg = document.getElementById('modal-main-img');
+        const modalSlidePrev = document.getElementById('modal-slide-prev');
+        const modalSlideNext = document.getElementById('modal-slide-next');
+        const modalImgCounter = document.getElementById('modal-img-counter');
+        const modalThumbnailsStrip = document.getElementById('modal-thumbnails-strip');
+        const modalTypeBadge = document.getElementById('modal-type-badge');
+        const modalCustomBadge = document.getElementById('modal-custom-badge');
+        const modalTitle = document.getElementById('modal-title');
+        const modalLocation = document.getElementById('modal-location');
+        const modalPrice = document.getElementById('modal-price');
+        const modalOriginalPrice = document.getElementById('modal-original-price');
+        const modalViewsCount = document.getElementById('modal-views-count');
+        const modalBeds = document.getElementById('modal-beds');
+        const modalBaths = document.getElementById('modal-baths');
+        const modalArea = document.getElementById('modal-area');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalWaBtn = document.getElementById('modal-wa-btn');
+        const modalCopyLinkBtn = document.getElementById('modal-copy-link-btn');
+        const modalShareWaBtn = document.getElementById('modal-share-wa-btn');
+        const modalFacilitiesSection = document.getElementById('modal-facilities-section');
+        const modalFacilitiesContainer = document.getElementById('modal-facilities-container');
+        const modalVideoSection = document.getElementById('modal-video-section');
+        const modalVideoIframe = document.getElementById('modal-video-iframe');
+
+        function formatDriveVideoEmbedUrl(input) {
+            if (!input) return '';
+            let val = input.trim();
+            if (val.includes('drive.google.com') && val.includes('/preview')) return val;
+            let id = val;
+            const match = val.match(/\/d\/([a-zA-Z0-9_-]+)/) || val.match(/id=([a-zA-Z0-9_-]+)/);
+            if (match) id = match[1];
+            return `https://drive.google.com/file/d/${id}/preview`;
+        }
+
+        function showShareToast(message) {
+            const toast = document.getElementById('toast-share');
+            const toastMsg = document.getElementById('toast-share-msg');
+            toastMsg.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4');
+            }, 3000);
+        }
+
+        function getProductShareUrl(propId) {
+            const base = window.location.href.split('?')[0];
+            return `${base}?id=${propId}`;
+        }
+
+        function copyToClipboard(text, customSuccessMsg) {
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showShareToast(customSuccessMsg || 'Tautan berhasil disalin!');
+            } catch (e) {
+                showShareToast('Gagal menyalin tautan.');
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function sanitizeWhatsappNumber(phone) {
+            if (!phone) return '6281234567890';
+            let cleaned = phone.replace(/[^0-9]/g, '');
+            if (cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+            return cleaned || '6281234567890';
+        }
+
+        function categorizeFacility(facName) {
+            const n = (facName || '').toLowerCase();
+            if (n.includes('mandi') || n.includes('shower') || n.includes('kloset') || n.includes('toilet') || n.includes('wc') || n.includes('ember') || n.includes('gayung') || n.includes('water heater') || n.includes('pemanas air') || n.includes('bath')) {
+                return 'Fasilitas kamar mandi';
+            }
+            if (n.includes('ac') || n.includes('kasur') || n.includes('bed') || n.includes('ranjang') || n.includes('meja') || n.includes('lemari') || n.includes('storage') || n.includes('wardrobe') || n.includes('jendela') || n.includes('cermin') || n.includes('kaca') || n.includes('bantal') || n.includes('guling') || n.includes('kursi') || n.includes('sofa') || n.includes('tv') || n.includes('balkon')) {
+                return 'Fasilitas kamar';
+            }
+            return 'Fasilitas umum & lainnya';
+        }
+
+        function updateModalSlide(idx) {
+            if (modalActiveImages.length === 0) return;
+            modalActiveIndex = (idx + modalActiveImages.length) % modalActiveImages.length;
+            modalMainImg.src = formatMediaUrl(modalActiveImages[modalActiveIndex]);
+            modalImgCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
+
+            const thumbs = modalThumbnailsStrip.querySelectorAll('.modal-thumb-item');
+            thumbs.forEach((th, i) => {
+                if (i === modalActiveIndex) {
+                    th.classList.add('ring-2', 'ring-blue-600', 'opacity-100');
+                    th.classList.remove('opacity-60');
+                } else {
+                    th.classList.remove('ring-2', 'ring-blue-600', 'opacity-100');
+                    th.classList.add('opacity-60');
+                }
+            });
+        }
+
+        modalSlidePrev.addEventListener('click', () => updateModalSlide(modalActiveIndex - 1));
+        modalSlideNext.addEventListener('click', () => updateModalSlide(modalActiveIndex + 1));
+
+        function openPropertyModal(id) {
+            const p = allProperties.find(item => item.id === id);
+            if (!p) return;
+
+            const sessionViewKey = 'viewed_prop_' + id;
+            if (!sessionStorage.getItem(sessionViewKey)) {
+                sessionStorage.setItem(sessionViewKey, 'true');
+                updateDoc(doc(db, "properti", id), {
+                    views: increment(1)
+                }).catch(err => console.warn("Gagal update view count:", err));
+            }
+
+            currentModalPropId = p.id;
+            modalActiveImages = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
+            modalActiveIndex = 0;
+
+            try {
+                if (window.location.protocol.startsWith('http')) {
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set('id', p.id);
+                    window.history.replaceState({}, '', newUrl.toString());
+                }
+            } catch(e) {}
+
+            modalThumbnailsStrip.innerHTML = modalActiveImages.map((imgUrl, i) => `
+                <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this)">
+            `).join('');
+
+            modalThumbnailsStrip.querySelectorAll('.modal-thumb-item').forEach(thumb => {
+                thumb.addEventListener('click', () => {
+                    const idx = Number(thumb.getAttribute('data-index'));
+                    updateModalSlide(idx);
+                });
+            });
+
+            modalTitle.textContent = p.title || 'Tanpa Judul';
+            modalLocation.textContent = p.location || 'Bandung';
+            modalPrice.textContent = p.price || '-';
+            modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
+
+            if (p.originalPrice) {
+                modalOriginalPrice.textContent = p.originalPrice;
+                modalOriginalPrice.classList.remove('hidden');
+            } else {
+                modalOriginalPrice.textContent = '';
+                modalOriginalPrice.classList.add('hidden');
+            }
+
+            modalBeds.textContent = p.beds || 0;
+            modalBaths.textContent = p.baths || 0;
+            modalArea.textContent = p.area || '-';
+            modalDesc.textContent = p.description || 'Hunian nyaman dan strategis di kawasan Bandung Raya dengan aksesibilitas tinggi dan fasilitas lengkap.';
+
+            const facilities = Array.isArray(p.facilities) ? p.facilities : [];
+            if (facilities.length > 0) {
+                const groups = {};
+                facilities.forEach(fac => {
+                    const cat = categorizeFacility(fac);
+                    if (!groups[cat]) groups[cat] = [];
+                    groups[cat].push(fac);
+                });
+
+                const categoryOrder = ['Fasilitas kamar', 'Fasilitas kamar mandi', 'Fasilitas umum & lainnya'];
+                const sortedCategories = Object.keys(groups).sort((a, b) => {
+                    const idxA = categoryOrder.indexOf(a);
+                    const idxB = categoryOrder.indexOf(b);
+                    return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
+                });
+
+                modalFacilitiesContainer.innerHTML = sortedCategories.map(catTitle => `
+                    <div class="bg-slate-50/70 p-4 sm:p-5 rounded-2xl border border-slate-100">
+                        <h4 class="text-sm font-bold text-slate-900 mb-3 capitalize tracking-wide flex items-center gap-2">
+                            <span class="w-1.5 h-4 rounded-full bg-blue-600 inline-block"></span>
+                            ${catTitle}
+                        </h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            ${groups[catTitle].map(fac => {
+                                const icon = getFacilityIcon(fac);
+                                return `
+                                    <div class="flex items-center gap-3 py-1">
+                                        <div class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 text-xs shadow-xs">
+                                            <i class="${icon}"></i>
+                                        </div>
+                                        <span class="text-xs sm:text-sm font-medium text-slate-800 truncate" title="${fac}">${fac}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('');
+
+                modalFacilitiesSection.classList.remove('hidden');
+            } else {
+                modalFacilitiesSection.classList.add('hidden');
+            }
+
+            const pType = p.type || 'Dijual';
+            modalTypeBadge.textContent = pType;
+            if (pType === 'Telah Terjual') {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-rose-600';
+            } else if (pType === 'Disewa') {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-orange-500';
+            } else {
+                modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600';
+            }
+
+            if (p.badge) {
+                modalCustomBadge.textContent = p.badge;
+                modalCustomBadge.classList.remove('hidden');
+            } else {
+                modalCustomBadge.classList.add('hidden');
+            }
+
+            if (p.video) {
+                modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
+                modalVideoSection.classList.remove('hidden');
+            } else {
+                modalVideoIframe.src = '';
+                modalVideoSection.classList.add('hidden');
+            }
+
+            const ownerPhone = sanitizeWhatsappNumber(p.waNumber || p.whatsapp);
+            const message = encodeURIComponent(
+                `Halo, saya melihat properti ini di Katalog:\n\n*${p.title || 'Properti'}*\nStatus: ${pType}\nHarga: ${p.price || '-'}\nLokasi: ${p.location || 'Bandung'}\n\nApakah unit ini masih tersedia untuk disurvei? Terima kasih!`
+            );
+            modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
+
+            const shareUrl = getProductShareUrl(p.id);
+            const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat detail & foto:\n${shareUrl}`);
+            modalShareWaBtn.href = `https://api.whatsapp.com/send?text=${shareText}`;
+
+            modalCopyLinkBtn.onclick = (e) => {
+                e.preventDefault();
+                copyToClipboard(shareUrl, 'Tautan properti berhasil disalin! Siap dibagikan.');
+            };
+
+            updateModalSlide(0);
+
+            propertyModal.classList.remove('hidden');
+            propertyModal.classList.add('flex');
+            setTimeout(() => modalContentCard.classList.add('modal-enter-active'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePropertyModal() {
+            modalContentCard.classList.remove('modal-enter-active');
+            modalVideoIframe.src = '';
+
+            try {
+                if (window.location.protocol.startsWith('http')) {
+                    const newUrl = new URL(window.location.href);
+                    newUrl.searchParams.delete('id');
+                    window.history.replaceState({}, '', newUrl.toString());
+                }
+            } catch(e) {}
+
+            setTimeout(() => {
+                propertyModal.classList.add('hidden');
+                propertyModal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        modalCloseBtn.addEventListener('click', closePropertyModal);
+        propertyModal.addEventListener('click', (e) => {
+            if (e.target === propertyModal) closePropertyModal();
+        });
+
+        const filterForm = document.getElementById('filter-form');
+        const inputKeyword = document.getElementById('filter-keyword');
+        const selectStatus = document.getElementById('filter-status');
+        const selectCategory = document.getElementById('filter-category');
+        const sortSelect = document.getElementById('sort-select');
+        const resetBtn = document.getElementById('reset-btn');
+        const emptyResetBtn = document.getElementById('empty-reset-btn');
+
+        const gridContainer = document.getElementById('properties-grid');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        const countDisplay = document.getElementById('property-count');
+        const activeQueryTag = document.getElementById('active-query-tag');
+
+        function initFiltersFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get('q') || '';
+            const status = params.get('status') || '';
+            const type = params.get('type') || '';
+
+            if (q) inputKeyword.value = q;
+            if (status) selectStatus.value = status;
+            if (type && type !== 'Tipe Properti') selectCategory.value = type;
+        }
+
+        onSnapshot(propertiRef, (snapshot) => {
+            const list = [];
+            snapshot.forEach((doc) => {
+                list.push({ id: doc.id, ...doc.data() });
+            });
+            allProperties = list;
+            loadingState.classList.add('hidden');
+            applyFilters();
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedId = urlParams.get('id');
+                if (sharedId) {
+                    setTimeout(() => {
+                        openPropertyModal(sharedId);
+                    }, 150);
+                }
+            } catch(e) {}
+        }, (err) => {
+            console.error("Gagal mengambil data katalog:", err);
+            loadingState.innerHTML = `<p class="text-red-500 font-semibold">Gagal memuat katalog properti. Silakan muat ulang.</p>`;
+        });
+
+        function applyFilters() {
+            const keyword = inputKeyword.value.trim().toLowerCase();
+            const status = selectStatus.value;
+            const category = selectCategory.value.toLowerCase();
+            const sortBy = sortSelect.value;
+
+            try {
+                if (window.location.protocol.startsWith('http')) {
+                    const newUrl = new URL(window.location.href);
+                    if (keyword) newUrl.searchParams.set('q', keyword); else newUrl.searchParams.delete('q');
+                    if (status) newUrl.searchParams.set('status', status); else newUrl.searchParams.delete('status');
+                    if (category) newUrl.searchParams.set('type', selectCategory.value); else newUrl.searchParams.delete('type');
+                    window.history.replaceState({}, '', newUrl.toString());
+                }
+            } catch (historyErr) {}
+
+            let filtered = allProperties.filter((p) => {
+                const title = (p.title || '').toLowerCase();
+                const location = (p.location || '').toLowerCase();
+                const pType = (p.type || '');
+
+                const matchKeyword = !keyword || title.includes(keyword) || location.includes(keyword);
+                const matchStatus = !status || pType.toLowerCase() === status.toLowerCase();
+                const matchCategory = !category || title.includes(category);
+
+                return matchKeyword && matchStatus && matchCategory;
+            });
+
+            if (sortBy === 'title-asc') {
+                filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+            } else if (sortBy === 'beds-desc') {
+                filtered.sort((a, b) => Number(b.beds || 0) - Number(a.beds || 0));
+            }
+
+            if (keyword || status || category) {
+                const terms = [];
+                if (keyword) terms.push(`Kata Kunci: "${keyword}"`);
+                if (status) terms.push(`Status: ${status}`);
+                if (category) terms.push(`Kategori: ${selectCategory.value}`);
+                activeQueryTag.textContent = `Filter Aktif: ${terms.join(' • ')}`;
+                activeQueryTag.classList.remove('hidden');
+            } else {
+                activeQueryTag.classList.add('hidden');
+            }
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(properties) {
+            countDisplay.textContent = properties.length;
+
+            if (properties.length === 0) {
+                gridContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            gridContainer.innerHTML = properties.map(p => {
+                const photos = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
+                const totalPhotos = photos.length;
+                const pType = p.type || 'Dijual';
+                const badgeColorClass = pType === 'Telah Terjual' ? 'bg-rose-600' : (pType === 'Disewa' ? 'bg-orange-500' : 'bg-blue-600');
+
+                return `
+                <div class="property-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer flex flex-col relative" data-id="${p.id}">
+                    <div class="relative h-60 overflow-hidden card-slider-container select-none" data-total-photos="${totalPhotos}">
+                        <img src="${formatMediaUrl(photos[0])}" alt="${p.title || 'Properti'}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this)"/>
+                        
+                        <div class="absolute top-4 left-4 flex flex-wrap gap-1.5 z-10 pointer-events-none">
+                            <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
+                            ${p.originalPrice ? `<span class="bg-rose-500 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-percent text-[9px]"></i> Diskon</span>` : ''}
+                            ${p.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${p.badge}</span>` : ''}
+                            ${p.video ? `<span class="bg-red-600 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-play text-[9px]"></i> Video</span>` : ''}
+                        </div>
+
+                        <!-- Tombol Cepat Share di Kartu -->
+                        <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
+                            <i class="fa-solid fa-share-nodes text-xs"></i>
+                        </button>
+
+                        <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-900 flex items-center shadow-sm z-10 pointer-events-none">
+                            <i class="fa-solid fa-location-dot mr-1 text-blue-600"></i> ${p.location || 'Bandung'}
+                        </div>
+
+                        ${totalPhotos > 1 ? `
+                            <button type="button" class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button type="button" class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                            <span class="card-counter absolute bottom-4 right-4 bg-black/60 text-white px-2 py-0.5 rounded-md text-[10px] font-bold z-10">
+                                1/${totalPhotos}
+                            </span>
+                        ` : ''}
+                    </div>
+
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">${p.title || 'Tanpa Judul'}</h3>
+                            <p class="text-xs text-gray-500 line-clamp-2 mb-3">${p.description || 'Hunian strategis di Bandung dengan fasilitas lengkap.'}</p>
+                            
+                            <div class="flex items-baseline gap-2 mb-4 flex-wrap">
+                                <p class="text-2xl font-extrabold text-blue-600">${p.price || '-'}</p>
+                                ${p.originalPrice ? `<p class="text-xs sm:text-sm text-rose-500 line-through font-semibold">${p.originalPrice}</p>` : ''}
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-3 border-t border-gray-100 text-gray-500">
+                            <div class="flex items-center"><i class="fa-solid fa-bed mr-1.5 text-gray-400"></i><span class="text-xs">${p.beds || 0} K. Tidur</span></div>
+                            <div class="flex items-center"><i class="fa-solid fa-bath mr-1.5 text-gray-400"></i><span class="text-xs">${p.baths || 0} K. Mandi</span></div>
+                            <div class="flex items-center text-blue-600 font-semibold"><i class="fa-regular fa-eye mr-1.5"></i><span class="text-xs">${p.views || 0}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+
+            document.querySelectorAll('.property-card').forEach(card => {
+                const id = card.getAttribute('data-id');
+                const prop = properties.find(item => item.id === id);
+                const photos = (prop && Array.isArray(prop.images) && prop.images.length > 0) ? prop.images : [prop?.image || ''];
+
+                const cardImg = card.querySelector('.card-slider-img');
+                const prevBtn = card.querySelector('.card-prev-btn');
+                const nextBtn = card.querySelector('.card-next-btn');
+                const counterBadge = card.querySelector('.card-counter');
+                const shareBtn = card.querySelector('.card-share-btn');
+
+                if (shareBtn) {
+                    shareBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const shareUrl = getProductShareUrl(id);
+                        copyToClipboard(shareUrl, `Tautan "${prop?.title || 'Properti'}" berhasil disalin!`);
+                    });
+                }
+
+                let curIdx = 0;
+                const updateCardPhoto = (newIdx) => {
+                    curIdx = (newIdx + photos.length) % photos.length;
+                    cardImg.src = formatMediaUrl(photos[curIdx]);
+                    if (counterBadge) counterBadge.textContent = `${curIdx + 1}/${photos.length}`;
+                };
+
+                if (prevBtn && nextBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        updateCardPhoto(curIdx - 1);
+                    });
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        updateCardPhoto(curIdx + 1);
+                    });
+                }
+
+                card.addEventListener('click', () => {
+                    openPropertyModal(id);
+                });
+            });
+        }
+
+        filterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            applyFilters();
+        });
+
+        inputKeyword.addEventListener('input', applyFilters);
+        selectStatus.addEventListener('change', applyFilters);
+        selectCategory.addEventListener('change', applyFilters);
+        sortSelect.addEventListener('change', applyFilters);
+
+        function resetAll() {
+            inputKeyword.value = '';
+            selectStatus.value = '';
+            selectCategory.value = '';
+            sortSelect.value = 'default';
+            applyFilters();
+        }
+
+        resetBtn.addEventListener('click', resetAll);
+        emptyResetBtn.addEventListener('click', resetAll);
+
+        initFiltersFromURL();
+    </script>
+</body>
+</html>
