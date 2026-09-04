@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog Properti - Properti Bandung & Sekitarnya</title>
     
+    <!-- Favicon Rumah Biru -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%232563eb' d='M44.5 13.2c3.1-2.9 7.9-2.9 11 0l34.8 32.2c3.5 3.2 1.3 9.1-3.5 9.1h-4.8v30.5c0 4.4-3.6 8-8 8H67c-1.7 0-3-1.3-3-3V68c0-3.3-2.7-6-6-6h-16c-3.3 0-6 2.7-6 6v22c0 1.7-1.3 3-3 3H16c-4.4 0-8-3.6-8-8V54.5H3.2c-4.8 0-7-5.9-3.5-9.1L34.5 13.2z'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -79,12 +84,18 @@
                     <a href="katalog.html" class="text-blue-600 font-bold transition">Semua Properti</a>
                     <a href="katalog.html?status=Dijual" class="text-gray-600 hover:text-blue-600 font-medium transition">Dijual</a>
                     <a href="katalog.html?status=Disewa" class="text-gray-600 hover:text-blue-600 font-medium transition">Disewa</a>
-                    <a href="https://wa.me/6281234567890" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition flex items-center shadow-sm">
+                    <a href="titip-properti.html" class="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus-circle text-xs"></i> Titip Properti
+                    </a>
+                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full text-sm font-semibold transition flex items-center shadow-sm">
                         <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Hubungi Kami
                     </a>
                 </div>
 
-                <div class="md:hidden flex items-center">
+                <div class="md:hidden flex items-center gap-3">
+                    <a href="titip-properti.html" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-lg">
+                        Titip Properti
+                    </a>
                     <a href="index.html" class="text-sm font-semibold text-blue-600 flex items-center">
                         <i class="fa-solid fa-arrow-left mr-1.5"></i> Beranda
                     </a>
@@ -103,12 +114,11 @@
             <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xl text-gray-800">
                 <form id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     
-                    <!-- Search Text -->
+                    <!-- Search Text (Nama, lokasi, deskripsi, fasilitas) -->
                     <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-blue-500">
                         <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2.5"></i>
-                        <input type="text" id="filter-keyword" placeholder="Nama properti atau lokasi..." class="w-full bg-transparent outline-none text-sm">
+                        <input type="text" id="filter-keyword" placeholder="Nama properti, lokasi, atau kata kunci..." class="w-full bg-transparent outline-none text-sm">
                     </div>
-                    
                     <!-- Tipe / Status (Dijual / Disewa / Telah Terjual) -->
                     <div>
                         <select id="filter-status" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
@@ -119,7 +129,7 @@
                         </select>
                     </div>
 
-                    <!-- Kategori Bangunan -->
+                    <!-- Kategori Bangunan (Berdasarkan Judul/Kata Kunci) -->
                     <div>
                         <select id="filter-category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Semua Kategori Bangunan</option>
@@ -158,7 +168,8 @@
             <div class="flex items-center space-x-2">
                 <label for="sort-select" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Urutkan:</label>
                 <select id="sort-select" class="bg-white border border-gray-200 rounded-lg text-sm px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
-                    <option value="default">Terbaru</option>
+                    <option value="default">Rekomendasi (Prioritas)</option>
+                    <option value="views">Paling Banyak Dilihat</option>
                     <option value="title-asc">Nama (A - Z)</option>
                     <option value="beds-desc">Kamar Tidur Terbanyak</option>
                 </select>
@@ -295,12 +306,14 @@
                     </div>
                 </div>
 
-                <!-- Fasilitas Lengkap dengan Ikon Otomatis -->
+                <!-- Fasilitas Lengkap dengan Ikon Otomatis (Tersusun Berdasarkan Kategori) -->
                 <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
                     <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
                     </h3>
-                    <div id="modal-facilities-container" class="space-y-4"></div>
+                    <div id="modal-facilities-container" class="space-y-4">
+                        <!-- Grup fasilitas dirender dinamis di sini -->
+                    </div>
                 </div>
 
                 <!-- Aksi Hubungi WhatsApp Owner -->
@@ -317,7 +330,17 @@
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-400 text-sm py-8 border-t border-gray-800">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p>&copy; <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya. All rights reserved.</p>
+            <p>
+                <a href="admin.html" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-base mx-1" title="Masuk ke Panel Admin">
+                    &copy;
+                </a>
+                <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya. All rights reserved.
+            </p>
+            <div class="mt-2 space-x-3 text-xs text-gray-500">
+                <a href="syarat-ketentuan.html" class="hover:text-gray-300 transition">Syarat & Ketentuan</a>
+                <span>•</span>
+                <a href="kebijakan-privasi.html" class="hover:text-gray-300 transition">Kebijakan Privasi</a>
+            </div>
         </div>
     </footer>
 
@@ -345,6 +368,26 @@
         let modalActiveImages = [];
         let modalActiveIndex = 0;
         let currentModalPropId = null;
+
+        // Algoritma Prioritas Berbayar 30 Hari + Random Shuffle on Page Load
+        function getPriorityScore(p) {
+            const isPaid = (p.paymentStatus === 'Sudah Membayar');
+            if (isPaid && p.expiresAt) {
+                const expDate = p.expiresAt.toDate ? p.expiresAt.toDate() : new Date(p.expiresAt);
+                if (expDate.getTime() > Date.now()) {
+                    return 2; // Prioritas Berbayar Aktif
+                }
+            }
+            return 1; // Belum bayar / masa aktif habis
+        }
+
+        const pageLoadRandomSeed = {};
+        function getRandomWeight(id) {
+            if (!pageLoadRandomSeed[id]) {
+                pageLoadRandomSeed[id] = Math.random();
+            }
+            return pageLoadRandomSeed[id];
+        }
 
         function getFacilityIcon(name) {
             if (!name) return 'fa-solid fa-circle-check';
@@ -379,6 +422,7 @@
             return 'fa-solid fa-circle-check';
         }
 
+        // Elemen DOM Pop-up Modal
         const propertyModal = document.getElementById('property-modal');
         const modalContentCard = document.getElementById('property-modal-card');
         const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -406,6 +450,7 @@
         const modalVideoSection = document.getElementById('modal-video-section');
         const modalVideoIframe = document.getElementById('modal-video-iframe');
 
+        // Helper URL Video Google Drive Embed
         function formatDriveVideoEmbedUrl(input) {
             if (!input) return '';
             let val = input.trim();
@@ -416,6 +461,7 @@
             return `https://drive.google.com/file/d/${id}/preview`;
         }
 
+        // Helper Notifikasi Toast
         function showShareToast(message) {
             const toast = document.getElementById('toast-share');
             const toastMsg = document.getElementById('toast-share-msg');
@@ -428,11 +474,13 @@
             }, 3000);
         }
 
+        // Helper Dapatkan URL Produk yang Langsung Menuju Modal
         function getProductShareUrl(propId) {
             const base = window.location.href.split('?')[0];
             return `${base}?id=${propId}`;
         }
 
+        // Salin Tautan ke Clipboard
         function copyToClipboard(text, customSuccessMsg) {
             const tempInput = document.createElement('input');
             tempInput.value = text;
@@ -448,12 +496,12 @@
         }
 
         function sanitizeWhatsappNumber(phone) {
-            if (!phone) return '6281234567890';
+            if (!phone) return '6285179756031';
             let cleaned = phone.replace(/[^0-9]/g, '');
             if (cleaned.startsWith('0')) {
                 cleaned = '62' + cleaned.substring(1);
             }
-            return cleaned || '6281234567890';
+            return cleaned || '6285179756031';
         }
 
         function categorizeFacility(facName) {
@@ -492,6 +540,7 @@
             const p = allProperties.find(item => item.id === id);
             if (!p) return;
 
+            // Catat View Realtime ke Firestore (mencegah spam hitungan per sesi)
             const sessionViewKey = 'viewed_prop_' + id;
             if (!sessionStorage.getItem(sessionViewKey)) {
                 sessionStorage.setItem(sessionViewKey, 'true');
@@ -504,6 +553,7 @@
             modalActiveImages = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
             modalActiveIndex = 0;
 
+            // Perbarui URL tanpa reload agar bisa disalin dari address bar
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -513,7 +563,7 @@
             } catch(e) {}
 
             modalThumbnailsStrip.innerHTML = modalActiveImages.map((imgUrl, i) => `
-                <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this)">
+                <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this, '${imgUrl}', false)">
             `).join('');
 
             modalThumbnailsStrip.querySelectorAll('.modal-thumb-item').forEach(thumb => {
@@ -601,6 +651,7 @@
                 modalCustomBadge.classList.add('hidden');
             }
 
+            // Tampilkan Video Google Drive jika ada
             if (p.video) {
                 modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
                 modalVideoSection.classList.remove('hidden');
@@ -615,6 +666,7 @@
             );
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
+            // Siapkan Tombol Share di dalam Pop-up Modal
             const shareUrl = getProductShareUrl(p.id);
             const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat detail & foto:\n${shareUrl}`);
             modalShareWaBtn.href = `https://api.whatsapp.com/send?text=${shareText}`;
@@ -634,8 +686,10 @@
 
         function closePropertyModal() {
             modalContentCard.classList.remove('modal-enter-active');
+            // Hentikan pemutaran video saat modal ditutup
             modalVideoIframe.src = '';
 
+            // Hapus parameter id dari URL saat ditutup
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -656,6 +710,13 @@
             if (e.target === propertyModal) closePropertyModal();
         });
 
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && propertyModal && !propertyModal.classList.contains('hidden')) {
+                closePropertyModal();
+            }
+        });
+
+        // Elemen DOM
         const filterForm = document.getElementById('filter-form');
         const inputKeyword = document.getElementById('filter-keyword');
         const selectStatus = document.getElementById('filter-status');
@@ -670,6 +731,7 @@
         const countDisplay = document.getElementById('property-count');
         const activeQueryTag = document.getElementById('active-query-tag');
 
+        // Membaca Parameter dari URL (Dikirim dari index.html)
         function initFiltersFromURL() {
             const params = new URLSearchParams(window.location.search);
             const q = params.get('q') || '';
@@ -681,6 +743,7 @@
             if (type && type !== 'Tipe Properti') selectCategory.value = type;
         }
 
+        // Sinkronisasi Data Firebase
         onSnapshot(propertiRef, (snapshot) => {
             const list = [];
             snapshot.forEach((doc) => {
@@ -690,6 +753,7 @@
             loadingState.classList.add('hidden');
             applyFilters();
 
+            // Cek jika URL memiliki parameter ?id=... (dibuka dari tautan share)
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const sharedId = urlParams.get('id');
@@ -704,43 +768,75 @@
             loadingState.innerHTML = `<p class="text-red-500 font-semibold">Gagal memuat katalog properti. Silakan muat ulang.</p>`;
         });
 
+        // Logika Penyaringan & Pengurutan
         function applyFilters() {
-            const keyword = inputKeyword.value.trim().toLowerCase();
+            const rawKeyword = inputKeyword.value.trim().toLowerCase();
+            const qTokens = rawKeyword.split(/\s+/).filter(Boolean);
             const status = selectStatus.value;
             const category = selectCategory.value.toLowerCase();
             const sortBy = sortSelect.value;
 
+            // Update URL tanpa reload secara aman
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
-                    if (keyword) newUrl.searchParams.set('q', keyword); else newUrl.searchParams.delete('q');
+                    if (rawKeyword) newUrl.searchParams.set('q', rawKeyword); else newUrl.searchParams.delete('q');
                     if (status) newUrl.searchParams.set('status', status); else newUrl.searchParams.delete('status');
                     if (category) newUrl.searchParams.set('type', selectCategory.value); else newUrl.searchParams.delete('type');
                     window.history.replaceState({}, '', newUrl.toString());
                 }
             } catch (historyErr) {}
 
+            // Filter data secara akurat (mencakup judul, lokasi, deskripsi, fasilitas)
             let filtered = allProperties.filter((p) => {
                 const title = (p.title || '').toLowerCase();
                 const location = (p.location || '').toLowerCase();
+                const description = (p.description || '').toLowerCase();
+                const badge = (p.badge || '').toLowerCase();
+                const facilities = Array.isArray(p.facilities) ? p.facilities.join(' ').toLowerCase() : '';
                 const pType = (p.type || '');
 
-                const matchKeyword = !keyword || title.includes(keyword) || location.includes(keyword);
-                const matchStatus = !status || pType.toLowerCase() === status.toLowerCase();
-                const matchCategory = !category || title.includes(category);
+                if (qTokens.length > 0) {
+                    const fullSearchText = `${title} ${location} ${description} ${badge} ${facilities}`;
+                    const matchAllTokens = qTokens.every(tok => fullSearchText.includes(tok));
+                    if (!matchAllTokens) return false;
+                }
 
-                return matchKeyword && matchStatus && matchCategory;
+                if (status && pType.toLowerCase() !== status.toLowerCase()) {
+                    return false;
+                }
+
+                if (category) {
+                    const fullTextCat = `${title} ${description} ${location}`;
+                    if (!fullTextCat.includes(category)) return false;
+                }
+
+                return true;
             });
 
+            // Urutkan
             if (sortBy === 'title-asc') {
                 filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
             } else if (sortBy === 'beds-desc') {
                 filtered.sort((a, b) => Number(b.beds || 0) - Number(a.beds || 0));
+            } else if (sortBy === 'views') {
+                filtered.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
+            } else {
+                // Default: Algoritma Prioritas Berbayar 30 Hari + Fair Random Shuffle per Page Load
+                filtered.sort((a, b) => {
+                    const scoreA = getPriorityScore(a);
+                    const scoreB = getPriorityScore(b);
+                    if (scoreA !== scoreB) {
+                        return scoreB - scoreA;
+                    }
+                    return getRandomWeight(a.id) - getRandomWeight(b.id);
+                });
             }
 
-            if (keyword || status || category) {
+            // Info tag pencarian aktif
+            if (rawKeyword || status || category) {
                 const terms = [];
-                if (keyword) terms.push(`Kata Kunci: "${keyword}"`);
+                if (rawKeyword) terms.push(`Kata Kunci: "${rawKeyword}"`);
                 if (status) terms.push(`Status: ${status}`);
                 if (category) terms.push(`Kategori: ${selectCategory.value}`);
                 activeQueryTag.textContent = `Filter Aktif: ${terms.join(' • ')}`;
@@ -752,6 +848,7 @@
             renderGrid(filtered);
         }
 
+        // Render List ke DOM
         function renderGrid(properties) {
             countDisplay.textContent = properties.length;
 
@@ -771,7 +868,7 @@
                 return `
                 <div class="property-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer flex flex-col relative" data-id="${p.id}">
                     <div class="relative h-60 overflow-hidden card-slider-container select-none" data-total-photos="${totalPhotos}">
-                        <img src="${formatMediaUrl(photos[0])}" alt="${p.title || 'Properti'}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this)"/>
+                        <img src="${formatMediaUrl(photos[0])}" alt="${p.title || 'Properti'}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${photos[0] || ''}', false)"/>
                         
                         <div class="absolute top-4 left-4 flex flex-wrap gap-1.5 z-10 pointer-events-none">
                             <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
@@ -821,6 +918,7 @@
                 </div>
             `}).join('');
 
+            // Hubungkan event klik pop-up modal & slider manual kartu katalog
             document.querySelectorAll('.property-card').forEach(card => {
                 const id = card.getAttribute('data-id');
                 const prop = properties.find(item => item.id === id);
@@ -832,6 +930,7 @@
                 const counterBadge = card.querySelector('.card-counter');
                 const shareBtn = card.querySelector('.card-share-btn');
 
+                // Event tombol share di kartu
                 if (shareBtn) {
                     shareBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -864,6 +963,7 @@
             });
         }
 
+        // Event Listeners
         filterForm.addEventListener('submit', (e) => {
             e.preventDefault();
             applyFilters();
@@ -885,6 +985,7 @@
         resetBtn.addEventListener('click', resetAll);
         emptyResetBtn.addEventListener('click', resetAll);
 
+        // Inisialisasi awal saat load
         initFiltersFromURL();
     </script>
 </body>
