@@ -222,7 +222,6 @@
                 <!-- Status & Counter Foto -->
                 <div class="absolute top-4 left-4 flex gap-2 items-center">
                     <span id="modal-type-badge" class="px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600">Dijual</span>
-                    <span id="modal-custom-badge" class="hidden px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-emerald-500"></span>
                 </div>
 
                 <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow">
@@ -286,27 +285,27 @@
                     </div>
                 </div>
 
-                <!-- Deskripsi Lengkap -->
-                <div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-blue-600"></i> Deskripsi Properti
-                    </h3>
-                    <p id="modal-desc" class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                        Tidak ada deskripsi tambahan untuk properti ini.
+                <!-- Video Tur Properti (Di atas Fasilitas & Deskripsi) -->
+                <div id="modal-video-section" class="hidden space-y-2 pt-2 border-t border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
+                        </h3>
+                        <button type="button" id="video-fullscreen-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-expand text-xs"></i> <span>Layar Penuh</span>
+                        </button>
+                    </div>
+
+                    <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center h-[55vh] sm:h-[65vh] max-h-[750px]">
+                        <iframe id="modal-video-iframe" class="w-full h-full border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" allowfullscreen></iframe>
+                    </div>
+                    <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-mobile-screen text-blue-600"></i>
+                        <span>Ukuran fleksibel mengikuti video (potret & lanskap). Klik <strong>Layar Penuh</strong> untuk menonton video satu layar penuh.</span>
                     </p>
                 </div>
 
-                <!-- Video Tur Properti (Google Drive) -->
-                <div id="modal-video-section" class="hidden space-y-3 pt-2 border-t border-gray-100">
-                    <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
-                    </h3>
-                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-md border border-slate-200">
-                        <iframe id="modal-video-iframe" class="w-full h-full" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-                    </div>
-                </div>
-
-                <!-- Fasilitas Lengkap dengan Ikon Otomatis (Tersusun Berdasarkan Kategori) -->
+                <!-- Fasilitas Lengkap (DI ATAS Deskripsi Properti) -->
                 <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
                     <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
@@ -314,6 +313,16 @@
                     <div id="modal-facilities-container" class="space-y-4">
                         <!-- Grup fasilitas dirender dinamis di sini -->
                     </div>
+                </div>
+
+                <!-- Deskripsi Lengkap (Di bawah Fasilitas) -->
+                <div>
+                    <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-600"></i> Deskripsi Properti
+                    </h3>
+                    <p id="modal-desc" class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                        Tidak ada deskripsi tambahan untuk properti ini.
+                    </p>
                 </div>
 
                 <!-- Aksi Hubungi WhatsApp Owner -->
@@ -449,6 +458,26 @@
         const modalFacilitiesContainer = document.getElementById('modal-facilities-container');
         const modalVideoSection = document.getElementById('modal-video-section');
         const modalVideoIframe = document.getElementById('modal-video-iframe');
+        const modalVideoWrapper = document.getElementById('modal-video-wrapper');
+        const videoFullscreenBtn = document.getElementById('video-fullscreen-btn');
+
+        if (videoFullscreenBtn && modalVideoWrapper) {
+            videoFullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (modalVideoWrapper.requestFullscreen) {
+                        modalVideoWrapper.requestFullscreen().catch(() => {});
+                    } else if (modalVideoWrapper.webkitRequestFullscreen) {
+                        modalVideoWrapper.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(() => {});
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            });
+        }
 
         // Helper URL Video Google Drive Embed
         function formatDriveVideoEmbedUrl(input) {
@@ -644,11 +673,13 @@
                 modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600';
             }
 
-            if (p.badge) {
-                modalCustomBadge.textContent = p.badge;
-                modalCustomBadge.classList.remove('hidden');
-            } else {
-                modalCustomBadge.classList.add('hidden');
+            if (modalCustomBadge) {
+                if (p.badge) {
+                    modalCustomBadge.textContent = p.badge;
+                    modalCustomBadge.classList.remove('hidden');
+                } else {
+                    modalCustomBadge.classList.add('hidden');
+                }
             }
 
             // Tampilkan Video Google Drive jika ada
@@ -686,7 +717,9 @@
 
         function closePropertyModal() {
             modalContentCard.classList.remove('modal-enter-active');
-            // Hentikan pemutaran video saat modal ditutup
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
             modalVideoIframe.src = '';
 
             // Hapus parameter id dari URL saat ditutup
@@ -870,11 +903,9 @@
                     <div class="relative h-60 overflow-hidden card-slider-container select-none" data-total-photos="${totalPhotos}">
                         <img src="${formatMediaUrl(photos[0])}" alt="${p.title || 'Properti'}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${photos[0] || ''}', false)"/>
                         
-                        <div class="absolute top-4 left-4 flex flex-wrap gap-1.5 z-10 pointer-events-none">
+                        <!-- Hanya Label Status Transaksi Saja -->
+                        <div class="absolute top-4 left-4 z-10 pointer-events-none">
                             <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
-                            ${p.originalPrice ? `<span class="bg-rose-500 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-percent text-[9px]"></i> Diskon</span>` : ''}
-                            ${p.badge ? `<span class="bg-green-500 text-white px-3 py-1 text-xs font-bold rounded-full shadow-sm">${p.badge}</span>` : ''}
-                            ${p.video ? `<span class="bg-red-600 text-white px-2.5 py-1 text-xs font-bold rounded-full shadow-sm flex items-center gap-1"><i class="fa-solid fa-play text-[9px]"></i> Video</span>` : ''}
                         </div>
 
                         <!-- Tombol Cepat Share di Kartu -->
