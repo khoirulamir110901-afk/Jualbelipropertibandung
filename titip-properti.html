@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titip Properti - Pasang Iklan Properti Bandung</title>
+
+    <!-- Favicon Rumah Biru -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%232563eb' d='M44.5 13.2c3.1-2.9 7.9-2.9 11 0l34.8 32.2c3.5 3.2 1.3 9.1-3.5 9.1h-4.8v30.5c0 4.4-3.6 8-8 8H67c-1.7 0-3-1.3-3-3V68c0-3.3-2.7-6-6-6h-16c-3.3 0-6 2.7-6 6v22c0 1.7-1.3 3-3 3H16c-4.4 0-8-3.6-8-8V54.5H3.2c-4.8 0-7-5.9-3.5-9.1L34.5 13.2z'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Tailwind CSS & Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+
+    <div id="toast-notif" class="fixed top-5 right-5 z-[200] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold transform transition-all duration-300 opacity-0 -translate-y-3 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-text">Berhasil disalin!</span>
+    </div>
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <a href="index.html" class="flex items-center group">
+                    <i class="fa-solid fa-house text-3xl text-blue-600"></i>
+                    <div class="ml-3 flex flex-col">
+                        <span class="font-bold text-xl leading-tight text-slate-900 group-hover:text-blue-600 transition">Properti Bandung</span>
+                        <span class="text-xs text-slate-500 font-medium tracking-wide">& Sekitarnya</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="index.html" class="text-slate-600 hover:text-blue-600 font-medium transition">Beranda</a>
+                    <a href="katalog.html" class="text-slate-600 hover:text-blue-600 font-medium transition">Katalog</a>
+                    <a href="katalog.html?status=Dijual" class="text-slate-600 hover:text-blue-600 font-medium transition">Beli</a>
+                    <a href="katalog.html?status=Disewa" class="text-slate-600 hover:text-blue-600 font-medium transition">Sewa</a>
+                    <a href="titip-properti.html" class="text-blue-600 font-extrabold flex items-center gap-1.5 transition">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span> Titip Properti
+                    </a>
+                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition shadow-sm hover:shadow flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Hubungi Agen
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-slate-900 focus:outline-none p-2">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 pt-2 pb-5 space-y-2 shadow-lg">
+            <a href="index.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beranda</a>
+            <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Katalog Properti</a>
+            <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beli (Dijual)</a>
+            <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Sewa (Disewa)</a>
+            <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-blue-600 bg-blue-50 rounded-xl">Titip Properti (Iklan)</a>
+            <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-3 bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold shadow-sm">
+                Hubungi Agen via WhatsApp
+            </a>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8 shadow-inner">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-blue-200 text-xs font-bold backdrop-blur-md mb-3">
+                <i class="fa-solid fa-crown text-amber-400"></i> Layanan Titip Jual & Sewa Properti Prioritas
+            </div>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-2">Pasang Iklan Properti Anda</h1>
+            <p class="text-blue-100 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+                Jangkau ribuan calon pembeli potensial di Bandung Raya dengan penayangan prioritas aktif selama 30 hari penuh. Iklan bersponsor aktif setiap Sabtu-Minggu selama 1 bulan.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-1 w-full">
+        <div class="bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 sm:p-8 space-y-6">
+
+            <!-- Pertanyaan Utama Flowchart -->
+            <div class="text-center space-y-2 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-xl shadow-xs">
+                    <i class="fa-solid fa-clipboard-question"></i>
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
+                    Apakah Anda sudah konfirmasi detail properti di WhatsApp?
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-500">
+                    (Foto, deskripsi, harga, & draft listing sudah dibuat oleh admin)
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" id="btn-choice-sudah" class="p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-blue-600 bg-blue-50/60 shadow-sm">
+                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-xs">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div>
+                        <span class="block text-sm sm:text-base font-black text-blue-900">SUDAH</span>
+                        <span class="text-[11px] text-blue-700 font-medium">Lanjut Pembayaran</span>
+                    </div>
+                </button>
+
+                <button type="button" id="btn-choice-belum" class="p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer">
+                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <div>
+                        <span class="block text-sm sm:text-base font-black text-slate-800">BELUM</span>
+                        <span class="text-[11px] text-slate-500 font-medium">Konsultasi Dulu</span>
+                    </div>
+                </button>
+            </div>
+
+            <div id="section-sudah" class="space-y-4 pt-2">
+                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-blue-600 text-sm mt-0.5 shrink-0"></i>
+                    <p class="text-xs text-blue-950 leading-relaxed">
+                        Silakan masukkan data konfirmasi Anda. Setelah ini Anda akan diarahkan ke pop-up pembayaran biaya iklan <strong>Rp 199.000</strong> (aktif 30 hari).
+                    </p>
+                </div>
+
+                <form id="form-sudah" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-nama">
+                            Nama Pemilik Properti <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="sudah-nama" required placeholder="Contoh: Bpk. Hendra Wijaya" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-wa">
+                            No. WhatsApp Aktif <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-brands fa-whatsapp absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                            <input type="tel" id="sudah-wa" required placeholder="Contoh: 081234567890" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-properti">
+                            Nama Properti Anda <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-house-chimney absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="sudah-properti" required placeholder="Contoh: Rumah Hook Dago Asri 2 Lantai" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3.5 px-5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
+                            <span>Lanjut Pembayaran (Rp199.000)</span>
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="section-belum" class="hidden space-y-4 pt-2">
+                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 flex items-start gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-600 text-sm mt-0.5 shrink-0"></i>
+                    <p class="text-xs text-amber-950 leading-relaxed">
+                        Belum punya draft listing? Isi formulir ringkas ini, admin kami akan langsung membantu menyiapkan foto, harga, dan deskripsi properti Anda di WhatsApp.
+                    </p>
+                </div>
+
+                <form id="form-belum" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="belum-nama">
+                            Nama Lengkap <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+                            <input type="text" id="belum-nama" required placeholder="Masukkan nama Anda..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="belum-wa">
+                            No. WhatsApp <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-brands fa-whatsapp absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                            <input type="tel" id="belum-wa" required placeholder="Contoh: 081234567890" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2">
+                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                            <span>Konsultasi via WhatsApp</span>
+                        </button>
+                        <p class="text-[11px] text-center text-slate-400 mt-2">
+                            Otomatis terhubung ke chat WhatsApp Admin untuk mengirimkan materi (foto, harga, deskripsi).
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="payment-modal" class="fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div id="payment-card" class="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-slate-100 p-6 sm:p-7 space-y-5">
+            
+            <!-- Tombol Tutup Pop-Up -->
+            <button id="close-payment-modal" type="button" class="absolute top-4 right-4 z-30 bg-slate-100 hover:bg-slate-200 text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <!-- Header Modal -->
+            <div class="text-center pt-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold mb-2">
+                    <i class="fa-solid fa-shield-halved"></i> Pembayaran Iklan 30 Hari
+                </span>
+                <h3 class="text-xl font-black text-slate-900">Selesaikan Pembayaran</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Transfer sebelum batas waktu berakhir untuk verifikasi instan</p>
+            </div>
+
+            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 text-center flex items-center justify-between px-5">
+                <div class="flex items-center gap-2 text-rose-700 text-xs font-bold">
+                    <i class="fa-regular fa-clock text-base animate-pulse"></i>
+                    <span>Sisa Waktu Pembayaran:</span>
+                </div>
+                <div id="countdown-display" class="font-mono text-xl font-black text-rose-600 tracking-wider">
+                    05:00
+                </div>
+            </div>
+
+            <!-- Total Tagihan -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                <span class="text-xs font-semibold text-slate-500 block mb-0.5">Total Tagihan Iklan</span>
+                <span class="text-3xl font-black text-blue-600 tracking-tight">Rp 199.000</span>
+                <span class="text-[11px] text-emerald-600 font-bold block mt-1 flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i> Penayangan Prioritas 30 Hari • Iklan bersponsor aktif setiap Sabtu-Minggu selama 1 bulan
+                </span>
+            </div>
+
+            <!-- Barcode QRIS & No. Rekening Bank -->
+            <div class="space-y-4">
+                
+                <!-- QRIS Box -->
+                <div class="border border-slate-200 rounded-2xl p-4 sm:p-5 text-center bg-white shadow-xs">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-qrcode text-blue-600"></i> Scan QRIS Nasional
+                        </span>
+                        <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">Semua Bank & E-Wallet</span>
+                    </div>
+
+                    <!-- Visual QRIS Asli dari Google Drive (Ukuran Besar & Proporsional Sesuai Aslinya) -->
+                    <div class="w-full max-w-sm mx-auto p-2 sm:p-3 border-2 border-slate-200 rounded-2xl bg-white flex flex-col items-center justify-center relative my-2 shadow-sm">
+                        <img src="https://lh3.googleusercontent.com/d/12QAvmryPmdb6DBy5jMuaMmX87XrrwY6I" 
+                             alt="QRIS Properti Bandung" 
+                             class="w-full h-auto max-h-[500px] object-contain rounded-xl"
+                             onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://drive.google.com/thumbnail?id=12QAvmryPmdb6DBy5jMuaMmX87XrrwY6I&sz=w1200';}">
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium mt-2">Buka m-Banking atau E-Wallet Anda (BCA, Mandiri, BRI, BSI, GoPay, OVO, DANA) lalu Scan QR di atas</p>
+                </div>
+
+                <!-- Rekening Transfer Bank & E-Wallet Alternatif -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-building-columns text-slate-600"></i> No. Rekening & E-Wallet
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-semibold">Klik salin untuk transfer</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        
+                        <!-- BSI -->
+                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded">BSI</span>
+                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Syariah Indonesia</span>
+                                </div>
+                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">7132946037</span>
+                            </div>
+                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="7132946037" data-name="BSI">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+
+                        <!-- BRI -->
+                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-black rounded">BRI</span>
+                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Rakyat Indonesia</span>
+                                </div>
+                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">0598-01-047153-50-0</span>
+                            </div>
+                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="059801047153500" data-name="BRI">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+
+                        <!-- BCA -->
+                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 bg-blue-800 text-white text-[10px] font-black rounded">BCA</span>
+                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Central Asia</span>
+                                </div>
+                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">2832369021</span>
+                            </div>
+                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="2832369021" data-name="BCA">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+
+                        <!-- DANA -->
+                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 bg-sky-100 text-sky-700 text-[10px] font-black rounded">DANA</span>
+                                    <span class="text-xs font-bold text-slate-800 truncate">Dompet Digital DANA</span>
+                                </div>
+                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">081224140860</span>
+                            </div>
+                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="081224140860" data-name="DANA">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+
+                        <!-- GoPay -->
+                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
+                            <div class="min-w-0 pr-2">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="px-1.5 py-0.5 bg-teal-100 text-teal-800 text-[10px] font-black rounded">GoPay</span>
+                                    <span class="text-xs font-bold text-slate-800 truncate">GoPay / Gojek</span>
+                                </div>
+                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">081224140860</span>
+                            </div>
+                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="081224140860" data-name="GoPay">
+                                <i class="fa-solid fa-copy"></i>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pt-1">
+                <button type="button" id="confirm-payment-wa-btn" class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-black rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2.5">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>Konfirmasi Pembayaran</span>
+                </button>
+                <p class="text-[11px] text-center text-slate-400 mt-2">
+                    Mengirim pesan konfirmasi bukti transfer otomatis ke WhatsApp Admin.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-house text-3xl text-blue-500"></i>
+                        <div class="ml-3 flex flex-col">
+                            <span class="font-bold text-xl leading-tight text-white">Properti Bandung</span>
+                            <span class="text-xs text-gray-400 font-medium tracking-wide">& Sekitarnya</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-400 leading-relaxed mt-4">
+                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya. Kami menjadikan proses pemasaran rumah lebih cepat dan tepat sasaran.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Tautan Cepat</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="index.html" class="hover:text-blue-400 transition">Beranda</a></li>
+                        <li><a href="titip-properti.html" class="text-blue-400 font-semibold">Titip Properti</a></li>
+                        <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
+                        <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
+                        <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Area Populer</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="katalog.html?q=Dago" class="hover:text-blue-400 transition">Rumah di Dago</a></li>
+                        <li><a href="katalog.html?q=Buah Batu" class="hover:text-blue-400 transition">Rumah di Buah Batu</a></li>
+                        <li><a href="katalog.html?q=Lembang" class="hover:text-blue-400 transition">Villa di Lembang</a></li>
+                        <li><a href="katalog.html?q=Pasteur" class="hover:text-blue-400 transition">Tanah di Pasteur</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Hubungi Kami</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope mr-3 text-blue-500 shrink-0"></i>
+                            <a href="mailto:khoirul.amir110901@gmail.com" class="hover:text-white transition break-all">khoirul.amir110901@gmail.com</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-3 text-blue-500 shrink-0"></i>
+                            <a href="tel:085179756031" class="hover:text-white transition">0851-7975-6031</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 mt-8 text-center md:flex md:justify-between md:text-left text-sm text-gray-500">
+                <p>
+                    <a href="admin.html" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-lg mx-1" title="Masuk ke Panel Admin">
+                        &copy;
+                    </a>
+                    <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.
+                </p>
+                <div class="mt-4 md:mt-0 space-x-4">
+                    <a href="syarat-ketentuan.html" class="hover:text-gray-300">Syarat & Ketentuan</a>
+                    <a href="kebijakan-privasi.html" class="hover:text-gray-300">Kebijakan Privasi</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const ADMIN_WA_NUMBER = "6285179756031";
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                } else {
+                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+                }
+            });
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notif');
+            const text = document.getElementById('toast-text');
+            text.textContent = msg;
+            toast.classList.remove('opacity-0', '-translate-y-3');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-3');
+            }, 3000);
+        }
+
+        // Salin Rekening & E-Wallet Otomatis
+        document.querySelectorAll('.copy-account-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const copyText = btn.getAttribute('data-copy');
+                const name = btn.getAttribute('data-name');
+                const tempInput = document.createElement('input');
+                tempInput.value = copyText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(`Nomor ${name} (${copyText}) berhasil disalin!`);
+                } catch(e) {
+                    showToast("Gagal menyalin nomor rekening.");
+                }
+                document.body.removeChild(tempInput);
+            });
+        });
+
+        // Tab Switcher: [ SUDAH ] vs [ BELUM ]
+        const btnChoiceSudah = document.getElementById('btn-choice-sudah');
+        const btnChoiceBelum = document.getElementById('btn-choice-belum');
+        const sectionSudah = document.getElementById('section-sudah');
+        const sectionBelum = document.getElementById('section-belum');
+
+        function setChoice(choice) {
+            if (choice === 'sudah') {
+                btnChoiceSudah.className = "p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-blue-600 bg-blue-50/60 shadow-sm";
+                btnChoiceSudah.querySelector('div').className = "w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-xs";
+                btnChoiceSudah.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-blue-900";
+                btnChoiceSudah.querySelector('span:last-child').className = "text-[11px] text-blue-700 font-medium";
+
+                btnChoiceBelum.className = "p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer";
+                btnChoiceBelum.querySelector('div').className = "w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base";
+                btnChoiceBelum.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-slate-800";
+                btnChoiceBelum.querySelector('span:last-child').className = "text-[11px] text-slate-500 font-medium";
+
+                sectionSudah.classList.remove('hidden');
+                sectionBelum.classList.add('hidden');
+            } else {
+                btnChoiceBelum.className = "p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-emerald-600 bg-emerald-50/60 shadow-sm";
+                btnChoiceBelum.querySelector('div').className = "w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-base shadow-xs";
+                btnChoiceBelum.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-emerald-900";
+                btnChoiceBelum.querySelector('span:last-child').className = "text-[11px] text-emerald-700 font-medium";
+
+                btnChoiceSudah.className = "p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer";
+                btnChoiceSudah.querySelector('div').className = "w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base";
+                btnChoiceSudah.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-slate-800";
+                btnChoiceSudah.querySelector('span:last-child').className = "text-[11px] text-slate-500 font-medium";
+
+                sectionBelum.classList.remove('hidden');
+                sectionSudah.classList.add('hidden');
+            }
+        }
+
+        btnChoiceSudah.addEventListener('click', () => setChoice('sudah'));
+        btnChoiceBelum.addEventListener('click', () => setChoice('belum'));
+
+        // Form [ BELUM ]: Konsultasi via WhatsApp (Kirim Materi)
+        const formBelum = document.getElementById('form-belum');
+        formBelum.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nama = document.getElementById('belum-nama').value.trim();
+            const wa = document.getElementById('belum-wa').value.trim();
+
+            const message = encodeURIComponent(
+                `Halo Admin Properti Bandung, saya ingin konsultasi dan titip jual/sewa properti saya.\n\n` +
+                `Nama Lengkap: ${nama}\n` +
+                `No. WhatsApp: ${wa}\n\n` +
+                `Saya ingin mengirim materi (foto, harga, dan deskripsi properti) untuk dibuatkan draft listingnya. Terima kasih!`
+            );
+
+            window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${message}`, '_blank');
+        });
+
+        // Form [ SUDAH ]: Buka Pop-up Pembayaran (Rp199.000) & Jalankan Countdown 05:00
+        const formSudah = document.getElementById('form-sudah');
+        const paymentModal = document.getElementById('payment-modal');
+        const paymentCard = document.getElementById('payment-card');
+        const closePaymentModal = document.getElementById('close-payment-modal');
+        const countdownDisplay = document.getElementById('countdown-display');
+        const confirmPaymentWaBtn = document.getElementById('confirm-payment-wa-btn');
+
+        let countdownInterval = null;
+        let validatedData = { nama: '', wa: '', properti: '' };
+
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            let totalSeconds = 5 * 60; // 05:00 Menit
+
+            const updateDisplay = () => {
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                countdownDisplay.textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                if (totalSeconds <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.textContent = "00:00 (Habis)";
+                } else {
+                    totalSeconds--;
+                }
+            };
+
+            updateDisplay();
+            countdownInterval = setInterval(updateDisplay, 1000);
+        }
+
+        formSudah.addEventListener('submit', (e) => {
+            e.preventDefault();
+            validatedData.nama = document.getElementById('sudah-nama').value.trim();
+            validatedData.wa = document.getElementById('sudah-wa').value.trim();
+            validatedData.properti = document.getElementById('sudah-properti').value.trim();
+
+            // Buka Modal & Mulai Hitung Mundur 05:00
+            paymentModal.classList.remove('hidden');
+            paymentModal.classList.add('flex');
+            requestAnimationFrame(() => {
+                paymentCard.classList.add('modal-enter-active');
+            });
+            document.body.style.overflow = 'hidden';
+            startCountdown();
+        });
+
+        function closeModal() {
+            paymentCard.classList.remove('modal-enter-active');
+            setTimeout(() => {
+                paymentModal.classList.add('hidden');
+                paymentModal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        closePaymentModal.addEventListener('click', closeModal);
+        paymentModal.addEventListener('click', (e) => {
+            if (e.target === paymentModal) closeModal();
+        });
+
+        // Tombol "Konfirmasi Pembayaran" -> Redirect WhatsApp Admin
+        // Pesan Otomatis: "halo ka,saya mau konfirmasi bukti pembayaranya"
+        confirmPaymentWaBtn.addEventListener('click', () => {
+            const baseText = "halo ka,saya mau konfirmasi bukti pembayaranya";
+            let detailText = "";
+            if (validatedData.nama || validatedData.properti) {
+                detailText = `\n\nNama Pemilik: ${validatedData.nama || '-'}\nNo. WhatsApp: ${validatedData.wa || '-'}\nNama Properti: ${validatedData.properti || '-'}\nTotal: Rp 199.000`;
+            }
+            const message = encodeURIComponent(baseText + detailText);
+            window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${message}`, '_blank');
+        });
+    </script>
+</body>
+</html>
