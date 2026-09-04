@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jual Beli Properti Bandung</title>
-    <link rel="icon" type="image/png" href="icon.png">
     
+    <!-- Favicon Rumah Biru -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%232563eb' d='M44.5 13.2c3.1-2.9 7.9-2.9 11 0l34.8 32.2c3.5 3.2 1.3 9.1-3.5 9.1h-4.8v30.5c0 4.4-3.6 8-8 8H67c-1.7 0-3-1.3-3-3V68c0-3.3-2.7-6-6-6h-16c-3.3 0-6 2.7-6 6v22c0 1.7-1.3 3-3 3H16c-4.4 0-8-3.6-8-8V54.5H3.2c-4.8 0-7-5.9-3.5-9.1L34.5 13.2z'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -67,22 +71,25 @@
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
-                <div class="flex items-center">
+                <a href="index.html" class="flex items-center group">
                     <i class="fa-solid fa-house text-3xl text-blue-600"></i>
                     <div class="ml-3 flex flex-col">
-                        <span class="font-bold text-xl leading-tight text-gray-900">Properti Bandung</span>
+                        <span class="font-bold text-xl leading-tight text-gray-900 group-hover:text-blue-600 transition">Properti Bandung</span>
                         <span class="text-xs text-gray-500 font-medium tracking-wide">& Sekitarnya</span>
                     </div>
-                </div>
+                </a>
                 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
+                <div class="hidden md:flex items-center space-x-7">
                     <a href="index.html" class="text-blue-600 font-semibold hover:text-blue-800 transition">Beranda</a>
                     <a href="katalog.html" class="text-gray-600 font-medium hover:text-blue-600 transition">Katalog</a>
                     <a href="katalog.html?status=Dijual" class="text-gray-600 font-medium hover:text-blue-600 transition">Beli</a>
                     <a href="katalog.html?status=Disewa" class="text-gray-600 font-medium hover:text-blue-600 transition">Sewa</a>
-                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg">
-                        Hubungi Agen
+                    <a href="titip-properti.html" class="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus-circle text-xs"></i> Titip Properti
+                    </a>
+                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Agen
                     </a>
                 </div>
 
@@ -95,14 +102,15 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Panel (Hidden by default) -->
+        <!-- Mobile Menu Panel -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-40">
             <a href="index.html" class="block px-3 py-2 text-base font-medium text-blue-600 bg-blue-50 rounded-md">Beranda</a>
             <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Katalog Semua Properti</a>
             <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli (Dijual)</a>
             <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Sewa (Disewa)</a>
+            <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-emerald-600 hover:bg-emerald-50 rounded-md">Titip Properti (Iklan)</a>
             <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-4 bg-blue-600 text-white px-3 py-3 rounded-md font-medium">
-                Hubungi Agen
+                Hubungi Agen via WhatsApp
             </a>
         </div>
     </nav>
@@ -130,7 +138,7 @@
                 <form id="search-form" action="katalog.html" method="GET" class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1 flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
                         <i class="fa-solid fa-location-dot text-gray-400 mr-3"></i>
-                        <input type="text" name="q" placeholder="Ketik lokasi atau nama (misal: Dago, Lembang, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" id="search-input" />
+                        <input type="text" name="q" placeholder="Ketik lokasi atau kata kunci (Dago, Tanjungsari, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" id="search-input" />
                     </div>
                     <div class="flex gap-3">
                         <select name="type" class="bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 md:w-40 outline-none">
@@ -215,23 +223,23 @@
             <!-- Konten Spesifikasi & Deskripsi -->
             <div class="p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
-                        <div>
-                            <div class="flex items-center gap-3 text-sm text-blue-600 font-semibold mb-1 flex-wrap">
-                                <span class="flex items-center"><i class="fa-solid fa-location-dot mr-1.5"></i><span id="modal-location">Bandung</span></span>
-                                <span id="modal-views-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
-                                    <i class="fa-solid fa-eye text-amber-500 animate-pulse"></i> <span id="modal-views-count">0</span>x dilihat
-                                </span>
-                            </div>
-                            <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight"></h2>
+                    <div>
+                        <div class="flex items-center gap-3 text-sm text-blue-600 font-semibold mb-1 flex-wrap">
+                            <span class="flex items-center"><i class="fa-solid fa-location-dot mr-1.5"></i><span id="modal-location">Bandung</span></span>
+                            <span id="modal-views-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold">
+                                <i class="fa-solid fa-eye text-amber-500 animate-pulse"></i> <span id="modal-views-count">0</span>x dilihat
+                            </span>
                         </div>
-                        <div class="md:text-right shrink-0">
-                            <span class="text-xs font-bold uppercase text-gray-400 block tracking-wider">Harga Penawaran</span>
-                            <div class="flex flex-col md:items-end">
-                                <span id="modal-original-price" class="hidden text-sm sm:text-base text-rose-500 line-through font-semibold"></span>
-                                <span id="modal-price" class="text-2xl sm:text-3xl font-black text-blue-600"></span>
-                            </div>
+                        <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight"></h2>
+                    </div>
+                    <div class="md:text-right shrink-0">
+                        <span class="text-xs font-bold uppercase text-gray-400 block tracking-wider">Harga Penawaran</span>
+                        <div class="flex flex-col md:items-end">
+                            <span id="modal-original-price" class="hidden text-sm sm:text-base text-rose-500 line-through font-semibold"></span>
+                            <span id="modal-price" class="text-2xl sm:text-3xl font-black text-blue-600"></span>
                         </div>
                     </div>
+                </div>
 
                 <!-- Tombol Aksi Bagikan di dalam Modal -->
                 <div class="flex flex-wrap gap-2.5 items-center p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl">
@@ -291,7 +299,7 @@
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
                     </h3>
                     <div id="modal-facilities-container" class="space-y-4">
-                        <!-- Grup fasilitas (Kamar, Kamar Mandi, Fasilitas Umum) dirender dinamis di sini -->
+                        <!-- Grup fasilitas dirender dinamis di sini -->
                     </div>
                 </div>
 
@@ -314,13 +322,13 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
+                <a href="titip-properti.html" class="block bg-blue-700/50 hover:bg-blue-700 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30 transition transform hover:-translate-y-1">
                     <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-house-chimney-user text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-3">TITIP PROPERTI ANDA</h3>
                     <p class="text-blue-100 text-sm leading-relaxed">Percayakan penjualan properti Anda kepada kami. Kami bantu memasarkan properti kepada calon pembeli yang potensial.</p>
-                </div>
+                </a>
                 <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
                     <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fa-solid fa-bullhorn text-2xl"></i>
@@ -360,6 +368,7 @@
                     <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Tautan Cepat</h4>
                     <ul class="space-y-3 text-sm">
                         <li><a href="index.html" class="hover:text-blue-400 transition">Beranda</a></li>
+                        <li><a href="titip-properti.html" class="text-emerald-400 font-semibold hover:text-emerald-300 transition">Titip Properti</a></li>
                         <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
                         <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
                         <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
@@ -424,6 +433,66 @@
         const db = getFirestore(app);
         const propertiRef = collection(db, "properti");
 
+        // Multi-Pixel Tracking (Meta & TikTok Ads)
+        const pixelsDocRef = doc(db, "pengaturan", "pixels");
+
+        function parsePixelList(input) {
+            if (!input) return [];
+            if (Array.isArray(input)) return input.map(s => String(s).trim()).filter(Boolean);
+            return String(input)
+                .split(/[\n,;\r]+/)
+                .map(s => s.trim())
+                .filter(Boolean);
+        }
+
+        function initTrackingPixels(metaIds, tiktokIds) {
+            // Meta Pixel (Facebook & Instagram)
+            if (metaIds.length > 0) {
+                if (!window.fbq) {
+                    (function(f,b,e,v,n,t,s){
+                        if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                        n.queue=[];t=b.createElement(e);t.async=!0;
+                        t.src=v;s=b.getElementsByTagName(e)[0];
+                        s.parentNode.insertBefore(t,s);
+                    })(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+                }
+                metaIds.forEach(id => {
+                    window.fbq('init', id);
+                });
+                window.fbq('track', 'PageView');
+            }
+
+            // TikTok Pixel
+            if (tiktokIds.length > 0) {
+                if (!window.ttq) {
+                    (function (w, d, t) {
+                        w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
+                        ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+                        for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+                        ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+                        ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var a=document.createElement("script");a.type="text/javascript";a.async=!0;a.src=r+"?sdkid="+e+"&lib="+t;var c=document.getElementsByTagName("script")[0];c.parentNode.insertBefore(a,c)};
+                    })(window, document, 'ttq');
+                }
+                tiktokIds.forEach(id => {
+                    window.ttq.load(id);
+                });
+                window.ttq.page();
+            }
+        }
+
+        onSnapshot(pixelsDocRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                const metaList = parsePixelList(data.metaPixelIds || data.metaPixelId);
+                const tiktokList = parsePixelList(data.tiktokPixelIds || data.tiktokPixelId);
+                initTrackingPixels(metaList, tiktokList);
+            }
+        }, (err) => {
+            console.warn("Pixel config error:", err);
+        });
+
         // Pelacakan Kunjungan Harian Halaman Utama (Anti-spam per sesi hari)
         try {
             const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
@@ -455,6 +524,37 @@
         let modalActiveIndex = 0;
 
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Algoritma Prioritas Berbayar 30 Hari + Random Shuffle on Page Load
+        function getPriorityScore(p) {
+            const isPaid = (p.paymentStatus === 'Sudah Membayar');
+            if (isPaid && p.expiresAt) {
+                const expDate = p.expiresAt.toDate ? p.expiresAt.toDate() : new Date(p.expiresAt);
+                if (expDate.getTime() > Date.now()) {
+                    return 2; // Prioritas Berbayar Aktif
+                }
+            }
+            return 1; // Belum bayar / masa aktif habis
+        }
+
+        const pageLoadRandomSeed = {};
+        function getRandomWeight(id) {
+            if (!pageLoadRandomSeed[id]) {
+                pageLoadRandomSeed[id] = Math.random();
+            }
+            return pageLoadRandomSeed[id];
+        }
+
+        function sortPropertiesByPriority(properties) {
+            return [...properties].sort((a, b) => {
+                const scoreA = getPriorityScore(a);
+                const scoreB = getPriorityScore(b);
+                if (scoreA !== scoreB) {
+                    return scoreB - scoreA;
+                }
+                return getRandomWeight(a.id) - getRandomWeight(b.id);
+            });
+        }
 
         function getFacilityIcon(name) {
             if (!name) return 'fa-solid fa-circle-check';
@@ -507,14 +607,16 @@
         const mobileMenu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('menu-icon');
 
-        menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-            if(mobileMenu.classList.contains('hidden')){
-                menuIcon.classList.replace('fa-xmark', 'fa-bars');
-            } else {
-                menuIcon.classList.replace('fa-bars', 'fa-xmark');
-            }
-        });
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
+                } else {
+                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
+                }
+            });
+        }
 
         // Helper Normalisasi Nomor WhatsApp
         function sanitizeWhatsappNumber(phone) {
@@ -637,6 +739,10 @@
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
 
+            // Tracking Pixel ViewContent
+            if (window.fbq) window.fbq('track', 'ViewContent', { content_name: p.title || 'Properti' });
+            if (window.ttq) window.ttq.track('ViewContent', { content_name: p.title || 'Properti' });
+
             // Catat View Realtime ke Firestore (Dicegah spam dengan session cache)
             const sessionViewKey = 'viewed_prop_' + id;
             if (!sessionStorage.getItem(sessionViewKey)) {
@@ -693,10 +799,9 @@
             modalArea.textContent = p.area || '-';
             modalDesc.textContent = p.description || 'Hunian nyaman dan strategis di kawasan Bandung Raya dengan aksesibilitas tinggi dan fasilitas lengkap.';
 
-            // Tampilkan Fasilitas yang Dikelompokkan seperti di Tampilan Contoh
+            // Tampilkan Fasilitas yang Dikelompokkan
             const facilities = Array.isArray(p.facilities) ? p.facilities : [];
             if (facilities.length > 0) {
-                // Kelompokkan item fasilitas
                 const groups = {};
                 facilities.forEach(fac => {
                     const cat = categorizeFacility(fac);
@@ -704,7 +809,6 @@
                     groups[cat].push(fac);
                 });
 
-                // Urutan prioritas tampilan kategori
                 const categoryOrder = ['Fasilitas kamar', 'Fasilitas kamar mandi', 'Fasilitas umum & lainnya'];
                 const sortedCategories = Object.keys(groups).sort((a, b) => {
                     const idxA = categoryOrder.indexOf(a);
@@ -773,6 +877,12 @@
             );
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
+            modalWaBtn.onclick = () => {
+                // Tracking Event Konversi Contact
+                if (window.fbq) window.fbq('track', 'Contact');
+                if (window.ttq) window.ttq.track('Contact');
+            };
+
             // Siapkan Tombol Share di dalam Modal
             const shareUrl = getProductShareUrl(p.id);
             const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat foto & spesifikasi:\n${shareUrl}`);
@@ -796,10 +906,8 @@
 
         function closePropertyModal() {
             modalContentCard.classList.remove('modal-enter-active');
-            // Hentikan pemutaran video saat modal ditutup
             modalVideoIframe.src = '';
 
-            // Hapus parameter id dari URL saat modal ditutup
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -820,7 +928,6 @@
             if (e.target === propertyModal) closePropertyModal();
         });
 
-        // Tutup modal secara praktis menggunakan tombol Escape
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !propertyModal.classList.contains('hidden')) {
                 closePropertyModal();
@@ -830,6 +937,8 @@
         // Hubungkan kartu properti ke Pop-Up Modal Detail & Sediakan Slider Manual di Kartu
         function renderProperti(data) {
             const grid = document.getElementById('properties-grid');
+            if (!grid) return;
+
             if (data.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-3 text-center py-12">
@@ -840,8 +949,11 @@
                 return;
             }
 
+            // Urutkan dengan algoritma prioritas berbayar 30 hari + fair random shuffle
+            const sortedData = sortPropertiesByPriority(data);
+
             // Batasi tampilan pilihan di Home menjadi maks 6 listing
-            const displayData = data.slice(0, 6);
+            const displayData = sortedData.slice(0, 6);
 
             grid.innerHTML = displayData.map(p => {
                 const photos = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
@@ -913,15 +1025,12 @@
                 const prop = loadedProperties.find(item => item.id === id);
                 const photos = (prop && Array.isArray(prop.images) && prop.images.length > 0) ? prop.images : [prop?.image || ''];
 
-                // Slider manual di kartu tanpa memicu modal
-                const sliderContainer = card.querySelector('.card-slider-container');
                 const cardImg = card.querySelector('.card-slider-img');
                 const prevBtn = card.querySelector('.card-prev-btn');
                 const nextBtn = card.querySelector('.card-next-btn');
                 const counterBadge = card.querySelector('.card-counter');
                 const shareBtn = card.querySelector('.card-share-btn');
 
-                // Event tombol share di kartu
                 if (shareBtn) {
                     shareBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -948,7 +1057,6 @@
                     });
                 }
 
-                // Klik kartu membuka Pop-up Detail
                 card.addEventListener('click', () => {
                     openPropertyModal(id);
                 });
@@ -977,7 +1085,7 @@
         }, (error) => {
             console.error("Kesalahan Firestore:", error);
             const grid = document.getElementById('properties-grid');
-            if (error.code === 'permission-denied') {
+            if (grid && error.code === 'permission-denied') {
                 grid.innerHTML = '<div class="col-span-3 text-center py-10 text-red-500 font-bold">Akses Ditolak: Periksa Rules Firestore Anda.</div>';
             }
         });
