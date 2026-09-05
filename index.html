@@ -121,15 +121,22 @@
                  src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
                  alt="Bandung Cityscape" 
                  class="w-full h-full object-cover transition-all duration-700" />
+            <script>
+                // Instant load from cache to prevent delay
+                const cachedHero = localStorage.getItem('hero_bg_cache');
+                if (cachedHero) {
+                    document.getElementById('hero-bg-image').src = cachedHero;
+                }
+            </script>
             <div class="absolute inset-0 bg-gray-900/60 mix-blend-multiply"></div>
         </div>
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 lg:py-40 flex flex-col items-center text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6 drop-shadow-lg">
-                Temukan Rumah Impian Anda di <span class="text-blue-400">Bandung</span>
+                Temukan Rumah Impian Anda di <span class="text-blue-400">Bandung & Sekitarnya</span>
             </h1>
-            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl drop-shadow-md">
-                Pusat jual beli properti terpercaya di Bandung Raya. Dari rumah mewah di Dago hingga apartemen strategis di pusat kota.
+            <p class="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl drop-shadow-md leading-relaxed">
+                Temukan pilihan rumah, tanah, ruko, apartemen, dan properti lainnya di Bandung & sekitarnya, untuk hunian maupun investasi.
             </p>
 
             <!-- Search Box (Terhubung ke katalog.html via action GET) -->
@@ -154,6 +161,22 @@
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <!-- CTA Titip Properti Bawah Pencarian -->
+            <div class="mt-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-8 max-w-3xl w-full text-center shadow-2xl relative overflow-hidden group">
+                <!-- Elemen dekoratif blur di belakang -->
+                <div class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                
+                <div class="relative z-10">
+                    <h3 class="text-xl md:text-2xl font-bold text-white mb-3 drop-shadow-md">Punya properti yang ingin dijual?</h3>
+                    <p class="text-sm md:text-base text-blue-50 mb-6 drop-shadow leading-relaxed max-w-2xl mx-auto">
+                        Kami bantu pasarkan melalui <span class="font-bold text-white"><i class="fa-brands fa-facebook text-blue-400 mr-0.5"></i> Facebook & <i class="fa-brands fa-instagram text-pink-400 mr-0.5"></i> Instagram</span> setiap Sabtu–Minggu. Menjangkau ratusan-ribuan orang yang berpotensi untuk membeli Properti Anda!
+                    </p>
+                    <a href="titip-properti.html" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:-translate-y-1">
+                        <i class="fa-solid fa-plus-circle text-lg"></i> Titip Jual Properti
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -288,12 +311,27 @@
                     </div>
 
                     <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center transition-all duration-500 aspect-video max-h-[75vh] mx-auto">
-                        <iframe id="modal-video-iframe" class="w-full h-full border-0 absolute inset-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" allowfullscreen></iframe>
+                        <!-- Overlay Play Button Buatan Kita -->
+                        <div id="video-click-overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/40 hover:bg-slate-900/20 cursor-pointer group backdrop-blur-[2px] transition-all duration-300">
+                            <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-red-600/40 group-hover:scale-110 transition-transform mb-3">
+                                <i class="fa-solid fa-expand ml-1"></i>
+                            </div>
+                            <span class="text-white text-[11px] font-bold bg-black/60 px-3 py-1.5 rounded-full tracking-wide">Ketuk untuk Layar Penuh</span>
+                        </div>
+                        
+                        <!-- Dikembalikan ke Iframe yang stabil -->
+                        <iframe id="modal-video-iframe" class="w-full h-full border-0 absolute inset-0 z-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" allowfullscreen></iframe>
                     </div>
-                    <p class="text-[11px] text-slate-500 flex items-start gap-1.5 mt-1">
-                        <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
-                        <span>Gunakan tombol <strong>Potret / Lanskap</strong> di atas untuk menyesuaikan bentuk bingkai video. Klik <strong>Layar Penuh</strong> untuk pengalaman terbaik.</span>
-                    </p>
+                    <div class="text-[11px] text-slate-500 mt-2 space-y-1.5 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/50">
+                        <p class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                            <span>Gunakan tombol <strong>Potret / Lanskap</strong> di atas untuk menyesuaikan bentuk bingkai video. Klik <strong>Layar Penuh</strong> untuk pengalaman terbaik.</span>
+                        </p>
+                        <p class="flex items-start gap-1.5 text-amber-700">
+                            <i class="fa-solid fa-gear mt-0.5"></i>
+                            <span><strong>Tips Video Jernih:</strong> Jika kualitas video buram, klik ikon <strong>Pengaturan (⚙️)</strong> pada pemutar video, pilih <strong>Kualitas</strong> lalu ubah ke <strong>720p atau 1080p</strong>.</span>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- Fasilitas Lengkap (DI ATAS Deskripsi Properti) -->
@@ -609,8 +647,10 @@
                 const data = docSnap.data();
                 if (data.image) {
                     const heroImg = document.getElementById('hero-bg-image');
-                    if (heroImg) {
-                        heroImg.src = formatMediaUrl(data.image);
+                    const newUrl = formatMediaUrl(data.image);
+                    if (heroImg && heroImg.src !== newUrl && heroImg.src !== newUrl + '/') {
+                        heroImg.src = newUrl;
+                        localStorage.setItem('hero_bg_cache', newUrl);
                     }
                 }
             }
@@ -671,6 +711,7 @@
         const modalVideoWrapper = document.getElementById('modal-video-wrapper');
         const videoFullscreenBtn = document.getElementById('video-fullscreen-btn');
         const videoAspectBtn = document.getElementById('video-aspect-btn');
+        const videoClickOverlay = document.getElementById('video-click-overlay');
 
         let isLandscape = true;
         
@@ -702,6 +743,24 @@
                         document.exitFullscreen().catch(() => {});
                     } else if (document.webkitExitFullscreen) {
                         document.webkitExitFullscreen();
+                    }
+                }
+            });
+        }
+
+        // Logika Tombol Play Overlay
+        if (videoClickOverlay && modalVideoWrapper && modalVideoIframe) {
+            videoClickOverlay.addEventListener('click', () => {
+                // 1. Sembunyikan overlay agar video bisa diklik
+                videoClickOverlay.classList.add('hidden');
+                videoClickOverlay.classList.remove('flex');
+                
+                // 2. Jika diakses dari HP (lebar < 768px), otomatis layar penuh
+                if (window.innerWidth < 768) {
+                    if (modalVideoWrapper.requestFullscreen) {
+                        modalVideoWrapper.requestFullscreen().catch(() => {});
+                    } else if (modalVideoWrapper.webkitRequestFullscreen) {
+                        modalVideoWrapper.webkitRequestFullscreen();
                     }
                 }
             });
@@ -962,11 +1021,19 @@
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(() => {});
             }
-            modalVideoIframe.src = '';
+            if (modalVideoIframe) {
+                modalVideoIframe.src = '';
+            }
 
             // Kembalikan format video ke lanskap (default) saat ditutup
             if (!isLandscape && videoAspectBtn) {
                 videoAspectBtn.click();
+            }
+
+            // Kembalikan overlay tombol play
+            if (videoClickOverlay) {
+                videoClickOverlay.classList.remove('hidden');
+                videoClickOverlay.classList.add('flex');
             }
 
             try {
