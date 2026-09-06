@@ -218,22 +218,27 @@
 
             <!-- Slider Gambar Manual di dalam Modal -->
             <div class="relative w-full h-72 sm:h-96 md:h-[420px] bg-slate-900 shrink-0 overflow-hidden select-none group">
-                <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300">
+                <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300 cursor-zoom-in hover:scale-[1.02]" title="Klik untuk melihat foto ukuran penuh">
                 
                 <!-- Navigasi Slide Manual Prev / Next -->
-                <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md">
+                <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md z-10">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button id="modal-slide-next" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md">
+                <button id="modal-slide-next" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md z-10">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
 
                 <!-- Status & Counter Foto -->
-                <div class="absolute top-4 left-4 flex gap-2 items-center">
+                <div class="absolute top-4 left-4 flex gap-2 items-center z-10">
                     <span id="modal-type-badge" class="px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600">Dijual</span>
                 </div>
 
-                <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow">
+                <!-- Tombol Klik Perbesar Foto Penuh -->
+                <button type="button" id="modal-expand-img-btn" class="absolute bottom-4 left-4 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow transition z-10 cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass-plus text-blue-400"></i> <span>Perbesar Foto</span>
+                </button>
+
+                <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow z-10">
                     <i class="fa-solid fa-camera"></i> <span id="modal-img-counter">1 / 1</span>
                 </div>
             </div>
@@ -362,6 +367,33 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX FULLSCREEN FOTO PROPERTI -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6 select-none">
+        <!-- Tombol Tutup Lightbox -->
+        <button id="lightbox-close-btn" class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg text-xl" title="Tutup Foto Penuh">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Navigasi Prev/Next Lightbox -->
+        <button id="lightbox-prev-btn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition backdrop-blur-sm text-lg shadow-lg">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button id="lightbox-next-btn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition backdrop-blur-sm text-lg shadow-lg">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <!-- Wadah Gambar Penuh -->
+        <div class="relative max-w-[95vw] max-h-[88vh] flex items-center justify-center">
+            <img id="lightbox-img" src="" alt="Foto Penuh Properti" class="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-2xl transition-all duration-300">
+        </div>
+
+        <!-- Info Counter Foto -->
+        <div class="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow">
+            <i class="fa-solid fa-image text-blue-400"></i>
+            <span id="lightbox-counter">1 / 1</span>
         </div>
     </div>
 
@@ -801,6 +833,60 @@
         const videoFullscreenBtn = document.getElementById('video-fullscreen-btn');
         const videoAspectBtn = document.getElementById('video-aspect-btn');
         const videoClickOverlay = document.getElementById('video-click-overlay');
+        const modalExpandImgBtn = document.getElementById('modal-expand-img-btn');
+
+        // --- Elemen DOM Lightbox Fullscreen Gambar ---
+        const lightboxModal = document.getElementById('lightbox-modal');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
+        const lightboxPrevBtn = document.getElementById('lightbox-prev-btn');
+        const lightboxNextBtn = document.getElementById('lightbox-next-btn');
+
+        function openLightbox(index = modalActiveIndex) {
+            if (!modalActiveImages || modalActiveImages.length === 0) return;
+            modalActiveIndex = (index + modalActiveImages.length) % modalActiveImages.length;
+            lightboxImg.src = formatMediaUrl(modalActiveImages[modalActiveIndex]);
+            lightboxCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
+            lightboxModal.classList.remove('hidden');
+            lightboxModal.classList.add('flex');
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.add('hidden');
+            lightboxModal.classList.remove('flex');
+        }
+
+        function updateLightboxSlide(idx) {
+            updateModalSlide(idx);
+            lightboxImg.src = formatMediaUrl(modalActiveImages[modalActiveIndex]);
+            lightboxCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
+        }
+
+        // Event Klik Gambar Modal untuk Buka Lightbox
+        modalMainImg.addEventListener('click', () => openLightbox(modalActiveIndex));
+        if (modalExpandImgBtn) {
+            modalExpandImgBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openLightbox(modalActiveIndex);
+            });
+        }
+
+        lightboxCloseBtn.addEventListener('click', closeLightbox);
+        lightboxPrevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            updateLightboxSlide(modalActiveIndex - 1);
+        });
+        lightboxNextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            updateLightboxSlide(modalActiveIndex + 1);
+        });
+
+        lightboxModal.addEventListener('click', (e) => {
+            if (e.target === lightboxModal) {
+                closeLightbox();
+            }
+        });
 
         let isLandscape = true;
         
@@ -1111,6 +1197,7 @@
         }
 
         function closePropertyModal() {
+            closeLightbox();
             modalContentCard.classList.remove('modal-enter-active');
             if (document.fullscreenElement) {
                 document.exitFullscreen().catch(() => {});
@@ -1151,10 +1238,86 @@
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !propertyModal.classList.contains('hidden')) {
-                closePropertyModal();
+            if (e.key === 'Escape') {
+                if (!lightboxModal.classList.contains('hidden')) {
+                    closeLightbox();
+                    return;
+                }
+                if (!propertyModal.classList.contains('hidden')) {
+                    closePropertyModal();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                if (!lightboxModal.classList.contains('hidden')) {
+                    updateLightboxSlide(modalActiveIndex - 1);
+                }
+            } else if (e.key === 'ArrowRight') {
+                if (!lightboxModal.classList.contains('hidden')) {
+                    updateLightboxSlide(modalActiveIndex + 1);
+                }
             }
         });
+
+        // =========================================================================
+        // PENCARIAN CERDAS & AKURAT (Normalisasi Kata Kunci & Deteksi Kategori)
+        // Menangani input seperti "rumah sekitar jatinangor" -> type=Rumah & q=jatinangor
+        // =========================================================================
+        const searchForm = document.getElementById('search-form');
+        const searchInput = document.getElementById('search-input');
+
+        if (searchForm && searchInput) {
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let rawQ = (searchInput.value || '').trim();
+                const typeSelect = searchForm.querySelector('select[name="type"]');
+                let selectedType = typeSelect ? typeSelect.value : '';
+
+                if (rawQ) {
+                    const categoryMap = {
+                        'rumah': 'Rumah',
+                        'apartemen': 'Apartemen',
+                        'tanah': 'Tanah',
+                        'kavling': 'Tanah',
+                        'ruko': 'Ruko',
+                        'rukan': 'Ruko',
+                        'villa': 'Villa',
+                        'vila': 'Villa'
+                    };
+
+                    // 1. Ekstraksi otomatis kategori jika belum dipilih di dropdown
+                    if (!selectedType) {
+                        for (const [key, catVal] of Object.entries(categoryMap)) {
+                            const catRegex = new RegExp(`\\b${key}\\b`, 'i');
+                            if (catRegex.test(rawQ)) {
+                                selectedType = catVal;
+                                rawQ = rawQ.replace(catRegex, '').trim();
+                                break;
+                            }
+                        }
+                    } else {
+                        // Bersihkan kata kategori yang sama dari query teks agar pencarian lokasi lebih tajam
+                        for (const key of Object.keys(categoryMap)) {
+                            const catRegex = new RegExp(`\\b${key}\\b`, 'i');
+                            rawQ = rawQ.replace(catRegex, '').trim();
+                        }
+                    }
+
+                    // 2. Pembersihan kata-kata penghubung / stop words pencarian ("sekitar", "dekat", "di", dll)
+                    const stopWords = ['sekitar', 'seputaran', 'dekat', 'di', 'ke', 'daerah', 'wilayah', 'area', 'dan', 'yang', 'murah', 'bagus', 'strategis'];
+                    stopWords.forEach(sw => {
+                        const swRegex = new RegExp(`\\b${sw}\\b`, 'gi');
+                        rawQ = rawQ.replace(swRegex, '').trim();
+                    });
+
+                    rawQ = rawQ.replace(/\s+/g, ' ').trim();
+                }
+
+                const params = new URLSearchParams();
+                if (rawQ) params.set('q', rawQ);
+                if (selectedType) params.set('type', selectedType);
+
+                window.location.href = `katalog.html?${params.toString()}`;
+            });
+        }
 
         // Hubungkan kartu properti ke Pop-Up Modal Detail & Sediakan Slider Manual di Kartu
         function renderProperti(data) {
