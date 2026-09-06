@@ -580,27 +580,27 @@
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Konfigurasi Firebase Proyek Anda
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
-            authDomain: "web-properti-bandung.firebaseapp.com",
-            projectId: "web-properti-bandung",
-            storageBucket: "web-properti-bandung.firebasestorage.app",
-            messagingSenderId: "684311108489",
-            appId: "1:684311108489:web:02e334723acd536656df58"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const leadsRef = collection(db, "leads_titip");
-
-        // Fungsi Spesial Pendeteksi IP & Device (iOS, dll)
+        // Fungsi Spesial Pendeteksi IP, Device (iOS, dll), dan Lokasi (Kota)
         async function getUserDeviceInfo() {
             let ip = "Tidak diketahui";
+            let city = "Unknown City";
+            
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                ip = data.ip;
-            } catch(e) {}
+                // Menggunakan API ip-api.com untuk mendapatkan IP dan data lokasi
+                const res = await fetch('http://ip-api.com/json/');
+                if (res.ok) {
+                    const data = await res.json();
+                    ip = data.query || data.ip || ip;
+                    city = data.city || data.regionName || city;
+                } else {
+                    // Fallback ke ipify jika ip-api gagal/diblokir (misal karena https/http mixed content)
+                    const resBackup = await fetch('https://api.ipify.org?format=json');
+                    const dataBackup = await resBackup.json();
+                    ip = dataBackup.ip;
+                }
+            } catch(e) {
+                console.warn("Gagal mengambil data IP/Lokasi", e);
+            }
 
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             let os = "Lainnya";
@@ -611,7 +611,7 @@
             else if (/Win/.test(ua)) os = "Windows";
             else if (/Linux/.test(ua)) os = "Linux";
 
-            return { ip, os };
+            return { ip, os, city };
         }
 
         document.getElementById('year').textContent = new Date().getFullYear();
@@ -721,6 +721,7 @@
                     status: "Konsultasi (Belum Draft)",
                     ip: info.ip,
                     os: info.os,
+                    city: info.city, // Menyimpan data kota
                     createdAt: serverTimestamp()
                 }).catch(err => console.error("Gagal simpan lead:", err));
             });
@@ -783,6 +784,7 @@
                     status: "Lanjut Pembayaran",
                     ip: info.ip,
                     os: info.os,
+                    city: info.city, // Menyimpan data kota
                     createdAt: serverTimestamp()
                 }).catch(err => console.error("Gagal simpan lead:", err));
             });
