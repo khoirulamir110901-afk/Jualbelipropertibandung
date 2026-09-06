@@ -358,11 +358,27 @@
                         Tidak ada deskripsi tambahan untuk properti ini.
                     </p>
                 </div>
+            </div>
 
-                <!-- Aksi WhatsApp Owner / PIC Langsung -->
-                <div class="pt-2">
-                    <a id="modal-wa-btn" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-600/25 transition active:scale-[0.99] text-base">
-                        <i class="fa-brands fa-whatsapp text-2xl"></i> Hubungi Owner / PIC via WhatsApp
+            <!-- MODEL BAR HARGA + TOMBOL (STICKY BOTTOM ACTION BAR) -->
+            <div class="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/80 px-5 sm:px-8 py-3.5 sm:py-4 rounded-b-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3 sm:gap-6 mt-auto">
+                <!-- Kolom Kiri: Informasi Harga -->
+                <div class="flex flex-col min-w-0 pr-1">
+                    <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1 mb-0.5">
+                        <i class="fa-solid fa-tag text-blue-500 text-[10px]"></i> Total Harga
+                    </span>
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                        <span id="modal-bar-price" class="text-lg sm:text-2xl font-black text-blue-600 leading-none truncate"></span>
+                        <span id="modal-bar-original-price" class="hidden text-xs sm:text-sm text-rose-500 line-through font-semibold"></span>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Tombol Aksi WhatsApp -->
+                <div class="flex items-center gap-2 shrink-0">
+                    <a id="modal-wa-btn" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 sm:py-3.5 px-4 sm:px-7 rounded-2xl flex items-center justify-center gap-2 sm:gap-2.5 shadow-lg shadow-emerald-600/30 transition-all duration-200 text-xs sm:text-sm group cursor-pointer">
+                        <i class="fa-brands fa-whatsapp text-lg sm:text-xl text-white group-hover:scale-110 transition-transform"></i>
+                        <span class="hidden sm:inline">Hubungi via WhatsApp</span>
+                        <span class="sm:hidden">Chat WhatsApp</span>
                     </a>
                 </div>
             </div>
@@ -817,6 +833,8 @@
         const modalLocation = document.getElementById('modal-location');
         const modalPrice = document.getElementById('modal-price');
         const modalOriginalPrice = document.getElementById('modal-original-price');
+        const modalBarPrice = document.getElementById('modal-bar-price');
+        const modalBarOriginalPrice = document.getElementById('modal-bar-original-price');
         const modalViewsCount = document.getElementById('modal-views-count');
         const modalBeds = document.getElementById('modal-beds');
         const modalBaths = document.getElementById('modal-baths');
@@ -1071,15 +1089,24 @@
             modalTitle.textContent = p.title || 'Tanpa Judul';
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
+            if (modalBarPrice) modalBarPrice.textContent = p.price || '-';
             modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
 
             // Tampilkan Harga Coret / Diskon jika ada
             if (p.originalPrice) {
                 modalOriginalPrice.textContent = p.originalPrice;
                 modalOriginalPrice.classList.remove('hidden');
+                if (modalBarOriginalPrice) {
+                    modalBarOriginalPrice.textContent = p.originalPrice;
+                    modalBarOriginalPrice.classList.remove('hidden');
+                }
             } else {
                 modalOriginalPrice.textContent = '';
                 modalOriginalPrice.classList.add('hidden');
+                if (modalBarOriginalPrice) {
+                    modalBarOriginalPrice.textContent = '';
+                    modalBarOriginalPrice.classList.add('hidden');
+                }
             }
 
             modalBeds.textContent = p.beds || 0;
