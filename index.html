@@ -484,7 +484,80 @@
         const db = getFirestore(app);
         const propertiRef = collection(db, "properti");
 
-        // Multi-Pixel Tracking (Meta & TikTok Ads)
+        // =========================================================================
+        // LOGIKA ANTI-SPAM & DEDUP TRACKING (Meta, TikTok, & Google Ads)
+        // Mencegah double tracking saat refresh, reload, atau klik berulang
+        // =========================================================================
+        function shouldFireTrackingEvent(eventName, uniqueKey = 'global', cooldownHours = 24) {
+            const storageKey = `anti_spam_track_${eventName}_${uniqueKey}`;
+            const now = Date.now();
+            const cooldownMs = cooldownHours * 60 * 60 * 1000;
+
+            try {
+                // 1. Cek riwayat tracking di localStorage (batas waktu 12-24 jam)
+                const storedTime = localStorage.getItem(storageKey);
+                if (storedTime && (now - Number(storedTime)) < cooldownMs) {
+                    // Masih dalam masa cooldown -> Cegah pengiriman event ganda
+                    return false;
+                }
+
+                // 2. Cek juga sessionStorage agar tidak spam dalam 1 sesi browser
+                const sessionKey = `sess_track_${eventName}_${uniqueKey}`;
+                if (sessionStorage.getItem(sessionKey)) {
+                    return false;
+                }
+
+                // Jika lolos, simpan timestamp terkini
+                localStorage.setItem(storageKey, String(now));
+                sessionStorage.setItem(sessionKey, 'fired');
+                return true;
+            } catch (e) {
+                // Fallback aman jika storage dibatasi oleh mode privasi browser
+                return true;
+            }
+        }
+
+        // Helper Pengiriman Event Terpusat ke 3 Platform Pixel
+        function fireUnifiedPixelEvent(eventName, params = {}, uniqueKey = 'global', cooldownHours = 24) {
+            if (!shouldFireTrackingEvent(eventName, uniqueKey, cooldownHours)) {
+                // Event diabaikan karena pengunjung sudah terhitung (mencegah spam / refresh)
+                return;
+            }
+
+            // 1. Meta Ads (Facebook & Instagram)
+            if (window.fbq) {
+                try {
+                    window.fbq('track', eventName, params);
+                } catch (e) {}
+            }
+
+            // 2. TikTok Ads
+            if (window.ttq) {
+                try {
+                    if (eventName === 'PageView') {
+                        window.ttq.page();
+                    } else {
+                        window.ttq.track(eventName, params);
+                    }
+                } catch (e) {}
+            }
+
+            // 3. Google Ads / Google Tag Manager (GTM / gtag)
+            if (window.gtag) {
+                try {
+                    window.gtag('event', eventName, params);
+                } catch (e) {}
+            } else if (window.dataLayer) {
+                try {
+                    window.dataLayer.push({
+                        event: eventName,
+                        ...params
+                    });
+                } catch (e) {}
+            }
+        }
+
+        // Multi-Pixel Tracking (Meta, TikTok Ads, & Google Ads)
         const pixelsDocRef = doc(db, "pengaturan", "pixels");
 
         function parsePixelList(input) {
@@ -496,7 +569,7 @@
                 .filter(Boolean);
         }
 
-        function initTrackingPixels(metaIds, tiktokIds) {
+        function initTrackingPixels(metaIds = [], tiktokIds = [], gtmIds = []) {
             // Meta Pixel (Facebook & Instagram)
             if (metaIds.length > 0) {
                 if (!window.fbq) {
@@ -512,7 +585,6 @@
                 metaIds.forEach(id => {
                     window.fbq('init', id);
                 });
-                window.fbq('track', 'PageView');
             }
 
             // TikTok Pixel
@@ -529,8 +601,24 @@
                 tiktokIds.forEach(id => {
                     window.ttq.load(id);
                 });
-                window.ttq.page();
             }
+
+            // Google Tag Manager / Google Ads (GTM)
+            if (gtmIds.length > 0) {
+                window.dataLayer = window.dataLayer || [];
+                gtmIds.forEach(gtmId => {
+                    if (!document.getElementById(`gtm-script-${gtmId}`)) {
+                        const script = document.createElement('script');
+                        script.id = `gtm-script-${gtmId}`;
+                        script.async = true;
+                        script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
+                        document.head.appendChild(script);
+                    }
+                });
+            }
+
+            // Eksekusi PageView dengan proteksi Anti-Spam (hanya fire 1x per 24 jam)
+            fireUnifiedPixelEvent('PageView', {}, 'homepage', 24);
         }
 
         onSnapshot(pixelsDocRef, (snap) => {
@@ -538,7 +626,8 @@
                 const data = snap.data();
                 const metaList = parsePixelList(data.metaPixelIds || data.metaPixelId);
                 const tiktokList = parsePixelList(data.tiktokPixelIds || data.tiktokPixelId);
-                initTrackingPixels(metaList, tiktokList);
+                const gtmList = parsePixelList(data.gtmPixelIds || data.gtmPixelId);
+                initTrackingPixels(metaList, tiktokList, gtmList);
             }
         }, (err) => {
             console.warn("Pixel config error:", err);
@@ -849,9 +938,12 @@
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
 
-            // Tracking Pixel ViewContent
-            if (window.fbq) window.fbq('track', 'ViewContent', { content_name: p.title || 'Properti' });
-            if (window.ttq) window.ttq.track('ViewContent', { content_name: p.title || 'Properti' });
+            // Tracking Pixel ViewContent (Hanya fire 1x per produk dalam 24 jam)
+            fireUnifiedPixelEvent('ViewContent', { 
+                content_name: p.title || 'Properti',
+                content_category: p.type || 'Properti',
+                content_ids: [p.id]
+            }, p.id, 24);
 
             // Catat View Realtime ke Firestore (Dicegah spam dengan session cache)
             const sessionViewKey = 'viewed_prop_' + id;
@@ -990,9 +1082,11 @@
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
             modalWaBtn.onclick = () => {
-                // Tracking Event Konversi Contact
-                if (window.fbq) window.fbq('track', 'Contact');
-                if (window.ttq) window.ttq.track('Contact');
+                // Tracking Event Konversi Contact (Cooldown 1 jam per properti agar tidak spam klik berulang)
+                fireUnifiedPixelEvent('Contact', {
+                    content_name: p.title || 'Properti',
+                    content_ids: [p.id]
+                }, `contact_${p.id}`, 1);
             };
 
             // Siapkan Tombol Share di dalam Modal
