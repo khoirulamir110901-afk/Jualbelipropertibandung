@@ -564,41 +564,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const leadsRef = collection(db, "leads_titip");
-
-        // Fungsi Spesial Pendeteksi IP, Device (iOS, dll), dan Lokasi (Kota)
-        async function getUserDeviceInfo() {
-            let ip = "Tidak diketahui";
-            let city = "Unknown City";
-            
-            try {
-                // Gunakan timeout agar jika API bermasalah, proses form tidak nyangkut (gagal loading terus)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 4000); 
-                
-                const res = await fetch('https://ipinfo.io/json', { signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if (res.ok) {
-                    const data = await res.json();
-                    ip = data.ip || ip;
-                    city = data.city || city;
-                }
-            } catch(e) {
-                console.warn("API Lokasi diblokir/timeout", e);
-            }
-
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            let os = "Lainnya";
-            if (/windows phone/i.test(ua)) os = "Windows Phone";
-            else if (/android/i.test(ua)) os = "Android";
-            else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) os = "iOS (Apple)";
-            else if (/Mac/.test(ua)) os = "MacOS (Apple)";
-            else if (/Win/.test(ua)) os = "Windows";
-            else if (/Linux/.test(ua)) os = "Linux";
-
-            return { ip, os, city };
-        }
 
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -693,35 +658,10 @@
 
         // Form [ BELUM ]: Konsultasi via WhatsApp (Kirim Materi)
         const formBelum = document.getElementById('form-belum');
-        formBelum.addEventListener('submit', async (e) => {
+        formBelum.addEventListener('submit', (e) => {
             e.preventDefault();
             const nama = document.getElementById('belum-nama').value.trim();
             const wa = document.getElementById('belum-wa').value.trim();
-
-            const btn = e.target.querySelector('button[type="submit"]');
-            const origHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
-            btn.disabled = true;
-
-            try {
-                // AWAIT: Pastikan data benar-benar tersimpan SEBELUM buka WA
-                const info = await getUserDeviceInfo();
-                await addDoc(leadsRef, {
-                    nama: nama,
-                    wa: wa,
-                    properti: "-",
-                    status: "Konsultasi (Belum Draft)",
-                    ip: info.ip,
-                    os: info.os,
-                    city: info.city,
-                    createdAt: serverTimestamp()
-                });
-            } catch (err) {
-                console.error("Firebase save error:", err);
-            }
-
-            btn.innerHTML = origHtml;
-            btn.disabled = false;
 
             const message = encodeURIComponent(
                 `Halo Admin Properti Bandung, saya ingin konsultasi dan titip jual/sewa properti saya.\n\n` +
@@ -778,16 +718,12 @@
             btn.disabled = true;
 
             try {
-                // AWAIT: Pastikan data benar-benar tersimpan SEBELUM buka Modal
-                const info = await getUserDeviceInfo();
-                await addDoc(leadsRef, {
+                // Simpan ke Firebase HANYA untuk Form "Sudah Lanjut Pembayaran"
+                await addDoc(collection(db, "leads_titip"), {
                     nama: validatedData.nama,
                     wa: validatedData.wa,
                     properti: validatedData.properti,
                     status: "Lanjut Pembayaran",
-                    ip: info.ip,
-                    os: info.os,
-                    city: info.city,
                     createdAt: serverTimestamp()
                 });
             } catch (err) {
