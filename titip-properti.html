@@ -575,7 +575,45 @@
         </div>
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Konfigurasi Firebase Proyek Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
+            authDomain: "web-properti-bandung.firebaseapp.com",
+            projectId: "web-properti-bandung",
+            storageBucket: "web-properti-bandung.firebasestorage.app",
+            messagingSenderId: "684311108489",
+            appId: "1:684311108489:web:02e334723acd536656df58"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const leadsRef = collection(db, "leads_titip");
+
+        // Fungsi Spesial Pendeteksi IP & Device (iOS, dll)
+        async function getUserDeviceInfo() {
+            let ip = "Tidak diketahui";
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                ip = data.ip;
+            } catch(e) {}
+
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            let os = "Lainnya";
+            if (/windows phone/i.test(ua)) os = "Windows Phone";
+            else if (/android/i.test(ua)) os = "Android";
+            else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) os = "iOS (Apple)";
+            else if (/Mac/.test(ua)) os = "MacOS (Apple)";
+            else if (/Win/.test(ua)) os = "Windows";
+            else if (/Linux/.test(ua)) os = "Linux";
+
+            return { ip, os };
+        }
+
         document.getElementById('year').textContent = new Date().getFullYear();
 
         const ADMIN_WA_NUMBER = "6285179756031";
@@ -674,6 +712,19 @@
             const nama = document.getElementById('belum-nama').value.trim();
             const wa = document.getElementById('belum-wa').value.trim();
 
+            // Lacak dan Simpan Data Lead (Fire & Forget)
+            getUserDeviceInfo().then(info => {
+                addDoc(leadsRef, {
+                    nama: nama,
+                    wa: wa,
+                    properti: "-",
+                    status: "Konsultasi (Belum Draft)",
+                    ip: info.ip,
+                    os: info.os,
+                    createdAt: serverTimestamp()
+                }).catch(err => console.error("Gagal simpan lead:", err));
+            });
+
             const message = encodeURIComponent(
                 `Halo Admin Properti Bandung, saya ingin konsultasi dan titip jual/sewa properti saya.\n\n` +
                 `Nama Lengkap: ${nama}\n` +
@@ -722,6 +773,19 @@
             validatedData.nama = document.getElementById('sudah-nama').value.trim();
             validatedData.wa = document.getElementById('sudah-wa').value.trim();
             validatedData.properti = document.getElementById('sudah-properti').value.trim();
+
+            // Lacak dan Simpan Data Lead Pembayaran (Fire & Forget)
+            getUserDeviceInfo().then(info => {
+                addDoc(leadsRef, {
+                    nama: validatedData.nama,
+                    wa: validatedData.wa,
+                    properti: validatedData.properti,
+                    status: "Lanjut Pembayaran",
+                    ip: info.ip,
+                    os: info.os,
+                    createdAt: serverTimestamp()
+                }).catch(err => console.error("Gagal simpan lead:", err));
+            });
 
             // Buka Modal & Mulai Hitung Mundur 05:00
             paymentModal.classList.remove('hidden');
