@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Mencegah pemblokiran hotlinking gambar Google Drive di browser lain -->
+    <meta name="referrer" content="no-referrer">
     <title>Katalog Properti - Properti Bandung & Sekitarnya</title>
     
     <!-- Favicon Rumah Biru -->
@@ -15,22 +17,42 @@
     
     <!-- Synchronous Global Helper Script to prevent ReferenceError during image load -->
     <script>
+        function extractDriveId(input) {
+            if (!input) return '';
+            const str = String(input).trim();
+            if (!str.includes('/') && !str.includes('http')) return str;
+            const match = str.match(/\/d\/([a-zA-Z0-9_-]+)/) || str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : str;
+        }
+
         function formatMediaUrl(input) {
             if (!input) return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            if (input.startsWith('http://') || input.startsWith('https://')) return input;
-            return 'https://lh3.googleusercontent.com/d/' + input;
+            const driveId = extractDriveId(input);
+            if ((input.startsWith('http://') || input.startsWith('https://')) && !input.includes('drive.google.com') && !input.includes('googleusercontent.com')) {
+                return input;
+            }
+            return 'https://drive.google.com/thumbnail?id=' + driveId + '&sz=w1200';
         }
 
         function handleImageError(img, input, isAdmin) {
             if (!img) return;
-            if (!img.dataset.triedBackup && input && !input.startsWith('http')) {
-                img.dataset.triedBackup = 'true';
-                img.src = 'https://drive.google.com/thumbnail?id=' + input + '&sz=w800';
+            const driveId = extractDriveId(input);
+            const step = Number(img.dataset.tryStep || 0);
+
+            if (step === 0 && driveId) {
+                img.dataset.tryStep = '1';
+                img.referrerPolicy = 'no-referrer';
+                img.src = 'https://lh3.googleusercontent.com/d/' + driveId;
+            } else if (step === 1 && driveId) {
+                img.dataset.tryStep = '2';
+                img.referrerPolicy = 'no-referrer';
+                img.src = 'https://drive.google.com/uc?export=view&id=' + driveId;
             } else {
                 img.src = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             }
         }
 
+        window.extractDriveId = extractDriveId;
         window.formatMediaUrl = formatMediaUrl;
         window.handleImageError = handleImageError;
     </script>
@@ -56,6 +78,11 @@
         .modal-enter-active {
             opacity: 1;
             transform: scale(1);
+        }
+        #modal-desc {
+            color: #1e293b;
+            font-size: 15px;
+            line-height: 1.7;
         }
     </style>
 </head>
@@ -114,12 +141,12 @@
             <div class="bg-white p-4 sm:p-5 rounded-2xl shadow-xl text-gray-800">
                 <form id="filter-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     
-                    <!-- Search Text (Nama, lokasi, deskripsi, fasilitas) -->
+                    <!-- Search Text -->
                     <div class="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 focus-within:ring-2 focus-within:ring-blue-500">
                         <i class="fa-solid fa-magnifying-glass text-gray-400 mr-2.5"></i>
                         <input type="text" id="filter-keyword" placeholder="Nama properti, lokasi, atau kata kunci..." class="w-full bg-transparent outline-none text-sm">
                     </div>
-                    <!-- Tipe / Status (Dijual / Disewa / Telah Terjual) -->
+                    <!-- Tipe / Status -->
                     <div>
                         <select id="filter-status" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Semua Status Transaksi</option>
@@ -129,7 +156,7 @@
                         </select>
                     </div>
 
-                    <!-- Kategori Bangunan (Berdasarkan Judul/Kata Kunci) -->
+                    <!-- Kategori Bangunan -->
                     <div>
                         <select id="filter-category" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Semua Kategori Bangunan</option>
@@ -158,7 +185,6 @@
     <!-- Katalog Grid Section -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 w-full">
         
-        <!-- Info Hasil Pencarian & Urutan -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-gray-200">
             <div>
                 <p class="text-gray-500 text-sm">Menampilkan <span id="property-count" class="font-bold text-gray-900">0</span> properti</p>
@@ -176,13 +202,11 @@
             </div>
         </div>
 
-        <!-- State Loading -->
         <div id="loading-state" class="text-center py-24">
             <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-600 mb-4"></i>
             <p class="text-gray-500 font-medium">Mengambil daftar properti...</p>
         </div>
 
-        <!-- State Empty (Tidak Ada Data) -->
         <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
             <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -194,7 +218,6 @@
             </button>
         </div>
 
-        <!-- Grid Container -->
         <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
     </main>
 
@@ -202,16 +225,14 @@
     <div id="property-modal" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-gray-100" id="property-modal-card">
             
-            <!-- Tombol Tutup Pop-Up -->
             <button id="modal-close-btn" class="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
 
-            <!-- Slider Gambar Manual di dalam Modal -->
+            <!-- Slider Gambar -->
             <div class="relative w-full h-72 sm:h-96 md:h-[420px] bg-slate-900 shrink-0 overflow-hidden select-none group">
                 <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300 cursor-zoom-in hover:scale-[1.02]" title="Klik untuk melihat foto ukuran penuh">
                 
-                <!-- Navigasi Slide Manual Prev / Next -->
                 <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md z-10">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
@@ -219,12 +240,12 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
 
-                <!-- Status & Counter Foto -->
+                <!-- Status & Badge -->
                 <div class="absolute top-4 left-4 flex gap-2 items-center z-10">
                     <span id="modal-type-badge" class="px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600">Dijual</span>
+                    <span id="modal-custom-badge" class="hidden px-2.5 py-1 text-xs font-bold rounded-full text-slate-900 shadow-md bg-amber-400 flex items-center gap-1"></span>
                 </div>
 
-                <!-- Tombol Klik Perbesar Foto Penuh -->
                 <button type="button" id="modal-expand-img-btn" class="absolute bottom-4 left-4 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow transition z-10 cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass-plus text-blue-400"></i> <span>Perbesar Foto</span>
                 </button>
@@ -234,11 +255,11 @@
                 </div>
             </div>
 
-            <!-- Thumbnail Foto Strip -->
+            <!-- Thumbnail -->
             <div id="modal-thumbnails-strip" class="flex gap-2 p-3 bg-slate-100 overflow-x-auto border-b border-gray-100 shrink-0"></div>
 
-            <!-- Konten Spesifikasi & Deskripsi -->
             <div class="p-6 sm:p-8 space-y-6">
+                <!-- Info Utama -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
                     <div>
                         <div class="flex items-center gap-3 text-sm text-blue-600 font-semibold mb-1 flex-wrap">
@@ -258,7 +279,7 @@
                     </div>
                 </div>
 
-                <!-- Tombol Aksi Bagikan di dalam Modal -->
+                <!-- Aksi Share -->
                 <div class="flex flex-wrap gap-2.5 items-center p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl">
                     <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
                         <i class="fa-solid fa-share-nodes text-blue-600"></i> Bagikan Properti Ini:
@@ -271,7 +292,7 @@
                     </a>
                 </div>
 
-                <!-- Spesifikasi Ringkas -->
+                <!-- Spesifikasi Ikon -->
                 <div class="grid grid-cols-3 gap-3 sm:gap-4 text-center">
                     <div class="p-3 sm:p-4 bg-blue-50/60 rounded-2xl border border-blue-100/60">
                         <i class="fa-solid fa-bed text-blue-600 text-xl mb-1 block"></i>
@@ -290,50 +311,78 @@
                     </div>
                 </div>
 
-                <!-- Video Tur Properti (Di atas Fasilitas & Deskripsi) -->
-                <div id="modal-video-section" class="hidden space-y-2 pt-2 border-t border-gray-100">
-                    <div class="flex items-center justify-between">
+                <!-- Video Tur Properti -->
+                <div id="modal-video-section" class="hidden space-y-3 pt-4 border-t border-gray-100">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
                         <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                             <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
                         </h3>
-                        <button type="button" id="video-fullscreen-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-expand text-xs"></i> <span>Layar Penuh</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="video-aspect-btn" class="px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-mobile-screen"></i> <span id="video-aspect-text">Potret</span>
+                            </button>
+                            <button type="button" id="video-fullscreen-btn" class="px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-expand text-xs"></i> <span class="hidden sm:inline">Layar Penuh</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center min-h-[380px] max-h-[75vh]">
-                        <iframe id="modal-video-iframe" class="w-full h-full min-h-[380px] max-h-[75vh] border-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" allowfullscreen></iframe>
+                    <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center transition-all duration-500 aspect-video max-h-[75vh] mx-auto">
+                        <div id="video-click-overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/40 hover:bg-slate-900/20 cursor-pointer group backdrop-blur-[2px] transition-all duration-300">
+                            <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-red-600/40 group-hover:scale-110 transition-transform mb-3">
+                                <i class="fa-solid fa-expand ml-1"></i>
+                            </div>
+                            <span class="text-white text-[11px] font-bold bg-black/60 px-3 py-1.5 rounded-full tracking-wide">Ketuk untuk Layar Penuh</span>
+                        </div>
+                        <iframe id="modal-video-iframe" class="w-full h-full border-0 absolute inset-0 z-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" allowfullscreen></iframe>
                     </div>
-                    <p class="text-[11px] text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-mobile-screen text-blue-600"></i>
-                        <span>Pemutar otomatis menyesuaikan video vertikal maupun horizontal. Klik <strong>Layar Penuh</strong> untuk memperbesar.</span>
-                    </p>
+                    <div class="text-[11px] text-slate-500 mt-2 space-y-1.5 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/50">
+                        <p class="flex items-start gap-1.5">
+                            <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
+                            <span>Gunakan tombol <strong>Potret / Lanskap</strong> di atas untuk menyesuaikan bentuk bingkai video. Klik <strong>Layar Penuh</strong> untuk pengalaman terbaik.</span>
+                        </p>
+                        <p class="flex items-start gap-1.5 text-amber-700">
+                            <i class="fa-solid fa-gear mt-0.5"></i>
+                            <span><strong>Tips Video Jernih:</strong> Jika kualitas video buram, klik ikon <strong>Pengaturan (⚙️)</strong> pada pemutar video, pilih <strong>Kualitas</strong> lalu ubah ke <strong>720p atau 1080p</strong>.</span>
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Fasilitas Lengkap (DI ATAS Deskripsi Properti) -->
+                <!-- Fasilitas Kategori -->
                 <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
                     <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
                     </h3>
-                    <div id="modal-facilities-container" class="space-y-4">
-                        <!-- Grup fasilitas dirender dinamis di sini -->
-                    </div>
+                    <div id="modal-facilities-container" class="space-y-4"></div>
                 </div>
 
-                <!-- Deskripsi Lengkap (Di bawah Fasilitas) -->
+                <!-- Deskripsi Rapi -->
                 <div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
+                    <h3 class="text-base font-bold text-slate-900 mb-2.5 flex items-center gap-2">
                         <i class="fa-solid fa-circle-info text-blue-600"></i> Deskripsi Properti
                     </h3>
-                    <p id="modal-desc" class="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <div id="modal-desc" class="text-[15px] text-slate-800 leading-[1.7] bg-slate-50/80 p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
                         Tidak ada deskripsi tambahan untuk properti ini.
-                    </p>
+                    </div>
                 </div>
+            </div>
 
-                <!-- Aksi Hubungi WhatsApp Owner -->
-                <div class="pt-2">
-                    <a id="modal-wa-btn" href="#" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-emerald-600/25 transition active:scale-[0.99] text-base">
-                        <i class="fa-brands fa-whatsapp text-2xl"></i> Hubungi Owner / PIC via WhatsApp
+            <!-- STICKY BOTTOM BAR -->
+            <div class="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/80 px-5 sm:px-8 py-3.5 sm:py-4 rounded-b-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3 sm:gap-6 mt-auto">
+                <div class="flex flex-col min-w-0 pr-1">
+                    <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1 mb-0.5">
+                        <i class="fa-solid fa-tag text-blue-500 text-[10px]"></i> Total Harga
+                    </span>
+                    <div class="flex items-baseline gap-2 flex-wrap">
+                        <span id="modal-bar-price" class="text-lg sm:text-2xl font-black text-blue-600 leading-none truncate"></span>
+                        <span id="modal-bar-original-price" class="hidden text-xs sm:text-sm text-rose-500 line-through font-semibold"></span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a id="modal-wa-btn" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 sm:py-3.5 px-4 sm:px-7 rounded-2xl flex items-center justify-center gap-2 sm:gap-2.5 shadow-lg shadow-emerald-600/30 transition-all duration-200 text-xs sm:text-sm group cursor-pointer">
+                        <i class="fa-brands fa-whatsapp text-lg sm:text-xl text-white group-hover:scale-110 transition-transform"></i>
+                        <span class="hidden sm:inline">Hubungi via WhatsApp</span>
+                        <span class="sm:hidden">Chat WhatsApp</span>
                     </a>
                 </div>
             </div>
@@ -341,27 +390,20 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX FULLSCREEN FOTO PROPERTI (SINKRON DENGAN INDEX) -->
+    <!-- MODAL LIGHTBOX FULLSCREEN FOTO -->
     <div id="lightbox-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6 select-none">
-        <!-- Tombol Tutup Lightbox -->
         <button id="lightbox-close-btn" class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg text-xl" title="Tutup Foto Penuh">
             <i class="fa-solid fa-xmark"></i>
         </button>
-
-        <!-- Navigasi Prev/Next Lightbox -->
         <button id="lightbox-prev-btn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition backdrop-blur-sm text-lg shadow-lg">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
         <button id="lightbox-next-btn" class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition backdrop-blur-sm text-lg shadow-lg">
             <i class="fa-solid fa-chevron-right"></i>
         </button>
-
-        <!-- Wadah Gambar Penuh -->
         <div class="relative max-w-[95vw] max-h-[88vh] flex items-center justify-center">
             <img id="lightbox-img" src="" alt="Foto Penuh Properti" class="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-2xl transition-all duration-300">
         </div>
-
-        <!-- Info Counter Foto -->
         <div class="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow">
             <i class="fa-solid fa-image text-blue-400"></i>
             <span id="lightbox-counter">1 / 1</span>
@@ -385,7 +427,7 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK & Logika Filter Realtime -->
+    <!-- Firebase SDK & Logika -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -410,16 +452,15 @@
         let modalActiveIndex = 0;
         let currentModalPropId = null;
 
-        // Algoritma Prioritas Berbayar 30 Hari + Random Shuffle on Page Load
         function getPriorityScore(p) {
             const isPaid = (p.paymentStatus === 'Sudah Membayar');
             if (isPaid && p.expiresAt) {
                 const expDate = p.expiresAt.toDate ? p.expiresAt.toDate() : new Date(p.expiresAt);
                 if (expDate.getTime() > Date.now()) {
-                    return 2; // Prioritas Berbayar Aktif
+                    return 2; 
                 }
             }
-            return 1; // Belum bayar / masa aktif habis
+            return 1; 
         }
 
         const pageLoadRandomSeed = {};
@@ -463,7 +504,6 @@
             return 'fa-solid fa-circle-check';
         }
 
-        // Elemen DOM Pop-up Modal
         const propertyModal = document.getElementById('property-modal');
         const modalContentCard = document.getElementById('property-modal-card');
         const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -478,6 +518,8 @@
         const modalLocation = document.getElementById('modal-location');
         const modalPrice = document.getElementById('modal-price');
         const modalOriginalPrice = document.getElementById('modal-original-price');
+        const modalBarPrice = document.getElementById('modal-bar-price');
+        const modalBarOriginalPrice = document.getElementById('modal-bar-original-price');
         const modalViewsCount = document.getElementById('modal-views-count');
         const modalBeds = document.getElementById('modal-beds');
         const modalBaths = document.getElementById('modal-baths');
@@ -492,9 +534,10 @@
         const modalVideoIframe = document.getElementById('modal-video-iframe');
         const modalVideoWrapper = document.getElementById('modal-video-wrapper');
         const videoFullscreenBtn = document.getElementById('video-fullscreen-btn');
+        const videoAspectBtn = document.getElementById('video-aspect-btn');
+        const videoClickOverlay = document.getElementById('video-click-overlay');
         const modalExpandImgBtn = document.getElementById('modal-expand-img-btn');
 
-        // Elemen DOM Lightbox Fullscreen Gambar
         const lightboxModal = document.getElementById('lightbox-modal');
         const lightboxImg = document.getElementById('lightbox-img');
         const lightboxCounter = document.getElementById('lightbox-counter');
@@ -541,10 +584,25 @@
         });
 
         lightboxModal.addEventListener('click', (e) => {
-            if (e.target === lightboxModal) {
-                closeLightbox();
-            }
+            if (e.target === lightboxModal) closeLightbox();
         });
+
+        let isLandscape = true;
+        
+        if (videoAspectBtn && modalVideoWrapper) {
+            videoAspectBtn.addEventListener('click', () => {
+                isLandscape = !isLandscape;
+                if (isLandscape) {
+                    modalVideoWrapper.classList.remove('aspect-[9/16]', 'max-w-sm');
+                    modalVideoWrapper.classList.add('aspect-video', 'w-full');
+                    videoAspectBtn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> <span id="video-aspect-text">Potret</span>';
+                } else {
+                    modalVideoWrapper.classList.remove('aspect-video', 'w-full');
+                    modalVideoWrapper.classList.add('aspect-[9/16]', 'max-w-sm');
+                    videoAspectBtn.innerHTML = '<i class="fa-solid fa-desktop"></i> <span id="video-aspect-text">Lanskap</span>';
+                }
+            });
+        }
 
         if (videoFullscreenBtn && modalVideoWrapper) {
             videoFullscreenBtn.addEventListener('click', () => {
@@ -564,7 +622,20 @@
             });
         }
 
-        // Helper URL Video Google Drive Embed
+        if (videoClickOverlay && modalVideoWrapper && modalVideoIframe) {
+            videoClickOverlay.addEventListener('click', () => {
+                videoClickOverlay.classList.add('hidden');
+                videoClickOverlay.classList.remove('flex');
+                if (window.innerWidth < 768) {
+                    if (modalVideoWrapper.requestFullscreen) {
+                        modalVideoWrapper.requestFullscreen().catch(() => {});
+                    } else if (modalVideoWrapper.webkitRequestFullscreen) {
+                        modalVideoWrapper.webkitRequestFullscreen();
+                    }
+                }
+            });
+        }
+
         function formatDriveVideoEmbedUrl(input) {
             if (!input) return '';
             let val = input.trim();
@@ -575,7 +646,6 @@
             return `https://drive.google.com/file/d/${id}/preview`;
         }
 
-        // Helper Notifikasi Toast
         function showShareToast(message) {
             const toast = document.getElementById('toast-share');
             const toastMsg = document.getElementById('toast-share-msg');
@@ -588,13 +658,11 @@
             }, 3000);
         }
 
-        // Helper Dapatkan URL Produk yang Langsung Menuju Modal
         function getProductShareUrl(propId) {
             const base = window.location.href.split('?')[0];
             return `${base}?id=${propId}`;
         }
 
-        // Salin Tautan ke Clipboard
         function copyToClipboard(text, customSuccessMsg) {
             const tempInput = document.createElement('input');
             tempInput.value = text;
@@ -629,6 +697,63 @@
             return 'Fasilitas umum & lainnya';
         }
 
+        function formatDescriptionHtml(rawText) {
+            if (!rawText || !rawText.trim()) {
+                return '<p class="text-slate-500 italic">Tidak ada deskripsi tambahan untuk properti ini.</p>';
+            }
+
+            const div = document.createElement('div');
+            div.textContent = rawText;
+            const escaped = div.innerHTML;
+
+            const lines = escaped.split('\n');
+            let resultHtml = '';
+            let isFirstLine = true;
+
+            lines.forEach((line) => {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    resultHtml += '<div class="h-2.5"></div>';
+                    return;
+                }
+
+                const isSubHeader = /^([A-Za-z0-9\s&/()-]+:)$/.test(trimmed) ||
+                    /^(spesifikasi|lokasi|keunggulan|aksesibilitas|legalitas|fasilitas|rincian|catatan|detail|kelebihan|akses)\b/i.test(trimmed);
+
+                if (isSubHeader) {
+                    const topMargin = isFirstLine ? 'mt-1' : 'mt-5';
+                    resultHtml += `
+                        <div class="${topMargin} mb-2 pt-1 font-bold text-slate-900 text-sm sm:text-base tracking-wide flex items-center gap-2 border-b border-slate-200/80 pb-1.5">
+                            <i class="fa-solid fa-caret-right text-blue-600 text-xs"></i>
+                            <span>${trimmed}</span>
+                        </div>
+                    `;
+                } else if (/^[-*•]\s+/.test(trimmed)) {
+                    const pointText = trimmed.replace(/^[-*•]\s+/, '');
+                    resultHtml += `
+                        <div class="flex items-start gap-2.5 py-1 text-slate-800 text-[14px] sm:text-[15px]">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600 mt-2 shrink-0"></span>
+                            <span class="leading-relaxed">${pointText}</span>
+                        </div>
+                    `;
+                } else if (/^\d+[.)]\s+/.test(trimmed)) {
+                    const match = trimmed.match(/^(\d+[.)])\s+(.*)/);
+                    resultHtml += `
+                        <div class="flex items-start gap-2.5 py-1 text-slate-800 text-[14px] sm:text-[15px]">
+                            <span class="font-bold text-blue-600 text-xs mt-0.5 shrink-0 min-w-[16px]">${match[1]}</span>
+                            <span class="leading-relaxed">${match[2]}</span>
+                        </div>
+                    `;
+                } else {
+                    resultHtml += `<p class="py-0.5 text-slate-800 text-[14px] sm:text-[15px] leading-relaxed">${trimmed}</p>`;
+                }
+
+                isFirstLine = false;
+            });
+
+            return resultHtml;
+        }
+
         function updateModalSlide(idx) {
             if (modalActiveImages.length === 0) return;
             modalActiveIndex = (idx + modalActiveImages.length) % modalActiveImages.length;
@@ -654,20 +779,16 @@
             const p = allProperties.find(item => item.id === id);
             if (!p) return;
 
-            // Catat View Realtime ke Firestore (mencegah spam hitungan per sesi)
             const sessionViewKey = 'viewed_prop_' + id;
             if (!sessionStorage.getItem(sessionViewKey)) {
                 sessionStorage.setItem(sessionViewKey, 'true');
-                updateDoc(doc(db, "properti", id), {
-                    views: increment(1)
-                }).catch(err => console.warn("Gagal update view count:", err));
+                updateDoc(doc(db, "properti", id), { views: increment(1) }).catch(err => console.warn("Gagal update view count:", err));
             }
 
             currentModalPropId = p.id;
             modalActiveImages = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
             modalActiveIndex = 0;
 
-            // Perbarui URL tanpa reload agar bisa disalin dari address bar
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -690,20 +811,29 @@
             modalTitle.textContent = p.title || 'Tanpa Judul';
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
+            if (modalBarPrice) modalBarPrice.textContent = p.price || '-';
             modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
 
             if (p.originalPrice) {
                 modalOriginalPrice.textContent = p.originalPrice;
                 modalOriginalPrice.classList.remove('hidden');
+                if (modalBarOriginalPrice) {
+                    modalBarOriginalPrice.textContent = p.originalPrice;
+                    modalBarOriginalPrice.classList.remove('hidden');
+                }
             } else {
                 modalOriginalPrice.textContent = '';
                 modalOriginalPrice.classList.add('hidden');
+                if (modalBarOriginalPrice) {
+                    modalBarOriginalPrice.textContent = '';
+                    modalBarOriginalPrice.classList.add('hidden');
+                }
             }
 
             modalBeds.textContent = p.beds || 0;
             modalBaths.textContent = p.baths || 0;
             modalArea.textContent = p.area || '-';
-            modalDesc.textContent = p.description || 'Hunian nyaman dan strategis di kawasan Bandung Raya dengan aksesibilitas tinggi dan fasilitas lengkap.';
+            modalDesc.innerHTML = formatDescriptionHtml(p.description);
 
             const facilities = Array.isArray(p.facilities) ? p.facilities : [];
             if (facilities.length > 0) {
@@ -767,26 +897,11 @@
                 }
             }
 
-            // Tampilkan Video Google Drive jika ada
             if (p.video) {
-                const directUrl = formatDriveVideoEmbedUrl(p.video);
-                const html5Video = document.getElementById('modal-html5-video');
-                const iframeVideo = document.getElementById('modal-video-iframe');
-                
-                if (html5Video) {
-                    html5Video.src = directUrl;
-                    html5Video.classList.remove('hidden');
-                    if (iframeVideo) iframeVideo.classList.add('hidden');
-                } else if (iframeVideo) {
-                    iframeVideo.src = formatDriveVideoEmbedUrl(p.video);
-                    iframeVideo.classList.remove('hidden');
-                }
+                modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
                 modalVideoSection.classList.remove('hidden');
             } else {
-                const html5Video = document.getElementById('modal-html5-video');
-                const iframeVideo = document.getElementById('modal-video-iframe');
-                if (html5Video) { html5Video.pause(); html5Video.src = ''; html5Video.classList.add('hidden'); }
-                if (iframeVideo) iframeVideo.src = '';
+                modalVideoIframe.src = '';
                 modalVideoSection.classList.add('hidden');
             }
 
@@ -796,7 +911,6 @@
             );
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
-            // Siapkan Tombol Share di dalam Pop-up Modal
             const shareUrl = getProductShareUrl(p.id);
             const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat detail & foto:\n${shareUrl}`);
             modalShareWaBtn.href = `https://api.whatsapp.com/send?text=${shareText}`;
@@ -824,7 +938,15 @@
                 modalVideoIframe.src = '';
             }
 
-            // Hapus parameter id dari URL saat ditutup
+            if (!isLandscape && videoAspectBtn) {
+                videoAspectBtn.click();
+            }
+
+            if (videoClickOverlay) {
+                videoClickOverlay.classList.remove('hidden');
+                videoClickOverlay.classList.add('flex');
+            }
+
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -865,7 +987,6 @@
             }
         });
 
-        // Elemen DOM
         const filterForm = document.getElementById('filter-form');
         const inputKeyword = document.getElementById('filter-keyword');
         const selectStatus = document.getElementById('filter-status');
@@ -880,7 +1001,6 @@
         const countDisplay = document.getElementById('property-count');
         const activeQueryTag = document.getElementById('active-query-tag');
 
-        // Membaca Parameter dari URL (Dikirim dari index.html)
         function initFiltersFromURL() {
             const params = new URLSearchParams(window.location.search);
             const q = params.get('q') || '';
@@ -892,7 +1012,6 @@
             if (type && type !== 'Tipe Properti') selectCategory.value = type;
         }
 
-        // Sinkronisasi Data Firebase
         onSnapshot(propertiRef, (snapshot) => {
             const list = [];
             snapshot.forEach((doc) => {
@@ -902,7 +1021,6 @@
             loadingState.classList.add('hidden');
             applyFilters();
 
-            // Cek jika URL memiliki parameter ?id=... (dibuka dari tautan share)
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const sharedId = urlParams.get('id');
@@ -917,12 +1035,10 @@
             loadingState.innerHTML = `<p class="text-red-500 font-semibold">Gagal memuat katalog properti. Silakan muat ulang.</p>`;
         });
 
-        // Logika Penyaringan & Pengurutan Cerdas
         function applyFilters() {
             let rawKeyword = (inputKeyword.value || '').trim();
             let selectedCat = selectCategory.value;
 
-            // Parser Cerdas: Deteksi kategori dan bersihkan stop words dari input pengguna
             if (rawKeyword) {
                 const categoryMap = {
                     'rumah': 'Rumah',
@@ -935,7 +1051,6 @@
                     'vila': 'Villa'
                 };
 
-                // Deteksi otomatis kategori jika belum dipilih di dropdown
                 if (!selectedCat) {
                     for (const [key, catVal] of Object.entries(categoryMap)) {
                         const catRegex = new RegExp(`\\b${key}\\b`, 'i');
@@ -948,7 +1063,6 @@
                     }
                 }
 
-                // Bersihkan stop words pencarian
                 const stopWords = ['sekitar', 'seputaran', 'dekat', 'di', 'ke', 'daerah', 'wilayah', 'area', 'dan', 'yang', 'murah', 'bagus', 'strategis'];
                 stopWords.forEach(sw => {
                     const swRegex = new RegExp(`\\b${sw}\\b`, 'gi');
@@ -963,7 +1077,6 @@
             const category = selectedCat.toLowerCase();
             const sortBy = sortSelect.value;
 
-            // Update URL tanpa reload secara aman
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -974,7 +1087,6 @@
                 }
             } catch (historyErr) {}
 
-            // Filter data secara akurat (mencakup judul, lokasi, deskripsi, fasilitas, dan kategori)
             let filtered = allProperties.filter((p) => {
                 const title = (p.title || '').toLowerCase();
                 const location = (p.location || '').toLowerCase();
@@ -1002,7 +1114,6 @@
                 return true;
             });
 
-            // Urutkan
             if (sortBy === 'title-asc') {
                 filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
             } else if (sortBy === 'beds-desc') {
@@ -1010,7 +1121,6 @@
             } else if (sortBy === 'views') {
                 filtered.sort((a, b) => Number(b.views || 0) - Number(a.views || 0));
             } else {
-                // Default: Algoritma Prioritas Berbayar 30 Hari + Fair Random Shuffle per Page Load
                 filtered.sort((a, b) => {
                     const scoreA = getPriorityScore(a);
                     const scoreB = getPriorityScore(b);
@@ -1021,7 +1131,6 @@
                 });
             }
 
-            // Info tag pencarian aktif
             if (rawKeyword || status || category) {
                 const terms = [];
                 if (rawKeyword) terms.push(`Kata Kunci: "${rawKeyword}"`);
@@ -1036,7 +1145,6 @@
             renderGrid(filtered);
         }
 
-        // Render List ke DOM
         function renderGrid(properties) {
             countDisplay.textContent = properties.length;
 
@@ -1058,12 +1166,11 @@
                     <div class="relative h-60 overflow-hidden card-slider-container select-none" data-total-photos="${totalPhotos}">
                         <img src="${formatMediaUrl(photos[0])}" alt="${p.title || 'Properti'}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${photos[0] || ''}', false)"/>
                         
-                        <!-- Hanya Label Status Transaksi Saja -->
-                        <div class="absolute top-4 left-4 z-10 pointer-events-none">
+                        <div class="absolute top-4 left-4 z-10 pointer-events-none flex flex-wrap items-center gap-1.5">
                             <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
+                            ${p.badge ? `<span class="px-2.5 py-1 text-xs font-bold rounded-full shadow-sm bg-amber-400 text-slate-900 flex items-center gap-1"><i class="fa-solid fa-tag text-[9px]"></i> ${p.badge}</span>` : ''}
                         </div>
 
-                        <!-- Tombol Cepat Share di Kartu -->
                         <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
                             <i class="fa-solid fa-share-nodes text-xs"></i>
                         </button>
@@ -1104,7 +1211,6 @@
                 </div>
             `}).join('');
 
-            // Hubungkan event klik pop-up modal & slider manual kartu katalog
             document.querySelectorAll('.property-card').forEach(card => {
                 const id = card.getAttribute('data-id');
                 const prop = properties.find(item => item.id === id);
@@ -1116,7 +1222,6 @@
                 const counterBadge = card.querySelector('.card-counter');
                 const shareBtn = card.querySelector('.card-share-btn');
 
-                // Event tombol share di kartu
                 if (shareBtn) {
                     shareBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1149,7 +1254,6 @@
             });
         }
 
-        // Event Listeners
         filterForm.addEventListener('submit', (e) => {
             e.preventDefault();
             applyFilters();
@@ -1171,7 +1275,6 @@
         resetBtn.addEventListener('click', resetAll);
         emptyResetBtn.addEventListener('click', resetAll);
 
-        // Inisialisasi awal saat load
         initFiltersFromURL();
     </script>
 </body>
