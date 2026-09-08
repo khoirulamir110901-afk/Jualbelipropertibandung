@@ -36,7 +36,6 @@
     </script>
 
     <style>
-        /* Animasi kustom untuk Modal */
         .modal-enter {
             opacity: 0;
             transform: scale(0.95);
@@ -57,6 +56,13 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+        #chat-messages-box::-webkit-scrollbar {
+            width: 5px;
+        }
+        #chat-messages-box::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
         }
     </style>
 </head>
@@ -88,6 +94,9 @@
                     <a href="titip-properti.html" class="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-plus-circle text-xs"></i> Titip Properti
                     </a>
+                    <a href="livechat.html" class="text-blue-600 font-bold hover:text-blue-800 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-comments"></i> Live Chat
+                    </a>
                     <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg flex items-center gap-2">
                         <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Agen
                     </a>
@@ -109,6 +118,7 @@
             <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli (Dijual)</a>
             <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Sewa (Disewa)</a>
             <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-emerald-600 hover:bg-emerald-50 rounded-md">Titip Properti (Iklan)</a>
+            <a href="livechat.html" class="block px-3 py-2 text-base font-bold text-blue-600 hover:bg-blue-50 rounded-md">Live Chat Online</a>
             <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-4 bg-blue-600 text-white px-3 py-3 rounded-md font-medium">
                 Hubungi Agen via WhatsApp
             </a>
@@ -122,7 +132,6 @@
                  alt="Bandung Cityscape" 
                  class="w-full h-full object-cover transition-all duration-700" />
             <script>
-                // Instant load from cache to prevent delay
                 const cachedHero = localStorage.getItem('hero_bg_cache');
                 if (cachedHero) {
                     document.getElementById('hero-bg-image').src = cachedHero;
@@ -139,7 +148,7 @@
                 Temukan pilihan rumah, tanah, ruko, apartemen, dan properti lainnya di Bandung & sekitarnya, untuk hunian maupun investasi.
             </p>
 
-            <!-- Search Box (Terhubung ke katalog.html via action GET) -->
+            <!-- Search Box -->
             <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-2 md:p-4">
                 <form id="search-form" action="katalog.html" method="GET" class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1 flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
@@ -165,7 +174,6 @@
 
             <!-- CTA Titip Properti Bawah Pencarian -->
             <div class="mt-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-8 max-w-3xl w-full text-center shadow-2xl relative overflow-hidden group">
-                <!-- Elemen dekoratif blur di belakang -->
                 <div class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
                 
                 <div class="relative z-10">
@@ -192,7 +200,7 @@
             </a>
         </div>
 
-        <!-- Property Grid Container (Populated by JS) -->
+        <!-- Property Grid Container -->
         <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="col-span-3 text-center py-10 text-gray-500">
                 <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-500"></i>
@@ -211,7 +219,6 @@
     <div id="property-modal" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-gray-100" id="property-modal-card">
             
-            <!-- Tombol Tutup Pop-Up -->
             <button id="modal-close-btn" class="absolute top-4 right-4 z-30 bg-black/50 hover:bg-black/80 text-white w-10 h-10 rounded-full flex items-center justify-center transition shadow-lg">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -220,7 +227,6 @@
             <div class="relative w-full h-72 sm:h-96 md:h-[420px] bg-slate-900 shrink-0 overflow-hidden select-none group">
                 <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300 cursor-zoom-in hover:scale-[1.02]" title="Klik untuk melihat foto ukuran penuh">
                 
-                <!-- Navigasi Slide Manual Prev / Next -->
                 <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md z-10">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
@@ -228,12 +234,10 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
 
-                <!-- Status & Counter Foto -->
                 <div class="absolute top-4 left-4 flex gap-2 items-center z-10">
                     <span id="modal-type-badge" class="px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600">Dijual</span>
                 </div>
 
-                <!-- Tombol Klik Perbesar Foto Penuh -->
                 <button type="button" id="modal-expand-img-btn" class="absolute bottom-4 left-4 bg-black/60 hover:bg-black/80 text-white px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm flex items-center gap-1.5 shadow transition z-10 cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass-plus text-blue-400"></i> <span>Perbesar Foto</span>
                 </button>
@@ -246,7 +250,6 @@
             <!-- Thumbnail Foto Strip -->
             <div id="modal-thumbnails-strip" class="flex gap-2 p-3 bg-slate-100 overflow-x-auto border-b border-gray-100 shrink-0"></div>
 
-            <!-- Konten Spesifikasi & Deskripsi -->
             <div class="p-6 sm:p-8 space-y-6">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-5">
                     <div>
@@ -267,7 +270,6 @@
                     </div>
                 </div>
 
-                <!-- Tombol Aksi Bagikan di dalam Modal -->
                 <div class="flex flex-wrap gap-2.5 items-center p-3.5 bg-blue-50/70 border border-blue-100 rounded-2xl">
                     <span class="text-xs font-bold text-blue-900 flex items-center gap-1.5">
                         <i class="fa-solid fa-share-nodes text-blue-600"></i> Bagikan Properti Ini:
@@ -280,7 +282,6 @@
                     </a>
                 </div>
 
-                <!-- Spesifikasi Ringkas -->
                 <div class="grid grid-cols-3 gap-3 sm:gap-4 text-center">
                     <div class="p-3 sm:p-4 bg-blue-50/60 rounded-2xl border border-blue-100/60">
                         <i class="fa-solid fa-bed text-blue-600 text-xl mb-1 block"></i>
@@ -299,7 +300,6 @@
                     </div>
                 </div>
 
-                <!-- Video Tur Properti (Di atas Fasilitas & Deskripsi) -->
                 <div id="modal-video-section" class="hidden space-y-3 pt-4 border-t border-gray-100">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
@@ -316,40 +316,23 @@
                     </div>
 
                     <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center transition-all duration-500 aspect-video max-h-[75vh] mx-auto">
-                        <!-- Overlay Play Button Buatan Kita -->
                         <div id="video-click-overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/40 hover:bg-slate-900/20 cursor-pointer group backdrop-blur-[2px] transition-all duration-300">
                             <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-red-600/40 group-hover:scale-110 transition-transform mb-3">
                                 <i class="fa-solid fa-expand ml-1"></i>
                             </div>
                             <span class="text-white text-[11px] font-bold bg-black/60 px-3 py-1.5 rounded-full tracking-wide">Ketuk untuk Layar Penuh</span>
                         </div>
-                        
-                        <!-- Dikembalikan ke Iframe yang stabil -->
                         <iframe id="modal-video-iframe" class="w-full h-full border-0 absolute inset-0 z-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" allowfullscreen></iframe>
-                    </div>
-                    <div class="text-[11px] text-slate-500 mt-2 space-y-1.5 bg-blue-50/50 p-2.5 rounded-xl border border-blue-100/50">
-                        <p class="flex items-start gap-1.5">
-                            <i class="fa-solid fa-circle-info text-blue-600 mt-0.5"></i>
-                            <span>Gunakan tombol <strong>Potret / Lanskap</strong> di atas untuk menyesuaikan bentuk bingkai video. Klik <strong>Layar Penuh</strong> untuk pengalaman terbaik.</span>
-                        </p>
-                        <p class="flex items-start gap-1.5 text-amber-700">
-                            <i class="fa-solid fa-gear mt-0.5"></i>
-                            <span><strong>Tips Video Jernih:</strong> Jika kualitas video buram, klik ikon <strong>Pengaturan (⚙️)</strong> pada pemutar video, pilih <strong>Kualitas</strong> lalu ubah ke <strong>720p atau 1080p</strong>.</span>
-                        </p>
                     </div>
                 </div>
 
-                <!-- Fasilitas Lengkap (DI ATAS Deskripsi Properti) -->
                 <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
                     <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
                     </h3>
-                    <div id="modal-facilities-container" class="space-y-4">
-                        <!-- Grup fasilitas dirender dinamis di sini -->
-                    </div>
+                    <div id="modal-facilities-container" class="space-y-4"></div>
                 </div>
 
-                <!-- Deskripsi Lengkap (Di bawah Fasilitas) -->
                 <div>
                     <h3 class="text-base font-bold text-gray-900 mb-2 flex items-center gap-2">
                         <i class="fa-solid fa-circle-info text-blue-600"></i> Deskripsi Properti
@@ -360,9 +343,8 @@
                 </div>
             </div>
 
-            <!-- MODEL BAR HARGA + TOMBOL (STICKY BOTTOM ACTION BAR) -->
+            <!-- Sticky Bottom Action Bar -->
             <div class="sticky bottom-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/80 px-5 sm:px-8 py-3.5 sm:py-4 rounded-b-3xl shadow-[0_-10px_25px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3 sm:gap-6 mt-auto">
-                <!-- Kolom Kiri: Informasi Harga -->
                 <div class="flex flex-col min-w-0 pr-1">
                     <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1 mb-0.5">
                         <i class="fa-solid fa-tag text-blue-500 text-[10px]"></i> Total Harga
@@ -373,7 +355,6 @@
                     </div>
                 </div>
 
-                <!-- Kolom Kanan: Tombol Aksi WhatsApp -->
                 <div class="flex items-center gap-2 shrink-0">
                     <a id="modal-wa-btn" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-extrabold py-3 sm:py-3.5 px-4 sm:px-7 rounded-2xl flex items-center justify-center gap-2 sm:gap-2.5 shadow-lg shadow-emerald-600/30 transition-all duration-200 text-xs sm:text-sm group cursor-pointer">
                         <i class="fa-brands fa-whatsapp text-lg sm:text-xl text-white group-hover:scale-110 transition-transform"></i>
@@ -388,12 +369,10 @@
 
     <!-- MODAL LIGHTBOX FULLSCREEN FOTO PROPERTI -->
     <div id="lightbox-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6 select-none">
-        <!-- Tombol Tutup Lightbox -->
         <button id="lightbox-close-btn" class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg text-xl" title="Tutup Foto Penuh">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
-        <!-- Navigasi Prev/Next Lightbox -->
         <button id="lightbox-prev-btn" class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition backdrop-blur-sm text-lg shadow-lg">
             <i class="fa-solid fa-chevron-left"></i>
         </button>
@@ -401,12 +380,10 @@
             <i class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <!-- Wadah Gambar Penuh -->
         <div class="relative max-w-[95vw] max-h-[88vh] flex items-center justify-center">
             <img id="lightbox-img" src="" alt="Foto Penuh Properti" class="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-2xl transition-all duration-300">
         </div>
 
-        <!-- Info Counter Foto -->
         <div class="absolute bottom-5 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 shadow">
             <i class="fa-solid fa-image text-blue-400"></i>
             <span id="lightbox-counter">1 / 1</span>
@@ -470,6 +447,7 @@
                         <li><a href="titip-properti.html" class="text-emerald-400 font-semibold hover:text-emerald-300 transition">Titip Properti</a></li>
                         <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
                         <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
+                        <li><a href="livechat.html" class="text-blue-400 hover:text-blue-300 transition">Live Chat Online</a></li>
                         <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
                     </ul>
                 </div>
@@ -514,10 +492,149 @@
         </div>
     </footer>
 
-    <!-- Integrasi Firebase Realtime untuk Tampilan Publik -->
+    <!-- WIDGET LIVE CHAT MELAYANG DENGAN TEKS 'LIVE CHAT' DI ATAS BALON -->
+    <div id="livechat-widget" class="fixed bottom-6 right-6 z-[160] flex flex-col items-end">
+        <!-- Pop-Up Jendela Obrolan -->
+        <div id="chat-window" class="hidden flex-col w-[92vw] sm:w-84 md:w-96 h-[540px] bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mb-3.5 transition-all duration-300">
+            
+            <!-- Header Chat -->
+            <div class="bg-blue-600 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="relative">
+                        <img id="widget-cs-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar CS" onerror="handleImageError(this)" class="w-9 h-9 rounded-full object-cover border-2 border-white/60">
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border border-white rounded-full"></span>
+                    </div>
+                    <div>
+                        <h4 id="widget-cs-name" class="font-bold text-xs sm:text-sm leading-tight">Customer Support</h4>
+                        <span id="widget-cs-status" class="text-[10px] text-blue-100 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Asisten Virtual Siap
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <a href="livechat.html" target="_blank" class="text-white/80 hover:text-white w-7 h-7 rounded-full flex items-center justify-center transition" title="Buka Halaman Penuh">
+                        <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                    </a>
+                    <button type="button" id="close-chat-btn" class="text-white/80 hover:text-white w-7 h-7 rounded-full flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 1: Form Registrasi Tamu Baru (Muncul jika belum pernah isi) -->
+            <div id="widget-reg-view" class="hidden flex-1 p-6 flex flex-col justify-center bg-slate-50">
+                <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mx-auto mb-3">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <h4 class="font-bold text-sm text-center text-gray-900">Mulai Percakapan</h4>
+                <p class="text-[11px] text-gray-500 text-center mb-4 mt-1">Silakan masukkan nama & WhatsApp agar kami dapat melayani Anda dengan baik.</p>
+                <form id="widget-reg-form" class="space-y-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-0.5">Nama Anda</label>
+                        <input type="text" id="widget-reg-name" required placeholder="Contoh: Budi" class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-xl px-3 py-2 text-xs outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-0.5">No. WhatsApp</label>
+                        <input type="tel" id="widget-reg-phone" required placeholder="Contoh: 0812..." class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-xl px-3 py-2 text-xs outline-none">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-600/30 mt-1 cursor-pointer">
+                        Mulai Chat
+                    </button>
+                </form>
+            </div>
+
+            <!-- View 2: Stream Percakapan & Alur Chatbot Interaktif -->
+            <div id="widget-chat-view" class="flex-1 flex flex-col min-h-0 bg-slate-50">
+                <div id="chat-messages-box" class="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3 text-xs">
+                    <!-- Sambutan Default Bot & 3 Tombol Menu Berikon Elegan -->
+                    <div class="flex items-start gap-2 max-w-[92%]">
+                        <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                            <i class="fa-solid fa-robot text-xs"></i>
+                        </div>
+                        <div class="bg-white border border-gray-200 text-gray-800 p-3.5 rounded-2xl rounded-tl-none shadow-xs space-y-2.5">
+                            <span class="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">Asisten Properti Bandung</span>
+                            <p class="leading-relaxed">
+                                Halo! Selamat datang di <strong>Properti Bandung</strong>. 🏡<br>
+                                Mau properti Anda cepat laku tanpa potong komisi? Kami menerapkan sistem <strong>0% komisi</strong>—cukup bayar paket iklan <strong>Rp199.000/30 hari</strong>, calon pembeli langsung kontak Anda.<br><br>
+                                Silakan pilih info yang Anda butuhkan:
+                            </p>
+                            <div class="flex flex-col gap-2 pt-1">
+                                <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full text-left p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-900 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px]">
+                                            <i class="fa-solid fa-file-circle-plus"></i>
+                                        </div>
+                                        <span class="font-bold text-xs">Mulai Titip Properti</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-blue-400 text-[10px]"></i>
+                                </button>
+
+                                <button type="button" onclick="window.widgetTriggerBot('fasilitas')" class="w-full text-left p-2.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200 text-amber-950 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center text-[10px]">
+                                            <i class="fa-solid fa-gem"></i>
+                                        </div>
+                                        <span class="font-bold text-xs">Detail Fasilitas Rp199rb</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-amber-400 text-[10px]"></i>
+                                </button>
+
+                                <button type="button" onclick="window.widgetTriggerBot('cs')" class="w-full text-left p-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 text-emerald-950 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                                            <i class="fa-solid fa-headset"></i>
+                                        </div>
+                                        <span class="font-bold text-xs">Hubungi CS Admin Live Chat</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right text-emerald-400 text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Kirim Pesan -->
+                <form id="chat-send-form" class="p-3 bg-white border-t border-gray-100 flex items-center gap-2 shrink-0">
+                    <input type="text" id="chat-input-text" placeholder="Ketik pesan Anda..." autocomplete="off" required class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-blue-500 text-gray-800">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition shadow-sm active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Wadah Tombol Balon & Teks Live Chat di Atasnya -->
+        <div class="flex flex-col items-center gap-1.5">
+            <!-- Label Teks Melayang 'Live Chat' -->
+            <div id="livechat-pill-label" class="bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-lg border border-white/20 flex items-center gap-1.5 animate-bounce select-none pointer-events-none transition-all duration-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                <span>Live Chat</span>
+            </div>
+
+            <!-- Tombol Pemicu Bulat Melayang -->
+            <button type="button" id="chat-toggle-button" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative group cursor-pointer" title="Live Chat Bantuan">
+                <i class="fa-solid fa-comments text-2xl group-hover:scale-110 transition-transform"></i>
+                <span id="chat-unread-dot" class="hidden absolute top-0 right-0 w-4 h-4 bg-rose-500 rounded-full border-2 border-white"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Integrasi Firebase Realtime untuk Tampilan Publik & Live Chat -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, setDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            collection, 
+            onSnapshot, 
+            doc, 
+            updateDoc, 
+            setDoc, 
+            addDoc,
+            query,
+            orderBy,
+            increment, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
@@ -532,93 +649,47 @@
         const db = getFirestore(app);
         const propertiRef = collection(db, "properti");
 
-        // =========================================================================
-        // LOGIKA ANTI-SPAM & DEDUP TRACKING (Meta, TikTok, & Google Ads)
-        // Mencegah double tracking saat refresh, reload, atau klik berulang
-        // =========================================================================
+        // Anti-spam Tracking Pixel Terpusat
         function shouldFireTrackingEvent(eventName, uniqueKey = 'global', cooldownHours = 24) {
             const storageKey = `anti_spam_track_${eventName}_${uniqueKey}`;
             const now = Date.now();
             const cooldownMs = cooldownHours * 60 * 60 * 1000;
 
             try {
-                // 1. Cek riwayat tracking di localStorage (batas waktu 12-24 jam)
                 const storedTime = localStorage.getItem(storageKey);
-                if (storedTime && (now - Number(storedTime)) < cooldownMs) {
-                    // Masih dalam masa cooldown -> Cegah pengiriman event ganda
-                    return false;
-                }
-
-                // 2. Cek juga sessionStorage agar tidak spam dalam 1 sesi browser
+                if (storedTime && (now - Number(storedTime)) < cooldownMs) return false;
                 const sessionKey = `sess_track_${eventName}_${uniqueKey}`;
-                if (sessionStorage.getItem(sessionKey)) {
-                    return false;
-                }
-
-                // Jika lolos, simpan timestamp terkini
+                if (sessionStorage.getItem(sessionKey)) return false;
                 localStorage.setItem(storageKey, String(now));
                 sessionStorage.setItem(sessionKey, 'fired');
                 return true;
             } catch (e) {
-                // Fallback aman jika storage dibatasi oleh mode privasi browser
                 return true;
             }
         }
 
-        // Helper Pengiriman Event Terpusat ke 3 Platform Pixel
         function fireUnifiedPixelEvent(eventName, params = {}, uniqueKey = 'global', cooldownHours = 24) {
-            if (!shouldFireTrackingEvent(eventName, uniqueKey, cooldownHours)) {
-                // Event diabaikan karena pengunjung sudah terhitung (mencegah spam / refresh)
-                return;
-            }
-
-            // 1. Meta Ads (Facebook & Instagram)
-            if (window.fbq) {
-                try {
-                    window.fbq('track', eventName, params);
-                } catch (e) {}
-            }
-
-            // 2. TikTok Ads
+            if (!shouldFireTrackingEvent(eventName, uniqueKey, cooldownHours)) return;
+            if (window.fbq) { try { window.fbq('track', eventName, params); } catch (e) {} }
             if (window.ttq) {
                 try {
-                    if (eventName === 'PageView') {
-                        window.ttq.page();
-                    } else {
-                        window.ttq.track(eventName, params);
-                    }
+                    if (eventName === 'PageView') window.ttq.page();
+                    else window.ttq.track(eventName, params);
                 } catch (e) {}
             }
-
-            // 3. Google Ads / Google Tag Manager (GTM / gtag)
-            if (window.gtag) {
-                try {
-                    window.gtag('event', eventName, params);
-                } catch (e) {}
-            } else if (window.dataLayer) {
-                try {
-                    window.dataLayer.push({
-                        event: eventName,
-                        ...params
-                    });
-                } catch (e) {}
-            }
+            if (window.gtag) { try { window.gtag('event', eventName, params); } catch (e) {} }
+            else if (window.dataLayer) { try { window.dataLayer.push({ event: eventName, ...params }); } catch (e) {} }
         }
 
-        // Multi-Pixel Tracking (Meta, TikTok Ads, & Google Ads)
         const pixelsDocRef = doc(db, "pengaturan", "pixels");
 
         function parsePixelList(input) {
             if (!input) return [];
             if (Array.isArray(input)) return input.map(s => String(s).trim()).filter(Boolean);
-            return String(input)
-                .split(/[\n,;\r]+/)
-                .map(s => s.trim())
-                .filter(Boolean);
+            return String(input).split(/[\n,;\r]+/).map(s => s.trim()).filter(Boolean);
         }
 
         function initTrackingPixels(metaIds = [], tiktokIds = [], gtmIds = []) {
-            // Meta Pixel (Facebook & Instagram)
             if (metaIds.length > 0) {
                 if (!window.fbq) {
                     (function(f,b,e,v,n,t,s){
@@ -630,12 +701,9 @@
                         s.parentNode.insertBefore(t,s);
                     })(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
                 }
-                metaIds.forEach(id => {
-                    window.fbq('init', id);
-                });
+                metaIds.forEach(id => { window.fbq('init', id); });
             }
 
-            // TikTok Pixel
             if (tiktokIds.length > 0) {
                 if (!window.ttq) {
                     (function (w, d, t) {
@@ -646,12 +714,9 @@
                         ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var a=document.createElement("script");a.type="text/javascript";a.async=!0;a.src=r+"?sdkid="+e+"&lib="+t;var c=document.getElementsByTagName("script")[0];c.parentNode.insertBefore(a,c)};
                     })(window, document, 'ttq');
                 }
-                tiktokIds.forEach(id => {
-                    window.ttq.load(id);
-                });
+                tiktokIds.forEach(id => { window.ttq.load(id); });
             }
 
-            // Google Tag Manager / Google Ads (GTM)
             if (gtmIds.length > 0) {
                 window.dataLayer = window.dataLayer || [];
                 gtmIds.forEach(gtmId => {
@@ -665,7 +730,6 @@
                 });
             }
 
-            // Eksekusi PageView dengan proteksi Anti-Spam (hanya fire 1x per 24 jam)
             fireUnifiedPixelEvent('PageView', {}, 'homepage', 24);
         }
 
@@ -677,35 +741,28 @@
                 const gtmList = parsePixelList(data.gtmPixelIds || data.gtmPixelId);
                 initTrackingPixels(metaList, tiktokList, gtmList);
             }
-        }, (err) => {
-            console.warn("Pixel config error:", err);
         });
 
-        // Pelacakan Kunjungan Harian Halaman Utama (Anti-spam per sesi hari)
+        // Pelacakan Kunjungan Harian
         try {
             const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
             const sessionVisitKey = 'visited_home_' + todayKey;
             if (!sessionStorage.getItem(sessionVisitKey)) {
                 sessionStorage.setItem(sessionVisitKey, 'true');
-                
-                // 1. Catat/tambahkan kunjungan hari ini ke koleksi kunjungan_harian
                 const visitDocRef = doc(db, "kunjungan_harian", todayKey);
                 setDoc(visitDocRef, {
                     date: todayKey,
                     views: increment(1),
                     lastVisit: serverTimestamp()
-                }, { merge: true }).catch(err => console.warn("Catat kunjungan harian error:", err));
+                }, { merge: true }).catch(() => {});
 
-                // 2. Catat akumulasi total kunjungan web sepanjang waktu
                 const statTotalRef = doc(db, "pengaturan", "statistik");
                 setDoc(statTotalRef, {
                     totalHomeViews: increment(1),
                     lastUpdated: serverTimestamp()
                 }, { merge: true }).catch(() => {});
             }
-        } catch(e) {
-            console.warn("Gagal inisialisasi statistik kunjungan:", e);
-        }
+        } catch(e) {}
 
         let loadedProperties = [];
         let modalActiveImages = [];
@@ -713,23 +770,18 @@
 
         document.getElementById('year').textContent = new Date().getFullYear();
 
-        // Algoritma Prioritas Berbayar 30 Hari + Random Shuffle on Page Load
         function getPriorityScore(p) {
             const isPaid = (p.paymentStatus === 'Sudah Membayar');
             if (isPaid && p.expiresAt) {
                 const expDate = p.expiresAt.toDate ? p.expiresAt.toDate() : new Date(p.expiresAt);
-                if (expDate.getTime() > Date.now()) {
-                    return 2; // Prioritas Berbayar Aktif
-                }
+                if (expDate.getTime() > Date.now()) return 2;
             }
-            return 1; // Belum bayar / masa aktif habis
+            return 1;
         }
 
         const pageLoadRandomSeed = {};
         function getRandomWeight(id) {
-            if (!pageLoadRandomSeed[id]) {
-                pageLoadRandomSeed[id] = Math.random();
-            }
+            if (!pageLoadRandomSeed[id]) pageLoadRandomSeed[id] = Math.random();
             return pageLoadRandomSeed[id];
         }
 
@@ -737,9 +789,7 @@
             return [...properties].sort((a, b) => {
                 const scoreA = getPriorityScore(a);
                 const scoreB = getPriorityScore(b);
-                if (scoreA !== scoreB) {
-                    return scoreB - scoreA;
-                }
+                if (scoreA !== scoreB) return scoreB - scoreA;
                 return getRandomWeight(a.id) - getRandomWeight(b.id);
             });
         }
@@ -748,36 +798,28 @@
             if (!name) return 'fa-solid fa-circle-check';
             const n = name.toLowerCase();
             if (n.includes('ac') || n.includes('pendingin')) return 'fa-solid fa-fan';
-            if (n.includes('kasur') || n.includes('bed') || n.includes('ranjang') || n.includes('springbed')) return 'fa-solid fa-bed';
+            if (n.includes('kasur') || n.includes('bed') || n.includes('ranjang')) return 'fa-solid fa-bed';
             if (n.includes('meja') || n.includes('desk') || n.includes('kerja')) return 'fa-solid fa-table';
-            if (n.includes('lemari') || n.includes('wardrobe') || n.includes('storage') || n.includes('kabinet')) return 'fa-solid fa-door-closed';
-            if (n.includes('jendela') || n.includes('window') || n.includes('ventilasi')) return 'fa-solid fa-border-all';
-            if (n.includes('cermin') || n.includes('mirror') || n.includes('kaca')) return 'fa-solid fa-circle-notch';
+            if (n.includes('lemari') || n.includes('wardrobe')) return 'fa-solid fa-door-closed';
+            if (n.includes('jendela') || n.includes('window')) return 'fa-solid fa-border-all';
+            if (n.includes('cermin') || n.includes('mirror')) return 'fa-solid fa-circle-notch';
             if (n.includes('bantal') || n.includes('guling') || n.includes('sprei')) return 'fa-solid fa-couch';
-            if (n.includes('kursi') || n.includes('chair') || n.includes('sofa')) return 'fa-solid fa-chair';
+            if (n.includes('kursi') || n.includes('sofa')) return 'fa-solid fa-chair';
             if (n.includes('shower')) return 'fa-solid fa-shower';
-            if (n.includes('k. mandi') || n.includes('kamar mandi') || n.includes('bath')) return 'fa-solid fa-bath';
+            if (n.includes('k. mandi') || n.includes('kamar mandi')) return 'fa-solid fa-bath';
             if (n.includes('kloset') || n.includes('toilet') || n.includes('wc')) return 'fa-solid fa-toilet';
-            if (n.includes('ember') || n.includes('gayung')) return 'fa-solid fa-bucket';
-            if (n.includes('wifi') || n.includes('internet') || n.includes('hotspot')) return 'fa-solid fa-wifi';
-            if (n.includes('dapur') || n.includes('kitchen') || n.includes('kompor') || n.includes('pantry')) return 'fa-solid fa-kitchen-set';
-            if (n.includes('kolam') || n.includes('renang') || n.includes('pool')) return 'fa-solid fa-water-ladder';
-            if (n.includes('garasi') || n.includes('carport') || n.includes('parkir') || n.includes('mobil') || n.includes('motor')) return 'fa-solid fa-car';
-            if (n.includes('taman') || n.includes('garden') || n.includes('halaman')) return 'fa-solid fa-tree';
-            if (n.includes('keamanan') || n.includes('security') || n.includes('satpam') || n.includes('cctv')) return 'fa-solid fa-shield-halved';
-            if (n.includes('balkon') || n.includes('balcony') || n.includes('teras')) return 'fa-solid fa-sun';
-            if (n.includes('water heater') || n.includes('pemanas air')) return 'fa-solid fa-fire-flame-curved';
-            if (n.includes('listrik') || n.includes('pln') || n.includes('token') || n.includes('watt')) return 'fa-solid fa-bolt';
-            if (n.includes('air') || n.includes('pam') || n.includes('sumur') || n.includes('toren')) return 'fa-solid fa-faucet-drip';
+            if (n.includes('wifi') || n.includes('internet')) return 'fa-solid fa-wifi';
+            if (n.includes('dapur') || n.includes('kitchen')) return 'fa-solid fa-kitchen-set';
+            if (n.includes('kolam') || n.includes('renang')) return 'fa-solid fa-water-ladder';
+            if (n.includes('garasi') || n.includes('carport') || n.includes('parkir')) return 'fa-solid fa-car';
+            if (n.includes('taman') || n.includes('garden')) return 'fa-solid fa-tree';
+            if (n.includes('keamanan') || n.includes('security') || n.includes('cctv')) return 'fa-solid fa-shield-halved';
+            if (n.includes('listrik') || n.includes('pln')) return 'fa-solid fa-bolt';
+            if (n.includes('air') || n.includes('pam')) return 'fa-solid fa-faucet-drip';
             if (n.includes('tv') || n.includes('televisi')) return 'fa-solid fa-tv';
-            if (n.includes('kulkas') || n.includes('refrigerator')) return 'fa-solid fa-box';
-            if (n.includes('mesin cuci') || n.includes('laundry')) return 'fa-solid fa-soap';
-            if (n.includes('lift') || n.includes('elevator')) return 'fa-solid fa-elevator';
-            if (n.includes('gym') || n.includes('fitness')) return 'fa-solid fa-dumbbell';
             return 'fa-solid fa-circle-check';
         }
 
-        // Sinkronisasi Latar Belakang Hero Beranda dari Firestore
         const heroSettingDoc = doc(db, "pengaturan", "hero");
         onSnapshot(heroSettingDoc, (docSnap) => {
             if (docSnap.exists()) {
@@ -808,17 +850,14 @@
             });
         }
 
-        // Helper Normalisasi Nomor WhatsApp
         function sanitizeWhatsappNumber(phone) {
             if (!phone) return '6285179756031';
             let cleaned = phone.replace(/[^0-9]/g, '');
-            if (cleaned.startsWith('0')) {
-                cleaned = '62' + cleaned.substring(1);
-            }
+            if (cleaned.startsWith('0')) cleaned = '62' + cleaned.substring(1);
             return cleaned || '6285179756031';
         }
 
-        // --- Logika Pop-Up Modal Detail & Slider Foto ---
+        // Modal Pop-Up Element Binding
         const propertyModal = document.getElementById('property-modal');
         const modalContentCard = document.getElementById('property-modal-card');
         const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -828,7 +867,6 @@
         const modalImgCounter = document.getElementById('modal-img-counter');
         const modalThumbnailsStrip = document.getElementById('modal-thumbnails-strip');
         const modalTypeBadge = document.getElementById('modal-type-badge');
-        const modalCustomBadge = document.getElementById('modal-custom-badge');
         const modalTitle = document.getElementById('modal-title');
         const modalLocation = document.getElementById('modal-location');
         const modalPrice = document.getElementById('modal-price');
@@ -853,7 +891,6 @@
         const videoClickOverlay = document.getElementById('video-click-overlay');
         const modalExpandImgBtn = document.getElementById('modal-expand-img-btn');
 
-        // --- Elemen DOM Lightbox Fullscreen Gambar ---
         const lightboxModal = document.getElementById('lightbox-modal');
         const lightboxImg = document.getElementById('lightbox-img');
         const lightboxCounter = document.getElementById('lightbox-counter');
@@ -881,7 +918,6 @@
             lightboxCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
         }
 
-        // Event Klik Gambar Modal untuk Buka Lightbox
         modalMainImg.addEventListener('click', () => openLightbox(modalActiveIndex));
         if (modalExpandImgBtn) {
             modalExpandImgBtn.addEventListener('click', (e) => {
@@ -901,13 +937,10 @@
         });
 
         lightboxModal.addEventListener('click', (e) => {
-            if (e.target === lightboxModal) {
-                closeLightbox();
-            }
+            if (e.target === lightboxModal) closeLightbox();
         });
 
         let isLandscape = true;
-        
         if (videoAspectBtn && modalVideoWrapper) {
             videoAspectBtn.addEventListener('click', () => {
                 isLandscape = !isLandscape;
@@ -926,40 +959,26 @@
         if (videoFullscreenBtn && modalVideoWrapper) {
             videoFullscreenBtn.addEventListener('click', () => {
                 if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                    if (modalVideoWrapper.requestFullscreen) {
-                        modalVideoWrapper.requestFullscreen().catch(() => {});
-                    } else if (modalVideoWrapper.webkitRequestFullscreen) {
-                        modalVideoWrapper.webkitRequestFullscreen();
-                    }
+                    if (modalVideoWrapper.requestFullscreen) modalVideoWrapper.requestFullscreen().catch(() => {});
+                    else if (modalVideoWrapper.webkitRequestFullscreen) modalVideoWrapper.webkitRequestFullscreen();
                 } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen().catch(() => {});
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    }
+                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
                 }
             });
         }
 
-        // Logika Tombol Play Overlay
         if (videoClickOverlay && modalVideoWrapper && modalVideoIframe) {
             videoClickOverlay.addEventListener('click', () => {
-                // 1. Sembunyikan overlay agar video bisa diklik
                 videoClickOverlay.classList.add('hidden');
                 videoClickOverlay.classList.remove('flex');
-                
-                // 2. Jika diakses dari HP (lebar < 768px), otomatis layar penuh
                 if (window.innerWidth < 768) {
-                    if (modalVideoWrapper.requestFullscreen) {
-                        modalVideoWrapper.requestFullscreen().catch(() => {});
-                    } else if (modalVideoWrapper.webkitRequestFullscreen) {
-                        modalVideoWrapper.webkitRequestFullscreen();
-                    }
+                    if (modalVideoWrapper.requestFullscreen) modalVideoWrapper.requestFullscreen().catch(() => {});
+                    else if (modalVideoWrapper.webkitRequestFullscreen) modalVideoWrapper.webkitRequestFullscreen();
                 }
             });
         }
 
-        // Helper URL Video Google Drive Embed
         function formatDriveVideoEmbedUrl(input) {
             if (!input) return '';
             let val = input.trim();
@@ -970,7 +989,6 @@
             return `https://drive.google.com/file/d/${id}/preview`;
         }
 
-        // Helper Toast & Share
         function showShareToast(message) {
             const toast = document.getElementById('toast-share');
             const toastMsg = document.getElementById('toast-share-msg');
@@ -1002,13 +1020,12 @@
             document.body.removeChild(tempInput);
         }
 
-        // Helper Pengelompokan Fasilitas Otomatis Berdasarkan Tipe
         function categorizeFacility(facName) {
             const n = (facName || '').toLowerCase();
-            if (n.includes('mandi') || n.includes('shower') || n.includes('kloset') || n.includes('toilet') || n.includes('wc') || n.includes('ember') || n.includes('gayung') || n.includes('water heater') || n.includes('pemanas air') || n.includes('bath')) {
+            if (n.includes('mandi') || n.includes('shower') || n.includes('kloset') || n.includes('toilet') || n.includes('wc')) {
                 return 'Fasilitas kamar mandi';
             }
-            if (n.includes('ac') || n.includes('kasur') || n.includes('bed') || n.includes('ranjang') || n.includes('meja') || n.includes('lemari') || n.includes('storage') || n.includes('wardrobe') || n.includes('jendela') || n.includes('cermin') || n.includes('kaca') || n.includes('bantal') || n.includes('guling') || n.includes('kursi') || n.includes('sofa') || n.includes('tv') || n.includes('balkon')) {
+            if (n.includes('ac') || n.includes('kasur') || n.includes('bed') || n.includes('meja') || n.includes('lemari') || n.includes('sofa')) {
                 return 'Fasilitas kamar';
             }
             return 'Fasilitas umum & lainnya';
@@ -1020,7 +1037,6 @@
             modalMainImg.src = formatMediaUrl(modalActiveImages[modalActiveIndex]);
             modalImgCounter.textContent = `${modalActiveIndex + 1} / ${modalActiveImages.length}`;
 
-            // Highlight thumbnail aktif
             if (modalThumbnailsStrip) {
                 const thumbs = modalThumbnailsStrip.querySelectorAll('.modal-thumb-item');
                 thumbs.forEach((th, i) => {
@@ -1042,23 +1058,18 @@
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
 
-            // Tracking Pixel ViewContent (Hanya fire 1x per produk dalam 24 jam)
             fireUnifiedPixelEvent('ViewContent', { 
                 content_name: p.title || 'Properti',
                 content_category: p.type || 'Properti',
                 content_ids: [p.id]
             }, p.id, 24);
 
-            // Catat View Realtime ke Firestore (Dicegah spam dengan session cache)
             const sessionViewKey = 'viewed_prop_' + id;
             if (!sessionStorage.getItem(sessionViewKey)) {
                 sessionStorage.setItem(sessionViewKey, 'true');
-                updateDoc(doc(db, "properti", id), {
-                    views: increment(1)
-                }).catch(err => console.warn("Gagal update view count:", err));
+                updateDoc(doc(db, "properti", id), { views: increment(1) }).catch(() => {});
             }
 
-            // Sinkronkan ID ke URL tanpa reload
             try {
                 if (window.location.protocol.startsWith('http')) {
                     const newUrl = new URL(window.location.href);
@@ -1067,11 +1078,9 @@
                 }
             } catch(e) {}
 
-            // Galeri Foto Unlimited
             modalActiveImages = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
             modalActiveIndex = 0;
 
-            // Thumbnail Strip
             if (modalThumbnailsStrip) {
                 modalThumbnailsStrip.innerHTML = modalActiveImages.map((imgUrl, i) => `
                     <img src="${formatMediaUrl(imgUrl)}" class="modal-thumb-item w-16 h-12 object-cover rounded-lg cursor-pointer transition shrink-0 opacity-60 border border-slate-200" data-index="${i}" onerror="handleImageError(this, '${imgUrl}', false)">
@@ -1085,14 +1094,12 @@
                 });
             }
 
-            // Isi Data Modal
             modalTitle.textContent = p.title || 'Tanpa Judul';
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
             if (modalBarPrice) modalBarPrice.textContent = p.price || '-';
             modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
 
-            // Tampilkan Harga Coret / Diskon jika ada
             if (p.originalPrice) {
                 modalOriginalPrice.textContent = p.originalPrice;
                 modalOriginalPrice.classList.remove('hidden');
@@ -1112,9 +1119,8 @@
             modalBeds.textContent = p.beds || 0;
             modalBaths.textContent = p.baths || 0;
             modalArea.textContent = p.area || '-';
-            modalDesc.textContent = p.description || 'Hunian nyaman dan strategis di kawasan Bandung Raya dengan aksesibilitas tinggi dan fasilitas lengkap.';
+            modalDesc.textContent = p.description || 'Hunian nyaman dan strategis di kawasan Bandung Raya.';
 
-            // Tampilkan Fasilitas yang Dikelompokkan
             const facilities = Array.isArray(p.facilities) ? p.facilities : [];
             if (facilities.length > 0) {
                 const groups = {};
@@ -1124,14 +1130,7 @@
                     groups[cat].push(fac);
                 });
 
-                const categoryOrder = ['Fasilitas kamar', 'Fasilitas kamar mandi', 'Fasilitas umum & lainnya'];
-                const sortedCategories = Object.keys(groups).sort((a, b) => {
-                    const idxA = categoryOrder.indexOf(a);
-                    const idxB = categoryOrder.indexOf(b);
-                    return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
-                });
-
-                modalFacilitiesContainer.innerHTML = sortedCategories.map(catTitle => `
+                modalFacilitiesContainer.innerHTML = Object.keys(groups).map(catTitle => `
                     <div class="bg-slate-50/70 p-4 sm:p-5 rounded-2xl border border-slate-100">
                         <h4 class="text-sm font-bold text-slate-900 mb-3 capitalize tracking-wide flex items-center gap-2">
                             <span class="w-1.5 h-4 rounded-full bg-blue-600 inline-block"></span>
@@ -1145,7 +1144,7 @@
                                         <div class="w-7 h-7 rounded-lg bg-white border border-slate-200 text-slate-700 flex items-center justify-center shrink-0 text-xs shadow-xs">
                                             <i class="${icon}"></i>
                                         </div>
-                                        <span class="text-xs sm:text-sm font-medium text-slate-800 truncate" title="${fac}">${fac}</span>
+                                        <span class="text-xs sm:text-sm font-medium text-slate-800 truncate">${fac}</span>
                                     </div>
                                 `;
                             }).join('')}
@@ -1158,7 +1157,6 @@
                 modalFacilitiesSection.classList.add('hidden');
             }
 
-            // Atur Status Badge (Dijual, Disewa, Telah Terjual)
             const pType = p.type || 'Dijual';
             modalTypeBadge.textContent = pType;
             if (pType === 'Telah Terjual') {
@@ -1169,16 +1167,6 @@
                 modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600';
             }
 
-            if (modalCustomBadge) {
-                if (p.badge) {
-                    modalCustomBadge.textContent = p.badge;
-                    modalCustomBadge.classList.remove('hidden');
-                } else {
-                    modalCustomBadge.classList.add('hidden');
-                }
-            }
-
-            // Tampilkan Video Google Drive jika ada
             if (p.video) {
                 modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
                 modalVideoSection.classList.remove('hidden');
@@ -1187,7 +1175,6 @@
                 modalVideoSection.classList.add('hidden');
             }
 
-            // WhatsApp Owner Khusus Produk Ini
             const ownerPhone = sanitizeWhatsappNumber(p.waNumber || p.whatsapp);
             const message = encodeURIComponent(
                 `Halo, saya melihat properti ini di website:\n\n*${p.title || 'Properti'}*\nStatus: ${pType}\nHarga: ${p.price || '-'}\nLokasi: ${p.location || 'Bandung'}\n\nApakah unit ini masih tersedia untuk disurvei? Terima kasih!`
@@ -1195,14 +1182,12 @@
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
 
             modalWaBtn.onclick = () => {
-                // Tracking Event Konversi Contact (Cooldown 1 jam per properti agar tidak spam klik berulang)
                 fireUnifiedPixelEvent('Contact', {
                     content_name: p.title || 'Properti',
                     content_ids: [p.id]
                 }, `contact_${p.id}`, 1);
             };
 
-            // Siapkan Tombol Share di dalam Modal
             const shareUrl = getProductShareUrl(p.id);
             const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat foto & spesifikasi:\n${shareUrl}`);
             modalShareWaBtn.href = `https://api.whatsapp.com/send?text=${shareText}`;
@@ -1214,7 +1199,6 @@
 
             updateModalSlide(0);
 
-            // Buka Modal Secara Cepat dan Halus
             propertyModal.classList.remove('hidden');
             propertyModal.classList.add('flex');
             requestAnimationFrame(() => {
@@ -1226,19 +1210,10 @@
         function closePropertyModal() {
             closeLightbox();
             modalContentCard.classList.remove('modal-enter-active');
-            if (document.fullscreenElement) {
-                document.exitFullscreen().catch(() => {});
-            }
-            if (modalVideoIframe) {
-                modalVideoIframe.src = '';
-            }
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+            if (modalVideoIframe) modalVideoIframe.src = '';
 
-            // Kembalikan format video ke lanskap (default) saat ditutup
-            if (!isLandscape && videoAspectBtn) {
-                videoAspectBtn.click();
-            }
-
-            // Kembalikan overlay tombol play
+            if (!isLandscape && videoAspectBtn) videoAspectBtn.click();
             if (videoClickOverlay) {
                 videoClickOverlay.classList.remove('hidden');
                 videoClickOverlay.classList.add('flex');
@@ -1264,30 +1239,7 @@
             if (e.target === propertyModal) closePropertyModal();
         });
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (!lightboxModal.classList.contains('hidden')) {
-                    closeLightbox();
-                    return;
-                }
-                if (!propertyModal.classList.contains('hidden')) {
-                    closePropertyModal();
-                }
-            } else if (e.key === 'ArrowLeft') {
-                if (!lightboxModal.classList.contains('hidden')) {
-                    updateLightboxSlide(modalActiveIndex - 1);
-                }
-            } else if (e.key === 'ArrowRight') {
-                if (!lightboxModal.classList.contains('hidden')) {
-                    updateLightboxSlide(modalActiveIndex + 1);
-                }
-            }
-        });
-
-        // =========================================================================
-        // PENCARIAN CERDAS & AKURAT (Normalisasi Kata Kunci & Deteksi Kategori)
-        // Menangani input seperti "rumah sekitar jatinangor" -> type=Rumah & q=jatinangor
-        // =========================================================================
+        // Search Form Filter
         const searchForm = document.getElementById('search-form');
         const searchInput = document.getElementById('search-input');
 
@@ -1298,55 +1250,13 @@
                 const typeSelect = searchForm.querySelector('select[name="type"]');
                 let selectedType = typeSelect ? typeSelect.value : '';
 
-                if (rawQ) {
-                    const categoryMap = {
-                        'rumah': 'Rumah',
-                        'apartemen': 'Apartemen',
-                        'tanah': 'Tanah',
-                        'kavling': 'Tanah',
-                        'ruko': 'Ruko',
-                        'rukan': 'Ruko',
-                        'villa': 'Villa',
-                        'vila': 'Villa'
-                    };
-
-                    // 1. Ekstraksi otomatis kategori jika belum dipilih di dropdown
-                    if (!selectedType) {
-                        for (const [key, catVal] of Object.entries(categoryMap)) {
-                            const catRegex = new RegExp(`\\b${key}\\b`, 'i');
-                            if (catRegex.test(rawQ)) {
-                                selectedType = catVal;
-                                rawQ = rawQ.replace(catRegex, '').trim();
-                                break;
-                            }
-                        }
-                    } else {
-                        // Bersihkan kata kategori yang sama dari query teks agar pencarian lokasi lebih tajam
-                        for (const key of Object.keys(categoryMap)) {
-                            const catRegex = new RegExp(`\\b${key}\\b`, 'i');
-                            rawQ = rawQ.replace(catRegex, '').trim();
-                        }
-                    }
-
-                    // 2. Pembersihan kata-kata penghubung / stop words pencarian ("sekitar", "dekat", "di", dll)
-                    const stopWords = ['sekitar', 'seputaran', 'dekat', 'di', 'ke', 'daerah', 'wilayah', 'area', 'dan', 'yang', 'murah', 'bagus', 'strategis'];
-                    stopWords.forEach(sw => {
-                        const swRegex = new RegExp(`\\b${sw}\\b`, 'gi');
-                        rawQ = rawQ.replace(swRegex, '').trim();
-                    });
-
-                    rawQ = rawQ.replace(/\s+/g, ' ').trim();
-                }
-
                 const params = new URLSearchParams();
                 if (rawQ) params.set('q', rawQ);
                 if (selectedType) params.set('type', selectedType);
-
                 window.location.href = `katalog.html?${params.toString()}`;
             });
         }
 
-        // Hubungkan kartu properti ke Pop-Up Modal Detail & Sediakan Slider Manual di Kartu
         function renderProperti(data) {
             const grid = document.getElementById('properties-grid');
             if (!grid) return;
@@ -1356,15 +1266,11 @@
                     <div class="col-span-3 text-center py-12">
                         <div class="text-gray-400 mb-3"><i class="fa-regular fa-folder-open text-5xl"></i></div>
                         <p class="text-gray-500">Belum ada properti di Database Anda.</p>
-                        <a href="admin.html" class="text-sm text-blue-600 hover:underline mt-2 inline-block">Buka Panel Admin untuk menambahkan</a>
                     </div>`;
                 return;
             }
 
-            // Urutkan dengan algoritma prioritas berbayar 30 hari + fair random shuffle
             const sortedData = sortPropertiesByPriority(data);
-
-            // Batasi tampilan pilihan di Home menjadi maks 6 listing
             const displayData = sortedData.slice(0, 6);
 
             grid.innerHTML = displayData.map(p => {
@@ -1375,31 +1281,26 @@
 
                 return `
                 <div class="property-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 group cursor-pointer flex flex-col relative" data-id="${p.id}">
-                    
-                    <!-- Slider Gambar Manual di Kartu -->
                     <div class="relative h-64 overflow-hidden card-slider-container select-none" data-current-index="0" data-total-photos="${totalPhotos}">
                         <img src="${formatMediaUrl(photos[0])}" alt="${p.title}" class="card-slider-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="handleImageError(this, '${photos[0] || ''}', false)"/>
                         
-                        <!-- Hanya Label Status Transaksi Saja -->
                         <div class="absolute top-4 left-4 z-10 pointer-events-none">
                             <span class="px-3 py-1 text-xs font-bold rounded-full shadow-sm text-white ${badgeColorClass}">${pType}</span>
                         </div>
 
-                        <!-- Tombol Cepat Share di Kartu -->
-                        <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
+                        <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90 cursor-pointer" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
                             <i class="fa-solid fa-share-nodes text-xs"></i>
                         </button>
 
-                        <!-- Lokasi Badge -->
                         <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-900 flex items-center shadow-sm z-10 pointer-events-none">
                             <i class="fa-solid fa-location-dot mr-1 text-blue-600"></i> ${p.location || 'Bandung'}
                         </div>
 
                         ${totalPhotos > 1 ? `
-                            <button type="button" class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                            <button type="button" class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button type="button" class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                            <button type="button" class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                             <span class="card-counter absolute bottom-4 right-4 bg-black/60 text-white px-2 py-0.5 rounded-md text-[10px] font-bold z-10">
@@ -1408,7 +1309,6 @@
                         ` : ''}
                     </div>
 
-                    <!-- Informasi Properti -->
                     <div class="p-6 flex-1 flex flex-col justify-between">
                         <div>
                             <h3 class="text-xl font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">${p.title || 'Tanpa Judul'}</h3>
@@ -1428,7 +1328,6 @@
                 </div>
             `}).join('');
 
-            // Pasang event klik pop-up modal
             document.querySelectorAll('.property-card').forEach(card => {
                 const id = card.getAttribute('data-id');
                 const prop = loadedProperties.find(item => item.id === id);
@@ -1472,7 +1371,6 @@
             });
         }
 
-        // Sinkronisasi Realtime dari Firestore
         onSnapshot(propertiRef, (snapshot) => {
             const listProperti = [];
             snapshot.forEach((dokumen) => {
@@ -1480,24 +1378,353 @@
             });
             loadedProperties = listProperti;
             renderProperti(loadedProperties);
-
-            // Cek jika halaman dibuka melalui tautan share (?id=...)
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedId = urlParams.get('id');
-                if (sharedId) {
-                    setTimeout(() => {
-                        openPropertyModal(sharedId);
-                    }, 150);
-                }
-            } catch(e) {}
-        }, (error) => {
-            console.error("Kesalahan Firestore:", error);
-            const grid = document.getElementById('properties-grid');
-            if (grid && error.code === 'permission-denied') {
-                grid.innerHTML = '<div class="col-span-3 text-center py-10 text-red-500 font-bold">Akses Ditolak: Periksa Rules Firestore Anda.</div>';
-            }
         });
+
+        // =========================================================================
+        // LOGIKA LIVE CHAT & CHATBOT ENGINE PADA FLOATING WIDGET BERANDA
+        // =========================================================================
+        function playChatTone(type = 'click') {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(380, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(750, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'incoming') {
+                    osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(780, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.25);
+                }
+            } catch (err) {}
+        }
+
+        function formatClock(timestamp) {
+            if (!timestamp) return 'Baru saja';
+            const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        let guestSessionId = localStorage.getItem('lifetime_user_id');
+        let guestName = localStorage.getItem('lifetime_user_name');
+        let guestPhone = localStorage.getItem('lifetime_user_phone');
+
+        if (!guestSessionId) {
+            guestSessionId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
+            localStorage.setItem('lifetime_user_id', guestSessionId);
+        }
+
+        const chatToggleBtn = document.getElementById('chat-toggle-button');
+        const chatCloseBtn = document.getElementById('close-chat-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const chatMessagesBox = document.getElementById('chat-messages-box');
+        const chatSendForm = document.getElementById('chat-send-form');
+        const chatInputText = document.getElementById('chat-input-text');
+        const chatUnreadDot = document.getElementById('chat-unread-dot');
+        const livechatPillLabel = document.getElementById('livechat-pill-label');
+
+        const widgetRegView = document.getElementById('widget-reg-view');
+        const widgetChatView = document.getElementById('widget-chat-view');
+        const widgetRegForm = document.getElementById('widget-reg-form');
+        const widgetRegName = document.getElementById('widget-reg-name');
+        const widgetRegPhone = document.getElementById('widget-reg-phone');
+
+        const widgetCsAvatar = document.getElementById('widget-cs-avatar');
+        const widgetCsName = document.getElementById('widget-cs-name');
+        const widgetCsStatus = document.getElementById('widget-cs-status');
+
+        let isChatOpen = false;
+        let isChatListenerAttached = false;
+
+        function refreshWidgetView() {
+            if (!guestName || !guestPhone) {
+                widgetRegView.classList.remove('hidden');
+                widgetChatView.classList.add('hidden');
+            } else {
+                widgetRegView.classList.add('hidden');
+                widgetChatView.classList.remove('hidden');
+                if (!isChatListenerAttached) {
+                    attachChatFirebaseListeners();
+                }
+            }
+        }
+
+        function toggleChat() {
+            playChatTone('click');
+            isChatOpen = !isChatOpen;
+
+            if (isChatOpen) {
+                refreshWidgetView();
+                chatWindow.classList.remove('hidden');
+                chatWindow.classList.add('flex');
+                chatUnreadDot.classList.add('hidden');
+                if (livechatPillLabel) livechatPillLabel.classList.add('hidden');
+                setTimeout(() => {
+                    chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+                    if (chatInputText) chatInputText.focus();
+                }, 100);
+            } else {
+                chatWindow.classList.add('hidden');
+                chatWindow.classList.remove('flex');
+                if (livechatPillLabel) livechatPillLabel.classList.remove('hidden');
+            }
+        }
+
+        if (chatToggleBtn) chatToggleBtn.addEventListener('click', toggleChat);
+        if (chatCloseBtn) chatCloseBtn.addEventListener('click', toggleChat);
+
+        if (widgetRegForm) {
+            widgetRegForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                guestName = widgetRegName.value.trim();
+                guestPhone = widgetRegPhone.value.trim();
+                if (!guestName || !guestPhone) return;
+
+                localStorage.setItem('lifetime_user_name', guestName);
+                localStorage.setItem('lifetime_user_phone', guestPhone);
+                refreshWidgetView();
+            });
+        }
+
+        function attachChatFirebaseListeners() {
+            isChatListenerAttached = true;
+            const chatSessionRef = doc(db, "live_chats", guestSessionId);
+            const chatMessagesRef = collection(db, "live_chats", guestSessionId, "messages");
+            const chatQuery = query(chatMessagesRef, orderBy("timestamp", "asc"));
+
+            onSnapshot(chatSessionRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.handlerCs) {
+                        widgetCsName.textContent = data.handlerCs.name ? `CS ${data.handlerCs.name}` : 'Customer Support';
+                        widgetCsStatus.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span> CS ${data.handlerCs.name}`;
+                        if (data.handlerCs.avatar) widgetCsAvatar.src = formatMediaUrl(data.handlerCs.avatar);
+                    } else {
+                        widgetCsName.textContent = 'Customer Support';
+                        widgetCsStatus.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-pulse"></span> Asisten Virtual Siap`;
+                    }
+                }
+            });
+
+            let isInitialChatLoad = true;
+
+            onSnapshot(chatQuery, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    const msg = change.doc.data();
+                    const msgId = change.doc.id;
+
+                    if (change.type === "added") {
+                        const isMe = (msg.sender === 'user');
+                        const wrapper = document.createElement('div');
+                        wrapper.id = `widget-msg-${msgId}`;
+                        wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+
+                        let statusTick = '';
+                        if (isMe) {
+                            const isRead = (msg.status === 'read');
+                            statusTick = isRead 
+                                ? `<span class="text-sky-400 font-bold ml-1 text-[11px]">✓✓</span>` 
+                                : `<span class="text-slate-300 ml-1 text-[11px]">✓</span>`;
+                        }
+
+                        if (isMe) {
+                            wrapper.innerHTML = `
+                                <div class="max-w-[85%] rounded-2xl px-3 py-2 bg-blue-600 text-white rounded-tr-none shadow-xs">
+                                    <p class="leading-relaxed break-words whitespace-pre-line">${msg.text}</p>
+                                    <div class="flex items-center justify-end text-[9px] text-blue-100 mt-1">
+                                        <span>${formatClock(msg.timestamp)}</span>
+                                        <span class="widget-tick-icon">${statusTick}</span>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            wrapper.innerHTML = `
+                                <div class="max-w-[90%] rounded-2xl px-3.5 py-2.5 bg-white border border-gray-200 text-gray-800 rounded-tl-none shadow-xs text-xs">
+                                    <span class="text-[9px] font-bold text-blue-600 block mb-0.5">${msg.csName ? `CS ${msg.csName}` : 'Asisten Properti'}</span>
+                                    <div class="leading-relaxed break-words whitespace-pre-line">${msg.text}</div>
+                                    ${msg.htmlContent ? `<div class="mt-2">${msg.htmlContent}</div>` : ''}
+                                    <span class="text-[9px] text-gray-400 block text-right mt-1 font-mono">${formatClock(msg.timestamp)}</span>
+                                </div>
+                            `;
+                        }
+
+                        chatMessagesBox.appendChild(wrapper);
+                        chatMessagesBox.scrollTop = chatMessagesBox.scrollHeight;
+
+                        if (!isInitialChatLoad && msg.sender === 'admin') {
+                            playChatTone('incoming');
+                            if (!isChatOpen) chatUnreadDot.classList.remove('hidden');
+                        }
+                    }
+
+                    if (change.type === "modified") {
+                        const targetEl = document.getElementById(`widget-msg-${msgId}`);
+                        if (targetEl && msg.sender === 'user') {
+                            const tickContainer = targetEl.querySelector('.widget-tick-icon');
+                            if (tickContainer) {
+                                tickContainer.innerHTML = (msg.status === 'read')
+                                    ? `<span class="text-sky-400 font-bold ml-1 text-[11px]">✓✓</span>` 
+                                    : `<span class="text-slate-300 ml-1 text-[11px]">✓</span>`;
+                            }
+                        }
+                    }
+                });
+                isInitialChatLoad = false;
+            });
+
+            async function botWidgetReply(textMessage, customHtml = '') {
+                await addDoc(chatMessagesRef, {
+                    sender: 'admin',
+                    csName: 'Asisten Properti',
+                    text: textMessage,
+                    htmlContent: customHtml,
+                    timestamp: serverTimestamp()
+                });
+            }
+
+            // Pilihan Interaktif Chatbot Beranda
+            window.widgetTriggerBot = async function(optionKey) {
+                playChatTone('click');
+
+                if (optionKey === 'titip') {
+                    // Formulir ringkas: Nama, WhatsApp, Alamat
+                    const formHtml = `
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 mt-1 space-y-2.5 text-[11px]">
+                            <h5 class="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                                <i class="fa-solid fa-file-pen text-blue-600"></i> Formulir Titip Properti
+                            </h5>
+                            <div class="space-y-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Nama Pemilik</label>
+                                    <input type="text" id="w-prop-owner" value="${guestName || ''}" placeholder="Nama lengkap Anda" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Nomor WhatsApp</label>
+                                    <input type="tel" id="w-prop-wa" value="${guestPhone || ''}" placeholder="081234567890" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Alamat / Lokasi Properti</label>
+                                    <textarea id="w-prop-location" rows="2" placeholder="Contoh: Jl. Dago Atas No. 12, Bandung Utara" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium"></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Box Arahan Kelengkapan via WhatsApp -->
+                            <div class="p-2.5 bg-blue-50/80 border border-blue-100 rounded-xl space-y-1 text-slate-700">
+                                <span class="font-bold text-blue-900 block text-[10px] flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-info text-blue-600"></i> Arahan Kirim Dokumen:
+                                </span>
+                                <p class="text-[10px] leading-relaxed">
+                                    Untuk <strong>spesifikasi lengkap, foto unit (bebas), 1 video tur, harga penawaran, dan bukti surat legalitas</strong> dapat langsung dilampirkan melalui chat WhatsApp resmi kami.
+                                </p>
+                            </div>
+
+                            <button type="button" onclick="window.submitWidgetListingWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer text-xs shadow-md shadow-emerald-600/30">
+                                <i class="fa-brands fa-whatsapp text-base"></i> <span>Kirim ke WhatsApp Agen</span>
+                            </button>
+                        </div>
+                    `;
+                    await botWidgetReply("Silakan isi data ringkas Anda berikut ini untuk kami pasarkan langsung:", formHtml);
+                } 
+                else if (optionKey === 'fasilitas') {
+                    const fasHtml = `
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-3.5 mt-1 space-y-2 text-[11px]">
+                            <div class="flex items-baseline gap-2 border-b border-amber-200 pb-1.5">
+                                <span class="font-extrabold text-amber-950 text-xs sm:text-sm">Rp 199.000 / 30 hari</span>
+                                <span class="text-[10px] text-rose-500 line-through font-bold">Rp 499.000</span>
+                            </div>
+                            <ul class="space-y-1 text-slate-800 font-medium">
+                                <li>✅ <strong>Prioritas website</strong> selama 30 hari</li>
+                                <li>✅ <strong>Facebook & Instagram Ads</strong></li>
+                                <li>✅ Total <strong>8 hari iklan weekend</strong></li>
+                                <li>✅ <strong>Rapor hasil iklan</strong> setiap Senin</li>
+                                <li>✅ <strong>Tayang sampai terjual</strong></li>
+                                <li>✅ <strong>Tanpa komisi penjualan</strong> (0%)</li>
+                                <li>✅ <strong>Tanpa ada biaya iklan tambahan</strong></li>
+                                <li>✅ <strong>Mendatangkan ribuan pengunjung potensial</strong> asal Bandung Raya setiap akhir pekan (Sabtu–Minggu) langsung ke listing Anda</li>
+                            </ul>
+                            <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition text-[11px] mt-1 cursor-pointer shadow-xs">
+                                Mulai Titip Sekarang
+                            </button>
+                        </div>
+                    `;
+                    await botWidgetReply("Berikut keuntungan Paket Pemasaran Rp199rb:", fasHtml);
+                } 
+                else if (optionKey === 'cs') {
+                    await botWidgetReply("Pertanyaan Anda telah kami teruskan ke petugas CS kami. Mohon tunggu sebentar, CS kami akan segera merespons obrolan ini.");
+                    await setDoc(chatSessionRef, {
+                        needsHuman: true,
+                        unreadByAdmin: increment(1),
+                        lastMessage: "Pengunjung meminta bantuan CS Admin Live Chat",
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
+                }
+            };
+
+            // Kirim Form Listing Ringkas ke WhatsApp 0851-7975-6031
+            window.submitWidgetListingWA = function() {
+                const ownerName = document.getElementById('w-prop-owner')?.value.trim() || (guestName || 'Pemilik');
+                const ownerWa = document.getElementById('w-prop-wa')?.value.trim() || (guestPhone || '-');
+                const propLoc = document.getElementById('w-prop-location')?.value.trim() || 'Bandung';
+
+                const waMessage = `Halo Agen Properti Bandung,\nSaya berminat untuk *Titip Jual Properti Paket Rp199rb (0% Komisi)*.\n\nBerikut data awal listing saya:\n• Nama Pemilik: ${ownerName}\n• No. WhatsApp: ${ownerWa}\n• Alamat / Lokasi: ${propLoc}\n\nBerikut saya lampirkan foto-foto unit, 1 video tur, rincian spesifikasi, harga penawaran, serta bukti surat legalitasnya di pesan ini. Mohon dibantu verifikasi. Terima kasih!`;
+
+                const waUrl = `https://wa.me/6285179756031?text=${encodeURIComponent(waMessage)}`;
+                window.open(waUrl, '_blank');
+            };
+
+            if (chatSendForm) {
+                chatSendForm.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const rawText = chatInputText.value.trim();
+                    if (!rawText) return;
+
+                    playChatTone('click');
+                    chatInputText.value = '';
+
+                    try {
+                        await setDoc(chatSessionRef, {
+                            sessionId: guestSessionId,
+                            userName: guestName || 'Pengunjung',
+                            userPhone: guestPhone || '-',
+                            lastMessage: rawText,
+                            updatedAt: serverTimestamp(),
+                            unreadByAdmin: increment(1),
+                            status: 'active'
+                        }, { merge: true });
+
+                        await addDoc(chatMessagesRef, {
+                            sender: 'user',
+                            text: rawText,
+                            status: 'sent',
+                            timestamp: serverTimestamp()
+                        });
+
+                        const lower = rawText.toLowerCase();
+                        if (lower === '1' || lower.includes('titip') || lower.includes('jual')) {
+                            setTimeout(() => window.widgetTriggerBot('titip'), 500);
+                        } else if (lower === '2' || lower.includes('fasilitas') || lower.includes('paket') || lower.includes('199')) {
+                            setTimeout(() => window.widgetTriggerBot('fasilitas'), 500);
+                        } else if (lower === '3' || lower.includes('cs') || lower.includes('admin')) {
+                            setTimeout(() => window.widgetTriggerBot('cs'), 500);
+                        }
+
+                    } catch (err) {
+                        console.error("Gagal mengirim pesan chat:", err);
+                    }
+                };
+            }
+        }
     </script>
 </body>
 </html>
