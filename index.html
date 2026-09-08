@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Jual Beli Properti Bandung</title>
     
     <!-- Favicon Rumah Biru -->
@@ -13,24 +14,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Synchronous Global Helper Script to prevent ReferenceError during image load -->
     <script>
+        function extractDriveId(input) {
+            if (!input) return '';
+            const str = String(input).trim();
+            if (!str.includes('/') && !str.includes('http')) return str;
+            const match = str.match(/\/d\/([a-zA-Z0-9_-]+)/) || str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : str;
+        }
+
         function formatMediaUrl(input) {
             if (!input) return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-            if (input.startsWith('http://') || input.startsWith('https://')) return input;
-            return 'https://lh3.googleusercontent.com/d/' + input;
+            const driveId = extractDriveId(input);
+            if ((input.startsWith('http://') || input.startsWith('https://')) && !input.includes('drive.google.com') && !input.includes('googleusercontent.com')) {
+                return input;
+            }
+            return 'https://drive.google.com/thumbnail?id=' + driveId + '&sz=w1200';
         }
 
         function handleImageError(img, input, isAdmin) {
             if (!img) return;
-            if (!img.dataset.triedBackup && input && !input.startsWith('http')) {
-                img.dataset.triedBackup = 'true';
-                img.src = 'https://drive.google.com/thumbnail?id=' + input + '&sz=w800';
+            const driveId = extractDriveId(input);
+            const step = Number(img.dataset.tryStep || 0);
+
+            if (step === 0 && driveId) {
+                img.dataset.tryStep = '1';
+                img.referrerPolicy = 'no-referrer';
+                img.src = 'https://lh3.googleusercontent.com/d/' + driveId;
+            } else if (step === 1 && driveId) {
+                img.dataset.tryStep = '2';
+                img.referrerPolicy = 'no-referrer';
+                img.src = 'https://drive.google.com/uc?export=view&id=' + driveId;
             } else {
                 img.src = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
             }
         }
 
+        window.extractDriveId = extractDriveId;
         window.formatMediaUrl = formatMediaUrl;
         window.handleImageError = handleImageError;
     </script>
@@ -68,13 +88,12 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 min-h-screen relative">
 
-    <!-- Toast Notifikasi Share -->
     <div id="toast-share" class="fixed bottom-6 right-6 z-[200] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
         <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
         <span id="toast-share-msg">Tautan berhasil disalin!</span>
     </div>
 
-    <!-- Header / Navigasi Utama (Sticky z-50) -->
+    <!-- Header Navigasi -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
@@ -86,7 +105,6 @@
                     </div>
                 </a>
                 
-                <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-7">
                     <a href="index.html" class="text-blue-600 font-semibold hover:text-blue-800 transition">Beranda</a>
                     <a href="katalog.html" class="text-gray-600 font-medium hover:text-blue-600 transition">Katalog</a>
@@ -95,15 +113,11 @@
                     <a href="titip-properti.html" class="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-plus-circle text-xs"></i> Titip Properti
                     </a>
-                    <a href="livechat.html" class="text-blue-600 font-bold hover:text-blue-800 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-comments"></i> Live Chat
-                    </a>
                     <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg flex items-center gap-2">
                         <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Agen
                     </a>
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
                     <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -112,14 +126,12 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Panel -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-40">
             <a href="index.html" class="block px-3 py-2 text-base font-medium text-blue-600 bg-blue-50 rounded-md">Beranda</a>
             <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Katalog Semua Properti</a>
             <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli (Dijual)</a>
             <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Sewa (Disewa)</a>
             <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-emerald-600 hover:bg-emerald-50 rounded-md">Titip Properti (Iklan)</a>
-            <a href="livechat.html" class="block px-3 py-2 text-base font-bold text-blue-600 hover:bg-blue-50 rounded-md">Live Chat Online</a>
             <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-4 bg-blue-600 text-white px-3 py-3 rounded-md font-medium">
                 Hubungi Agen via WhatsApp
             </a>
@@ -149,23 +161,23 @@
                 Temukan pilihan rumah, tanah, ruko, apartemen, dan properti lainnya di Bandung & sekitarnya, untuk hunian maupun investasi.
             </p>
 
-            <!-- Search Box -->
+            <!-- Search Box dengan Pilihan Default 'Semua Properti' -->
             <div class="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-2 md:p-4">
-                <form id="search-form" action="katalog.html" method="GET" class="flex flex-col md:flex-row gap-3">
+                <form id="search-form" class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1 flex items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
                         <i class="fa-solid fa-location-dot text-gray-400 mr-3"></i>
-                        <input type="text" name="q" placeholder="Ketik lokasi atau kata kunci (Dago, Tanjungsari, Buah Batu)..." class="w-full bg-transparent border-none focus:outline-none text-gray-700" id="search-input" />
+                        <input type="text" name="q" placeholder="Ketik bebas: rumah 200jta, tanah 100jt dago, properti 10jtaa..." class="w-full bg-transparent border-none focus:outline-none text-gray-700 text-sm md:text-base" id="search-input" />
                     </div>
                     <div class="flex gap-3">
-                        <select name="type" class="bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 md:w-40 outline-none">
-                            <option value="">Tipe Properti</option>
+                        <select name="type" id="search-type" class="bg-gray-50 border border-gray-100 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-3 md:w-44 outline-none font-medium cursor-pointer">
+                            <option value="">Semua Properti</option>
                             <option value="Rumah">Rumah</option>
                             <option value="Apartemen">Apartemen</option>
                             <option value="Tanah">Tanah</option>
                             <option value="Ruko">Ruko</option>
                             <option value="Villa">Villa</option>
                         </select>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 flex items-center justify-center font-semibold transition">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-6 py-3 flex items-center justify-center font-semibold transition shadow-md">
                             <i class="fa-solid fa-magnifying-glass md:mr-2"></i>
                             <span class="hidden md:inline">Cari</span>
                         </button>
@@ -173,10 +185,8 @@
                 </form>
             </div>
 
-            <!-- CTA Titip Properti Bawah Pencarian -->
             <div class="mt-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-6 md:p-8 max-w-3xl w-full text-center shadow-2xl relative overflow-hidden group">
                 <div class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                
                 <div class="relative z-10">
                     <h3 class="text-xl md:text-2xl font-bold text-white mb-3 drop-shadow-md">Punya properti yang ingin dijual?</h3>
                     <p class="text-sm md:text-base text-blue-50 mb-6 drop-shadow leading-relaxed max-w-2xl mx-auto">
@@ -201,7 +211,6 @@
             </a>
         </div>
 
-        <!-- Property Grid Container -->
         <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="col-span-3 text-center py-10 text-gray-500">
                 <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-500"></i>
@@ -216,7 +225,7 @@
         </div>
     </div>
 
-    <!-- MODAL POP-UP DETAIL PROPERTI INTERAKTIF -->
+    <!-- MODAL POP-UP DETAIL PROPERTI -->
     <div id="property-modal" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
         <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-gray-100" id="property-modal-card">
             
@@ -224,9 +233,8 @@
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
 
-            <!-- Slider Gambar Manual di dalam Modal -->
             <div class="relative w-full h-72 sm:h-96 md:h-[420px] bg-slate-900 shrink-0 overflow-hidden select-none group">
-                <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300 cursor-zoom-in hover:scale-[1.02]" title="Klik untuk melihat foto ukuran penuh">
+                <img id="modal-main-img" src="" alt="Foto Properti" class="w-full h-full object-cover transition-all duration-300 cursor-zoom-in hover:scale-[1.02]">
                 
                 <button id="modal-slide-prev" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition backdrop-blur-sm shadow-md z-10">
                     <i class="fa-solid fa-chevron-left"></i>
@@ -248,7 +256,6 @@
                 </div>
             </div>
 
-            <!-- Thumbnail Foto Strip -->
             <div id="modal-thumbnails-strip" class="flex gap-2 p-3 bg-slate-100 overflow-x-auto border-b border-gray-100 shrink-0"></div>
 
             <div class="p-6 sm:p-8 space-y-6">
@@ -301,32 +308,6 @@
                     </div>
                 </div>
 
-                <div id="modal-video-section" class="hidden space-y-3 pt-4 border-t border-gray-100">
-                    <div class="flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
-                            <i class="fa-solid fa-circle-play text-red-600"></i> Video Tur Properti
-                        </h3>
-                        <div class="flex items-center gap-2">
-                            <button type="button" id="video-aspect-btn" class="px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-mobile-screen"></i> <span id="video-aspect-text">Potret</span>
-                            </button>
-                            <button type="button" id="video-fullscreen-btn" class="px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 shadow-sm transition active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-expand text-xs"></i> <span class="hidden sm:inline">Layar Penuh</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="modal-video-wrapper" class="relative w-full rounded-2xl overflow-hidden bg-slate-950 shadow-md border border-slate-200 flex items-center justify-center transition-all duration-500 aspect-video max-h-[75vh] mx-auto">
-                        <div id="video-click-overlay" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/40 hover:bg-slate-900/20 cursor-pointer group backdrop-blur-[2px] transition-all duration-300">
-                            <div class="w-16 h-16 bg-red-600 text-white rounded-full flex items-center justify-center text-2xl shadow-xl shadow-red-600/40 group-hover:scale-110 transition-transform mb-3">
-                                <i class="fa-solid fa-expand ml-1"></i>
-                            </div>
-                            <span class="text-white text-[11px] font-bold bg-black/60 px-3 py-1.5 rounded-full tracking-wide">Ketuk untuk Layar Penuh</span>
-                        </div>
-                        <iframe id="modal-video-iframe" class="w-full h-full border-0 absolute inset-0 z-0" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" allowfullscreen></iframe>
-                    </div>
-                </div>
-
                 <div id="modal-facilities-section" class="hidden space-y-5 pt-2 border-t border-gray-100">
                     <h3 class="text-base font-extrabold text-gray-900 flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-blue-600"></i> Fasilitas & Keunggulan
@@ -368,9 +349,9 @@
         </div>
     </div>
 
-    <!-- MODAL LIGHTBOX FULLSCREEN FOTO PROPERTI -->
+    <!-- MODAL LIGHTBOX FULLSCREEN FOTO -->
     <div id="lightbox-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6 select-none">
-        <button id="lightbox-close-btn" class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg text-xl" title="Tutup Foto Penuh">
+        <button id="lightbox-close-btn" class="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/25 text-white w-12 h-12 rounded-full flex items-center justify-center transition shadow-lg text-xl">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
@@ -391,40 +372,7 @@
         </div>
     </div>
 
-    <div class="bg-blue-600 py-16 text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Mengapa Memilih Kami?</h2>
-                <p class="text-blue-100 max-w-2xl mx-auto">Kami berkomitmen memberikan layanan terbaik untuk membantu Anda memasarkan dan menjual properti di wilayah Bandung dan sekitarnya.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                <a href="titip-properti.html" class="block bg-blue-700/50 hover:bg-blue-700 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30 transition transform hover:-translate-y-1">
-                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fa-solid fa-house-chimney-user text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">TITIP PROPERTI ANDA</h3>
-                    <p class="text-blue-100 text-sm leading-relaxed">Percayakan penjualan properti Anda kepada kami. Kami bantu memasarkan properti kepada calon pembeli yang potensial.</p>
-                </a>
-                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
-                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fa-solid fa-bullhorn text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">PEMASARAN LEBIH LUAS</h3>
-                    <p class="text-blue-100 text-sm leading-relaxed">Properti Anda dipromosikan melalui iklan dan strategi pemasaran yang tepat agar lebih mudah ditemukan.</p>
-                </div>
-                <div class="bg-blue-700/50 p-8 rounded-2xl backdrop-blur-sm border border-blue-500/30">
-                    <div class="bg-white/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <i class="fa-solid fa-handshake text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3">KAMI BANTU HINGGA TERJUAL</h3>
-                    <p class="text-blue-100 text-sm leading-relaxed">Dari pemasaran, pencarian pembeli, negosiasi, hingga proses transaksi, kami siap membantu Anda.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer with Admin Trigger -->
+    <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
@@ -437,7 +385,7 @@
                         </div>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed mt-4">
-                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya. Kami menjadikan proses pencarian rumah lebih mudah dan aman.
+                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya.
                     </p>
                 </div>
 
@@ -448,7 +396,6 @@
                         <li><a href="titip-properti.html" class="text-emerald-400 font-semibold hover:text-emerald-300 transition">Titip Properti</a></li>
                         <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
                         <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
-                        <li><a href="livechat.html" class="text-blue-400 hover:text-blue-300 transition">Live Chat Online</a></li>
                         <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
                     </ul>
                 </div>
@@ -493,16 +440,14 @@
         </div>
     </footer>
 
-    <!-- WIDGET LIVE CHAT MELAYANG (z-40) -->
+    <!-- WIDGET LIVE CHAT MELAYANG (z-40 & Transparan Elegan) -->
     <div id="livechat-widget" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end">
-        <!-- Pop-Up Jendela Obrolan (Ukuran sedang di HP: lebar max 340px, tinggi 430px) -->
-        <div id="chat-window" class="hidden flex-col w-[86vw] max-w-[340px] sm:w-84 md:w-96 h-[430px] sm:h-[480px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mb-2.5 sm:mb-3.5 transition-all duration-300">
+        <div id="chat-window" class="hidden flex-col w-[86vw] max-w-[340px] sm:w-84 md:w-96 h-[430px] sm:h-[480px] bg-white/85 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl border border-white/60 overflow-hidden mb-2.5 sm:mb-3.5 transition-all duration-300">
             
-            <!-- Header Chat -->
-            <div class="bg-blue-600 text-white p-3 sm:p-3.5 flex items-center justify-between shrink-0">
+            <div class="bg-blue-600/95 backdrop-blur-md text-white p-3 sm:p-3.5 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <img id="widget-cs-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar CS" onerror="handleImageError(this)" class="w-8 h-8 rounded-full object-cover border-2 border-white/60">
+                        <img id="widget-cs-avatar" src="https://lh3.googleusercontent.com/d/1XyZ1eHcFZsmaJl5aaJM88y5-ue1GQbpx" alt="Avatar CS" onerror="handleImageError(this, '1XyZ1eHcFZsmaJl5aaJM88y5-ue1GQbpx', false)" class="w-8 h-8 rounded-full object-cover border-2 border-white/60">
                         <span class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 border border-white rounded-full"></span>
                     </div>
                     <div>
@@ -513,18 +458,14 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
-                    <a href="livechat.html" target="_blank" class="text-white/80 hover:text-white w-6 h-6 rounded-full flex items-center justify-center transition" title="Buka Halaman Penuh">
-                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
-                    </a>
                     <button type="button" id="close-chat-btn" class="text-white/80 hover:text-white w-6 h-6 rounded-full flex items-center justify-center transition cursor-pointer">
                         <i class="fa-solid fa-xmark text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- View 1: Form Registrasi Tamu Baru -->
-            <div id="widget-reg-view" class="hidden flex-1 p-4 sm:p-5 flex flex-col justify-center bg-slate-50">
-                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg mx-auto mb-2.5">
+            <div id="widget-reg-view" class="hidden flex-1 p-4 sm:p-5 flex flex-col justify-center bg-transparent">
+                <div class="w-10 h-10 rounded-xl bg-blue-100/70 text-blue-600 flex items-center justify-center text-lg mx-auto mb-2.5 shadow-xs">
                     <i class="fa-solid fa-comments"></i>
                 </div>
                 <h4 class="font-bold text-xs text-center text-gray-900">Mulai Percakapan</h4>
@@ -532,11 +473,11 @@
                 <form id="widget-reg-form" class="space-y-2.5">
                     <div>
                         <label class="block text-[9.5px] font-bold text-gray-600 uppercase mb-0.5">Nama Anda</label>
-                        <input type="text" id="widget-reg-name" required placeholder="Contoh: Budi" class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                        <input type="text" id="widget-reg-name" required placeholder="Contoh: Budi" class="w-full bg-white/90 border border-gray-200/80 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none shadow-xs">
                     </div>
                     <div>
                         <label class="block text-[9.5px] font-bold text-gray-600 uppercase mb-0.5">No. WhatsApp</label>
-                        <input type="tel" id="widget-reg-phone" required placeholder="Contoh: 0812..." class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none">
+                        <input type="tel" id="widget-reg-phone" required placeholder="Contoh: 0812..." class="w-full bg-white/90 border border-gray-200/80 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none shadow-xs">
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs transition shadow-sm shadow-blue-600/30 mt-1 cursor-pointer">
                         Mulai Chat
@@ -544,15 +485,11 @@
                 </form>
             </div>
 
-            <!-- View 2: Stream Percakapan & Alur Chatbot Interaktif -->
-            <div id="widget-chat-view" class="flex-1 flex flex-col min-h-0 bg-slate-50">
+            <div id="widget-chat-view" class="flex-1 flex flex-col min-h-0 bg-transparent">
                 <div id="chat-messages-box" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs">
-                    <!-- Sambutan Default Bot & 3 Tombol Menu Berikon -->
                     <div class="flex items-start gap-1.5 max-w-[95%]">
-                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                            <i class="fa-solid fa-robot text-[10px]"></i>
-                        </div>
-                        <div class="bg-white border border-gray-200 text-gray-800 p-3 rounded-2xl rounded-tl-none shadow-xs space-y-2">
+                        <img src="https://lh3.googleusercontent.com/d/1XyZ1eHcFZsmaJl5aaJM88y5-ue1GQbpx" alt="Asisten Virtual" onerror="handleImageError(this, '1XyZ1eHcFZsmaJl5aaJM88y5-ue1GQbpx', false)" class="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5 border border-blue-200 shadow-xs">
+                        <div class="bg-white/80 backdrop-blur-md border border-white/60 text-gray-800 p-3 rounded-2xl rounded-tl-none shadow-xs space-y-2">
                             <span class="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">Asisten Properti Bandung</span>
                             <p class="leading-relaxed text-[11px]">
                                 Halo! Selamat datang di <strong>Properti Bandung</strong>. 🏡<br>
@@ -560,7 +497,7 @@
                                 Silakan pilih info yang Anda butuhkan:
                             </p>
                             <div class="flex flex-col gap-1.5 pt-0.5">
-                                <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full text-left p-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-900 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full text-left p-2 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 hover:from-blue-100 hover:to-indigo-100 border border-blue-200/80 text-blue-900 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
                                     <div class="flex items-center gap-1.5">
                                         <div class="w-5 h-5 rounded bg-blue-600 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-file-circle-plus"></i>
@@ -570,7 +507,7 @@
                                     <i class="fa-solid fa-chevron-right text-blue-400 text-[9px]"></i>
                                 </button>
 
-                                <button type="button" onclick="window.widgetTriggerBot('fasilitas')" class="w-full text-left p-2 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200 text-amber-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                <button type="button" onclick="window.widgetTriggerBot('fasilitas')" class="w-full text-left p-2 bg-gradient-to-r from-amber-50/80 to-orange-50/80 hover:from-amber-100 hover:to-orange-100 border border-amber-200/80 text-amber-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
                                     <div class="flex items-center gap-1.5">
                                         <div class="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-gem"></i>
@@ -580,7 +517,7 @@
                                     <i class="fa-solid fa-chevron-right text-amber-400 text-[9px]"></i>
                                 </button>
 
-                                <button type="button" onclick="window.widgetTriggerBot('cs')" class="w-full text-left p-2 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 text-emerald-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                <button type="button" onclick="window.widgetTriggerBot('cs')" class="w-full text-left p-2 bg-gradient-to-r from-emerald-50/80 to-teal-50/80 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200/80 text-emerald-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
                                     <div class="flex items-center gap-1.5">
                                         <div class="w-5 h-5 rounded bg-emerald-600 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-headset"></i>
@@ -594,9 +531,8 @@
                     </div>
                 </div>
 
-                <!-- Form Kirim Pesan -->
-                <form id="chat-send-form" class="p-2.5 bg-white border-t border-gray-100 flex items-center gap-1.5 shrink-0">
-                    <input type="text" id="chat-input-text" placeholder="Ketik pesan Anda..." autocomplete="off" required class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-gray-800">
+                <form id="chat-send-form" class="p-2.5 bg-white/75 backdrop-blur-md border-t border-white/50 flex items-center gap-1.5 shrink-0">
+                    <input type="text" id="chat-input-text" placeholder="Ketik pesan Anda..." autocomplete="off" required class="flex-1 bg-white/80 border border-gray-200/80 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-gray-800">
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition shadow-xs active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-paper-plane text-[10px]"></i>
                     </button>
@@ -604,15 +540,12 @@
             </div>
         </div>
 
-        <!-- Wadah Tombol Balon & Teks Live Chat di Atasnya -->
         <div class="flex flex-col items-center gap-1.5">
-            <!-- Label Teks Melayang 'Live Chat' -->
             <div id="livechat-pill-label" class="bg-slate-900/90 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-lg border border-white/20 flex items-center gap-1.5 animate-bounce select-none pointer-events-none transition-all duration-300">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
                 <span>Live Chat</span>
             </div>
 
-            <!-- Tombol Pemicu Bulat Melayang -->
             <button type="button" id="chat-toggle-button" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative group cursor-pointer" title="Live Chat Bantuan">
                 <i class="fa-solid fa-comments text-xl sm:text-2xl group-hover:scale-110 transition-transform"></i>
                 <span id="chat-unread-dot" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white"></span>
@@ -620,7 +553,7 @@
         </div>
     </div>
 
-    <!-- Integrasi Firebase Realtime untuk Tampilan Publik & Live Chat -->
+    <!-- Firebase SDK & Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -649,121 +582,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const propertiRef = collection(db, "properti");
-
-        // Anti-spam Tracking Pixel Terpusat
-        function shouldFireTrackingEvent(eventName, uniqueKey = 'global', cooldownHours = 24) {
-            const storageKey = `anti_spam_track_${eventName}_${uniqueKey}`;
-            const now = Date.now();
-            const cooldownMs = cooldownHours * 60 * 60 * 1000;
-
-            try {
-                const storedTime = localStorage.getItem(storageKey);
-                if (storedTime && (now - Number(storedTime)) < cooldownMs) return false;
-                const sessionKey = `sess_track_${eventName}_${uniqueKey}`;
-                if (sessionStorage.getItem(sessionKey)) return false;
-                localStorage.setItem(storageKey, String(now));
-                sessionStorage.setItem(sessionKey, 'fired');
-                return true;
-            } catch (e) {
-                return true;
-            }
-        }
-
-        function fireUnifiedPixelEvent(eventName, params = {}, uniqueKey = 'global', cooldownHours = 24) {
-            if (!shouldFireTrackingEvent(eventName, uniqueKey, cooldownHours)) return;
-            if (window.fbq) { try { window.fbq('track', eventName, params); } catch (e) {} }
-            if (window.ttq) {
-                try {
-                    if (eventName === 'PageView') window.ttq.page();
-                    else window.ttq.track(eventName, params);
-                } catch (e) {}
-            }
-            if (window.gtag) { try { window.gtag('event', eventName, params); } catch (e) {} }
-            else if (window.dataLayer) { try { window.dataLayer.push({ event: eventName, ...params }); } catch (e) {} }
-        }
-
-        const pixelsDocRef = doc(db, "pengaturan", "pixels");
-
-        function parsePixelList(input) {
-            if (!input) return [];
-            if (Array.isArray(input)) return input.map(s => String(s).trim()).filter(Boolean);
-            return String(input).split(/[\n,;\r]+/).map(s => s.trim()).filter(Boolean);
-        }
-
-        function initTrackingPixels(metaIds = [], tiktokIds = [], gtmIds = []) {
-            if (metaIds.length > 0) {
-                if (!window.fbq) {
-                    (function(f,b,e,v,n,t,s){
-                        if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                        n.queue=[];t=b.createElement(e);t.async=!0;
-                        t.src=v;s=b.getElementsByTagName(e)[0];
-                        s.parentNode.insertBefore(t,s);
-                    })(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-                }
-                metaIds.forEach(id => { window.fbq('init', id); });
-            }
-
-            if (tiktokIds.length > 0) {
-                if (!window.ttq) {
-                    (function (w, d, t) {
-                        w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"];
-                        ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
-                        for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-                        ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
-                        ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};var a=document.createElement("script");a.type="text/javascript";a.async=!0;a.src=r+"?sdkid="+e+"&lib="+t;var c=document.getElementsByTagName("script")[0];c.parentNode.insertBefore(a,c)};
-                    })(window, document, 'ttq');
-                }
-                tiktokIds.forEach(id => { window.ttq.load(id); });
-            }
-
-            if (gtmIds.length > 0) {
-                window.dataLayer = window.dataLayer || [];
-                gtmIds.forEach(gtmId => {
-                    if (!document.getElementById(`gtm-script-${gtmId}`)) {
-                        const script = document.createElement('script');
-                        script.id = `gtm-script-${gtmId}`;
-                        script.async = true;
-                        script.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}`;
-                        document.head.appendChild(script);
-                    }
-                });
-            }
-
-            fireUnifiedPixelEvent('PageView', {}, 'homepage', 24);
-        }
-
-        onSnapshot(pixelsDocRef, (snap) => {
-            if (snap.exists()) {
-                const data = snap.data();
-                const metaList = parsePixelList(data.metaPixelIds || data.metaPixelId);
-                const tiktokList = parsePixelList(data.tiktokPixelIds || data.tiktokPixelId);
-                const gtmList = parsePixelList(data.gtmPixelIds || data.gtmPixelId);
-                initTrackingPixels(metaList, tiktokList, gtmList);
-            }
-        });
-
-        // Pelacakan Kunjungan Harian
-        try {
-            const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
-            const sessionVisitKey = 'visited_home_' + todayKey;
-            if (!sessionStorage.getItem(sessionVisitKey)) {
-                sessionStorage.setItem(sessionVisitKey, 'true');
-                const visitDocRef = doc(db, "kunjungan_harian", todayKey);
-                setDoc(visitDocRef, {
-                    date: todayKey,
-                    views: increment(1),
-                    lastVisit: serverTimestamp()
-                }, { merge: true }).catch(() => {});
-
-                const statTotalRef = doc(db, "pengaturan", "statistik");
-                setDoc(statTotalRef, {
-                    totalHomeViews: increment(1),
-                    lastUpdated: serverTimestamp()
-                }, { merge: true }).catch(() => {});
-            }
-        } catch(e) {}
 
         let loadedProperties = [];
         let modalActiveImages = [];
@@ -858,7 +676,6 @@
             return cleaned || '6285179756031';
         }
 
-        // Modal Pop-Up Element Binding
         const propertyModal = document.getElementById('property-modal');
         const modalContentCard = document.getElementById('property-modal-card');
         const modalCloseBtn = document.getElementById('modal-close-btn');
@@ -884,12 +701,6 @@
         const modalShareWaBtn = document.getElementById('modal-share-wa-btn');
         const modalFacilitiesSection = document.getElementById('modal-facilities-section');
         const modalFacilitiesContainer = document.getElementById('modal-facilities-container');
-        const modalVideoSection = document.getElementById('modal-video-section');
-        const modalVideoIframe = document.getElementById('modal-video-iframe');
-        const modalVideoWrapper = document.getElementById('modal-video-wrapper');
-        const videoFullscreenBtn = document.getElementById('video-fullscreen-btn');
-        const videoAspectBtn = document.getElementById('video-aspect-btn');
-        const videoClickOverlay = document.getElementById('video-click-overlay');
         const modalExpandImgBtn = document.getElementById('modal-expand-img-btn');
 
         const lightboxModal = document.getElementById('lightbox-modal');
@@ -940,55 +751,6 @@
         lightboxModal.addEventListener('click', (e) => {
             if (e.target === lightboxModal) closeLightbox();
         });
-
-        let isLandscape = true;
-        if (videoAspectBtn && modalVideoWrapper) {
-            videoAspectBtn.addEventListener('click', () => {
-                isLandscape = !isLandscape;
-                if (isLandscape) {
-                    modalVideoWrapper.classList.remove('aspect-[9/16]', 'max-w-sm');
-                    modalVideoWrapper.classList.add('aspect-video', 'w-full');
-                    videoAspectBtn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> <span id="video-aspect-text">Potret</span>';
-                } else {
-                    modalVideoWrapper.classList.remove('aspect-video', 'w-full');
-                    modalVideoWrapper.classList.add('aspect-[9/16]', 'max-w-sm');
-                    videoAspectBtn.innerHTML = '<i class="fa-solid fa-desktop"></i> <span id="video-aspect-text">Lanskap</span>';
-                }
-            });
-        }
-
-        if (videoFullscreenBtn && modalVideoWrapper) {
-            videoFullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-                    if (modalVideoWrapper.requestFullscreen) modalVideoWrapper.requestFullscreen().catch(() => {});
-                    else if (modalVideoWrapper.webkitRequestFullscreen) modalVideoWrapper.webkitRequestFullscreen();
-                } else {
-                    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-                }
-            });
-        }
-
-        if (videoClickOverlay && modalVideoWrapper && modalVideoIframe) {
-            videoClickOverlay.addEventListener('click', () => {
-                videoClickOverlay.classList.add('hidden');
-                videoClickOverlay.classList.remove('flex');
-                if (window.innerWidth < 768) {
-                    if (modalVideoWrapper.requestFullscreen) modalVideoWrapper.requestFullscreen().catch(() => {});
-                    else if (modalVideoWrapper.webkitRequestFullscreen) modalVideoWrapper.webkitRequestFullscreen();
-                }
-            });
-        }
-
-        function formatDriveVideoEmbedUrl(input) {
-            if (!input) return '';
-            let val = input.trim();
-            if (val.includes('drive.google.com') && val.includes('/preview')) return val;
-            let id = val;
-            const match = val.match(/\/d\/([a-zA-Z0-9_-]+)/) || val.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match) id = match[1];
-            return `https://drive.google.com/file/d/${id}/preview`;
-        }
 
         function showShareToast(message) {
             const toast = document.getElementById('toast-share');
@@ -1059,15 +821,8 @@
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
 
-            // Sembunyikan balon chat agar tidak menutupi modal katalog produk
             const livechatEl = document.getElementById('livechat-widget');
             if (livechatEl) livechatEl.classList.add('hidden');
-
-            fireUnifiedPixelEvent('ViewContent', { 
-                content_name: p.title || 'Properti',
-                content_category: p.type || 'Properti',
-                content_ids: [p.id]
-            }, p.id, 24);
 
             const sessionViewKey = 'viewed_prop_' + id;
             if (!sessionStorage.getItem(sessionViewKey)) {
@@ -1172,26 +927,11 @@
                 modalTypeBadge.className = 'px-3 py-1 text-xs font-bold rounded-full text-white shadow-md bg-blue-600';
             }
 
-            if (p.video) {
-                modalVideoIframe.src = formatDriveVideoEmbedUrl(p.video);
-                modalVideoSection.classList.remove('hidden');
-            } else {
-                modalVideoIframe.src = '';
-                modalVideoSection.classList.add('hidden');
-            }
-
             const ownerPhone = sanitizeWhatsappNumber(p.waNumber || p.whatsapp);
             const message = encodeURIComponent(
                 `Halo, saya melihat properti ini di website:\n\n*${p.title || 'Properti'}*\nStatus: ${pType}\nHarga: ${p.price || '-'}\nLokasi: ${p.location || 'Bandung'}\n\nApakah unit ini masih tersedia untuk disurvei? Terima kasih!`
             );
             modalWaBtn.href = `https://wa.me/${ownerPhone}?text=${message}`;
-
-            modalWaBtn.onclick = () => {
-                fireUnifiedPixelEvent('Contact', {
-                    content_name: p.title || 'Properti',
-                    content_ids: [p.id]
-                }, `contact_${p.id}`, 1);
-            };
 
             const shareUrl = getProductShareUrl(p.id);
             const shareText = encodeURIComponent(`Lihat properti ini di Properti Bandung: *${p.title || 'Properti'}* (${p.price || '-'})\n\nKlik tautan ini untuk langsung melihat foto & spesifikasi:\n${shareUrl}`);
@@ -1216,13 +956,6 @@
             closeLightbox();
             modalContentCard.classList.remove('modal-enter-active');
             if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-            if (modalVideoIframe) modalVideoIframe.src = '';
-
-            if (!isLandscape && videoAspectBtn) videoAspectBtn.click();
-            if (videoClickOverlay) {
-                videoClickOverlay.classList.remove('hidden');
-                videoClickOverlay.classList.add('flex');
-            }
 
             try {
                 if (window.location.protocol.startsWith('http')) {
@@ -1232,7 +965,6 @@
                 }
             } catch(e) {}
 
-            // Munculkan kembali balon chat setelah modal ditutup
             const livechatEl = document.getElementById('livechat-widget');
             if (livechatEl) livechatEl.classList.remove('hidden');
 
@@ -1248,16 +980,16 @@
             if (e.target === propertyModal) closePropertyModal();
         });
 
-        // Search Form Filter
+        // FORM PENCARIAN PINTAR KE KATALOG
         const searchForm = document.getElementById('search-form');
         const searchInput = document.getElementById('search-input');
+        const searchType = document.getElementById('search-type');
 
         if (searchForm && searchInput) {
             searchForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 let rawQ = (searchInput.value || '').trim();
-                const typeSelect = searchForm.querySelector('select[name="type"]');
-                let selectedType = typeSelect ? typeSelect.value : '';
+                let selectedType = searchType ? searchType.value : '';
 
                 const params = new URLSearchParams();
                 if (rawQ) params.set('q', rawQ);
@@ -1390,7 +1122,7 @@
         });
 
         // =========================================================================
-        // LOGIKA LIVE CHAT & CHATBOT ENGINE PADA FLOATING WIDGET BERANDA
+        // LOGIKA LIVE CHAT
         // =========================================================================
         function playChatTone(type = 'click') {
             try {
@@ -1559,7 +1291,7 @@
                             `;
                         } else {
                             wrapper.innerHTML = `
-                                <div class="max-w-[90%] rounded-2xl px-3.5 py-2.5 bg-white border border-gray-200 text-gray-800 rounded-tl-none shadow-xs text-xs">
+                                <div class="max-w-[90%] rounded-2xl px-3.5 py-2.5 bg-white/85 backdrop-blur-sm border border-white/60 text-gray-800 rounded-tl-none shadow-xs text-xs">
                                     <span class="text-[9px] font-bold text-blue-600 block mb-0.5">${msg.csName ? `CS ${msg.csName}` : 'Asisten Properti'}</span>
                                     <div class="leading-relaxed break-words whitespace-pre-line">${msg.text}</div>
                                     ${msg.htmlContent ? `<div class="mt-2">${msg.htmlContent}</div>` : ''}
@@ -1602,33 +1334,30 @@
                 });
             }
 
-            // Pilihan Interaktif Chatbot Beranda
             window.widgetTriggerBot = async function(optionKey) {
                 playChatTone('click');
 
                 if (optionKey === 'titip') {
-                    // Formulir ringkas: Nama, WhatsApp, Alamat
                     const formHtml = `
-                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-1 space-y-2 text-[10px]">
+                        <div class="bg-white/70 backdrop-blur-sm border border-white/60 rounded-2xl p-3 mt-1 space-y-2 text-[10px]">
                             <h5 class="font-bold text-slate-800 flex items-center gap-1 text-[11px]">
                                 <i class="fa-solid fa-file-pen text-blue-600"></i> Formulir Titip Properti
                             </h5>
                             <div class="space-y-1.5">
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Nama Pemilik</label>
-                                    <input type="text" id="w-prop-owner" value="${guestName || ''}" placeholder="Nama lengkap Anda" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
+                                    <input type="text" id="w-prop-owner" value="${guestName || ''}" placeholder="Nama lengkap Anda" class="w-full bg-white/90 border border-gray-200/80 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Nomor WhatsApp</label>
-                                    <input type="tel" id="w-prop-wa" value="${guestPhone || ''}" placeholder="081234567890" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
+                                    <input type="tel" id="w-prop-wa" value="${guestPhone || ''}" placeholder="081234567890" class="w-full bg-white border border-gray-200/80 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
                                 </div>
                                 <div>
                                     <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Alamat / Lokasi Properti</label>
-                                    <textarea id="w-prop-location" rows="2" placeholder="Contoh: Jl. Dago Atas No. 12, Bandung Utara" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium"></textarea>
+                                    <textarea id="w-prop-location" rows="2" placeholder="Contoh: Jl. Dago Atas No. 12, Bandung Utara" class="w-full bg-white/90 border border-gray-200/80 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium"></textarea>
                                 </div>
                             </div>
                             
-                            <!-- Box Arahan Kelengkapan via WhatsApp -->
                             <div class="p-2 bg-blue-50/80 border border-blue-100 rounded-lg space-y-1 text-slate-700">
                                 <span class="font-bold text-blue-900 block text-[9.5px] flex items-center gap-1">
                                     <i class="fa-solid fa-circle-info text-blue-600"></i> Arahan Kirim Dokumen:
@@ -1647,7 +1376,7 @@
                 } 
                 else if (optionKey === 'fasilitas') {
                     const fasHtml = `
-                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 mt-1 space-y-1.5 text-[10px]">
+                        <div class="bg-gradient-to-br from-amber-50/90 to-orange-50/90 backdrop-blur-sm border border-amber-200/80 rounded-xl p-3 mt-1 space-y-1.5 text-[10px]">
                             <div class="flex items-baseline gap-1.5 border-b border-amber-200 pb-1">
                                 <span class="font-extrabold text-amber-950 text-[11px]">Rp 199.000 / 30 hari</span>
                                 <span class="text-[9px] text-rose-500 line-through font-bold">Rp 499.000</span>
@@ -1680,13 +1409,12 @@
                 }
             };
 
-            // Kirim Form Listing Ringkas ke WhatsApp 0851-7975-6031
             window.submitWidgetListingWA = function() {
                 const ownerName = document.getElementById('w-prop-owner')?.value.trim() || (guestName || 'Pemilik');
                 const ownerWa = document.getElementById('w-prop-wa')?.value.trim() || (guestPhone || '-');
                 const propLoc = document.getElementById('w-prop-location')?.value.trim() || 'Bandung';
 
-                const waMessage = `Halo Agen Properti Bandung,\nSaya berminat untuk *Titip Jual Properti Paket Rp199rb (0% Komisi)*.\n\nBerikut data awal listing sy:\n• Nama Pemilik: ${ownerName}\n• No. WhatsApp: ${ownerWa}\n• Alamat / Lokasi: ${propLoc}\n\nBerikut saya lampirkan foto-foto unit, 1 video tur, rincian spesifikasi, harga penawaran, serta bukti surat legalitasnya di pesan ini. Mohon dibantu verifikasi. Terima kasih!`;
+                const waMessage = `Halo Agen Properti Bandung,\nSaya berminat untuk *Titip Jual Properti Paket Rp199rb (0% Komisi)*.\n\nBerikut data awal listing saya:\n• Nama Pemilik: ${ownerName}\n• No. WhatsApp: ${ownerWa}\n• Alamat / Lokasi: ${propLoc}\n\nBerikut saya lampirkan foto-foto unit, 1 video tur, rincian spesifikasi, harga penawaran, serta bukti surat legalitasnya di pesan ini. Mohon dibantu verifikasi. Terima kasih!`;
 
                 const waUrl = `https://wa.me/6285179756031?text=${encodeURIComponent(waMessage)}`;
                 window.open(waUrl, '_blank');
