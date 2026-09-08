@@ -74,6 +74,7 @@
         <span id="toast-share-msg">Tautan berhasil disalin!</span>
     </div>
 
+    <!-- Header / Navigasi Utama (Sticky z-50) -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
@@ -492,52 +493,52 @@
         </div>
     </footer>
 
-    <!-- WIDGET LIVE CHAT MELAYANG (z-40 agar berada di bawah modal pop-up produk) -->
-    <div id="livechat-widget" class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
-        <!-- Pop-Up Jendela Obrolan -->
-        <div id="chat-window" class="hidden flex-col w-[92vw] sm:w-84 md:w-96 h-[540px] bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mb-3.5 transition-all duration-300">
+    <!-- WIDGET LIVE CHAT MELAYANG (z-40) -->
+    <div id="livechat-widget" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end">
+        <!-- Pop-Up Jendela Obrolan (Ukuran sedang di HP: lebar max 340px, tinggi 430px) -->
+        <div id="chat-window" class="hidden flex-col w-[86vw] max-w-[340px] sm:w-84 md:w-96 h-[430px] sm:h-[480px] bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mb-2.5 sm:mb-3.5 transition-all duration-300">
             
             <!-- Header Chat -->
-            <div class="bg-blue-600 text-white p-3.5 sm:p-4 flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2.5">
+            <div class="bg-blue-600 text-white p-3 sm:p-3.5 flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
                     <div class="relative">
-                        <img id="widget-cs-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar CS" onerror="handleImageError(this)" class="w-9 h-9 rounded-full object-cover border-2 border-white/60">
-                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border border-white rounded-full"></span>
+                        <img id="widget-cs-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Avatar CS" onerror="handleImageError(this)" class="w-8 h-8 rounded-full object-cover border-2 border-white/60">
+                        <span class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-400 border border-white rounded-full"></span>
                     </div>
                     <div>
-                        <h4 id="widget-cs-name" class="font-bold text-xs sm:text-sm leading-tight">Customer Support</h4>
-                        <span id="widget-cs-status" class="text-[10px] text-blue-100 flex items-center gap-1">
+                        <h4 id="widget-cs-name" class="font-bold text-xs leading-tight">Customer Support</h4>
+                        <span id="widget-cs-status" class="text-[9.5px] text-blue-100 flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Asisten Virtual Siap
                         </span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1">
-                    <a href="livechat.html" target="_blank" class="text-white/80 hover:text-white w-7 h-7 rounded-full flex items-center justify-center transition" title="Buka Halaman Penuh">
-                        <i class="fa-solid fa-up-right-from-square text-xs"></i>
+                    <a href="livechat.html" target="_blank" class="text-white/80 hover:text-white w-6 h-6 rounded-full flex items-center justify-center transition" title="Buka Halaman Penuh">
+                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
                     </a>
-                    <button type="button" id="close-chat-btn" class="text-white/80 hover:text-white w-7 h-7 rounded-full flex items-center justify-center transition cursor-pointer">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                    <button type="button" id="close-chat-btn" class="text-white/80 hover:text-white w-6 h-6 rounded-full flex items-center justify-center transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- View 1: Form Registrasi Tamu Baru (Muncul jika belum pernah isi) -->
-            <div id="widget-reg-view" class="hidden flex-1 p-6 flex flex-col justify-center bg-slate-50">
-                <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl mx-auto mb-3">
+            <!-- View 1: Form Registrasi Tamu Baru -->
+            <div id="widget-reg-view" class="hidden flex-1 p-4 sm:p-5 flex flex-col justify-center bg-slate-50">
+                <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg mx-auto mb-2.5">
                     <i class="fa-solid fa-comments"></i>
                 </div>
-                <h4 class="font-bold text-sm text-center text-gray-900">Mulai Percakapan</h4>
-                <p class="text-[11px] text-gray-500 text-center mb-4 mt-1">Silakan masukkan nama & WhatsApp agar kami dapat melayani Anda dengan baik.</p>
-                <form id="widget-reg-form" class="space-y-3">
+                <h4 class="font-bold text-xs text-center text-gray-900">Mulai Percakapan</h4>
+                <p class="text-[10px] text-gray-500 text-center mb-3 mt-0.5 leading-relaxed">Silakan masukkan nama & WhatsApp agar kami dapat melayani Anda dengan baik.</p>
+                <form id="widget-reg-form" class="space-y-2.5">
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-0.5">Nama Anda</label>
-                        <input type="text" id="widget-reg-name" required placeholder="Contoh: Budi" class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-xl px-3 py-2 text-xs outline-none">
+                        <label class="block text-[9.5px] font-bold text-gray-600 uppercase mb-0.5">Nama Anda</label>
+                        <input type="text" id="widget-reg-name" required placeholder="Contoh: Budi" class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-gray-600 uppercase mb-0.5">No. WhatsApp</label>
-                        <input type="tel" id="widget-reg-phone" required placeholder="Contoh: 0812..." class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-xl px-3 py-2 text-xs outline-none">
+                        <label class="block text-[9.5px] font-bold text-gray-600 uppercase mb-0.5">No. WhatsApp</label>
+                        <input type="tel" id="widget-reg-phone" required placeholder="Contoh: 0812..." class="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-lg px-2.5 py-1.5 text-xs outline-none">
                     </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md shadow-blue-600/30 mt-1 cursor-pointer">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs transition shadow-sm shadow-blue-600/30 mt-1 cursor-pointer">
                         Mulai Chat
                     </button>
                 </form>
@@ -545,48 +546,48 @@
 
             <!-- View 2: Stream Percakapan & Alur Chatbot Interaktif -->
             <div id="widget-chat-view" class="flex-1 flex flex-col min-h-0 bg-slate-50">
-                <div id="chat-messages-box" class="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3 text-xs">
-                    <!-- Sambutan Default Bot & 3 Tombol Menu Berikon Elegan -->
-                    <div class="flex items-start gap-2 max-w-[92%]">
-                        <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                            <i class="fa-solid fa-robot text-xs"></i>
+                <div id="chat-messages-box" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-xs">
+                    <!-- Sambutan Default Bot & 3 Tombol Menu Berikon -->
+                    <div class="flex items-start gap-1.5 max-w-[95%]">
+                        <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                            <i class="fa-solid fa-robot text-[10px]"></i>
                         </div>
-                        <div class="bg-white border border-gray-200 text-gray-800 p-3.5 rounded-2xl rounded-tl-none shadow-xs space-y-2.5">
+                        <div class="bg-white border border-gray-200 text-gray-800 p-3 rounded-2xl rounded-tl-none shadow-xs space-y-2">
                             <span class="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">Asisten Properti Bandung</span>
-                            <p class="leading-relaxed">
+                            <p class="leading-relaxed text-[11px]">
                                 Halo! Selamat datang di <strong>Properti Bandung</strong>. 🏡<br>
-                                Mau properti Anda cepat laku tanpa potong komisi? Kami menerapkan sistem <strong>0% komisi</strong>—cukup bayar paket iklan <strong>Rp199.000/30 hari</strong>, calon pembeli langsung kontak Anda.<br><br>
+                                Mau properti Anda cepat laku tanpa potong komisi? Kami menerapkan sistem <strong>0% komisi</strong>—cukup bayar paket iklan <strong>Rp199.000/30 hari</strong>.<br><br>
                                 Silakan pilih info yang Anda butuhkan:
                             </p>
-                            <div class="flex flex-col gap-2 pt-1">
-                                <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full text-left p-2.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-900 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px]">
+                            <div class="flex flex-col gap-1.5 pt-0.5">
+                                <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full text-left p-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-900 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-5 h-5 rounded bg-blue-600 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-file-circle-plus"></i>
                                         </div>
-                                        <span class="font-bold text-xs">Mulai Titip Properti</span>
+                                        <span class="font-bold text-[11px]">Mulai Titip Properti</span>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-blue-400 text-[10px]"></i>
+                                    <i class="fa-solid fa-chevron-right text-blue-400 text-[9px]"></i>
                                 </button>
 
-                                <button type="button" onclick="window.widgetTriggerBot('fasilitas')" class="w-full text-left p-2.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200 text-amber-950 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center text-[10px]">
+                                <button type="button" onclick="window.widgetTriggerBot('fasilitas')" class="w-full text-left p-2 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border border-amber-200 text-amber-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-5 h-5 rounded bg-amber-500 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-gem"></i>
                                         </div>
-                                        <span class="font-bold text-xs">Detail Fasilitas Rp199rb</span>
+                                        <span class="font-bold text-[11px]">Detail Fasilitas Rp199rb</span>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-amber-400 text-[10px]"></i>
+                                    <i class="fa-solid fa-chevron-right text-amber-400 text-[9px]"></i>
                                 </button>
 
-                                <button type="button" onclick="window.widgetTriggerBot('cs')" class="w-full text-left p-2.5 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 text-emerald-950 rounded-xl transition text-[11px] flex items-center justify-between group cursor-pointer active:scale-98">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px]">
+                                <button type="button" onclick="window.widgetTriggerBot('cs')" class="w-full text-left p-2 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200 text-emerald-950 rounded-lg transition text-[10px] flex items-center justify-between group cursor-pointer active:scale-98">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-5 h-5 rounded bg-emerald-600 text-white flex items-center justify-center text-[9px]">
                                             <i class="fa-solid fa-headset"></i>
                                         </div>
-                                        <span class="font-bold text-xs">Hubungi CS Admin Live Chat</span>
+                                        <span class="font-bold text-[11px]">Hubungi CS Admin Live Chat</span>
                                     </div>
-                                    <i class="fa-solid fa-chevron-right text-emerald-400 text-[10px]"></i>
+                                    <i class="fa-solid fa-chevron-right text-emerald-400 text-[9px]"></i>
                                 </button>
                             </div>
                         </div>
@@ -594,10 +595,10 @@
                 </div>
 
                 <!-- Form Kirim Pesan -->
-                <form id="chat-send-form" class="p-3 bg-white border-t border-gray-100 flex items-center gap-2 shrink-0">
-                    <input type="text" id="chat-input-text" placeholder="Ketik pesan Anda..." autocomplete="off" required class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-blue-500 text-gray-800">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition shadow-sm active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                <form id="chat-send-form" class="p-2.5 bg-white border-t border-gray-100 flex items-center gap-1.5 shrink-0">
+                    <input type="text" id="chat-input-text" placeholder="Ketik pesan Anda..." autocomplete="off" required class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-blue-500 text-gray-800">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition shadow-xs active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane text-[10px]"></i>
                     </button>
                 </form>
             </div>
@@ -606,15 +607,15 @@
         <!-- Wadah Tombol Balon & Teks Live Chat di Atasnya -->
         <div class="flex flex-col items-center gap-1.5">
             <!-- Label Teks Melayang 'Live Chat' -->
-            <div id="livechat-pill-label" class="bg-slate-900/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-lg border border-white/20 flex items-center gap-1.5 animate-bounce select-none pointer-events-none transition-all duration-300">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+            <div id="livechat-pill-label" class="bg-slate-900/90 backdrop-blur-sm text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-lg border border-white/20 flex items-center gap-1.5 animate-bounce select-none pointer-events-none transition-all duration-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
                 <span>Live Chat</span>
             </div>
 
             <!-- Tombol Pemicu Bulat Melayang -->
-            <button type="button" id="chat-toggle-button" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative group cursor-pointer" title="Live Chat Bantuan">
-                <i class="fa-solid fa-comments text-2xl group-hover:scale-110 transition-transform"></i>
-                <span id="chat-unread-dot" class="hidden absolute top-0 right-0 w-4 h-4 bg-rose-500 rounded-full border-2 border-white"></span>
+            <button type="button" id="chat-toggle-button" class="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 relative group cursor-pointer" title="Live Chat Bantuan">
+                <i class="fa-solid fa-comments text-xl sm:text-2xl group-hover:scale-110 transition-transform"></i>
+                <span id="chat-unread-dot" class="hidden absolute top-0 right-0 w-3.5 h-3.5 bg-rose-500 rounded-full border-2 border-white"></span>
             </button>
         </div>
     </div>
@@ -1608,37 +1609,37 @@
                 if (optionKey === 'titip') {
                     // Formulir ringkas: Nama, WhatsApp, Alamat
                     const formHtml = `
-                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 mt-1 space-y-2.5 text-[11px]">
-                            <h5 class="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mt-1 space-y-2 text-[10px]">
+                            <h5 class="font-bold text-slate-800 flex items-center gap-1 text-[11px]">
                                 <i class="fa-solid fa-file-pen text-blue-600"></i> Formulir Titip Properti
                             </h5>
-                            <div class="space-y-2">
+                            <div class="space-y-1.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Nama Pemilik</label>
-                                    <input type="text" id="w-prop-owner" value="${guestName || ''}" placeholder="Nama lengkap Anda" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium">
+                                    <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Nama Pemilik</label>
+                                    <input type="text" id="w-prop-owner" value="${guestName || ''}" placeholder="Nama lengkap Anda" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Nomor WhatsApp</label>
-                                    <input type="tel" id="w-prop-wa" value="${guestPhone || ''}" placeholder="081234567890" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium">
+                                    <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Nomor WhatsApp</label>
+                                    <input type="tel" id="w-prop-wa" value="${guestPhone || ''}" placeholder="081234567890" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-0.5">Alamat / Lokasi Properti</label>
-                                    <textarea id="w-prop-location" rows="2" placeholder="Contoh: Jl. Dago Atas No. 12, Bandung Utara" class="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-medium"></textarea>
+                                    <label class="block text-[9px] font-bold text-slate-600 uppercase mb-0.5">Alamat / Lokasi Properti</label>
+                                    <textarea id="w-prop-location" rows="2" placeholder="Contoh: Jl. Dago Atas No. 12, Bandung Utara" class="w-full bg-white border border-gray-200 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-blue-500 font-medium"></textarea>
                                 </div>
                             </div>
                             
                             <!-- Box Arahan Kelengkapan via WhatsApp -->
-                            <div class="p-2.5 bg-blue-50/80 border border-blue-100 rounded-xl space-y-1 text-slate-700">
-                                <span class="font-bold text-blue-900 block text-[10px] flex items-center gap-1">
+                            <div class="p-2 bg-blue-50/80 border border-blue-100 rounded-lg space-y-1 text-slate-700">
+                                <span class="font-bold text-blue-900 block text-[9.5px] flex items-center gap-1">
                                     <i class="fa-solid fa-circle-info text-blue-600"></i> Arahan Kirim Dokumen:
                                 </span>
-                                <p class="text-[10px] leading-relaxed">
+                                <p class="text-[9.5px] leading-relaxed">
                                     Untuk <strong>spesifikasi lengkap, foto unit (bebas), 1 video tur, harga penawaran, dan bukti surat legalitas</strong> dapat langsung dilampirkan melalui chat WhatsApp resmi kami.
                                 </p>
                             </div>
 
-                            <button type="button" onclick="window.submitWidgetListingWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2.5 px-3 rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer text-xs shadow-md shadow-emerald-600/30">
-                                <i class="fa-brands fa-whatsapp text-base"></i> <span>Kirim ke WhatsApp Agen</span>
+                            <button type="button" onclick="window.submitWidgetListingWA()" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold py-2 px-2.5 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer text-[11px] shadow-sm shadow-emerald-600/30">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> <span>Kirim ke WhatsApp Agen</span>
                             </button>
                         </div>
                     `;
@@ -1646,10 +1647,10 @@
                 } 
                 else if (optionKey === 'fasilitas') {
                     const fasHtml = `
-                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-3.5 mt-1 space-y-2 text-[11px]">
-                            <div class="flex items-baseline gap-2 border-b border-amber-200 pb-1.5">
-                                <span class="font-extrabold text-amber-950 text-xs sm:text-sm">Rp 199.000 / 30 hari</span>
-                                <span class="text-[10px] text-rose-500 line-through font-bold">Rp 499.000</span>
+                        <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3 mt-1 space-y-1.5 text-[10px]">
+                            <div class="flex items-baseline gap-1.5 border-b border-amber-200 pb-1">
+                                <span class="font-extrabold text-amber-950 text-[11px]">Rp 199.000 / 30 hari</span>
+                                <span class="text-[9px] text-rose-500 line-through font-bold">Rp 499.000</span>
                             </div>
                             <ul class="space-y-1 text-slate-800 font-medium">
                                 <li>✅ <strong>Prioritas website</strong> selama 30 hari</li>
@@ -1661,7 +1662,7 @@
                                 <li>✅ <strong>Tanpa ada biaya iklan tambahan</strong></li>
                                 <li>✅ <strong>Mendatangkan ribuan pengunjung potensial</strong> asal Bandung Raya setiap akhir pekan (Sabtu–Minggu) langsung ke listing Anda</li>
                             </ul>
-                            <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl transition text-[11px] mt-1 cursor-pointer shadow-xs">
+                            <button type="button" onclick="window.widgetTriggerBot('titip')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 rounded-lg transition text-[10px] mt-1 cursor-pointer shadow-xs">
                                 Mulai Titip Sekarang
                             </button>
                         </div>
@@ -1685,7 +1686,7 @@
                 const ownerWa = document.getElementById('w-prop-wa')?.value.trim() || (guestPhone || '-');
                 const propLoc = document.getElementById('w-prop-location')?.value.trim() || 'Bandung';
 
-                const waMessage = `Halo Agen Properti Bandung,\nSaya berminat untuk *Titip Jual Properti Paket Rp199rb (0% Komisi)*.\n\nBerikut data awal listing saya:\n• Nama Pemilik: ${ownerName}\n• No. WhatsApp: ${ownerWa}\n• Alamat / Lokasi: ${propLoc}\n\nBerikut saya lampirkan foto-foto unit, 1 video tur, rincian spesifikasi, harga penawaran, serta bukti surat legalitasnya di pesan ini. Mohon dibantu verifikasi. Terima kasih!`;
+                const waMessage = `Halo Agen Properti Bandung,\nSaya berminat untuk *Titip Jual Properti Paket Rp199rb (0% Komisi)*.\n\nBerikut data awal listing sy:\n• Nama Pemilik: ${ownerName}\n• No. WhatsApp: ${ownerWa}\n• Alamat / Lokasi: ${propLoc}\n\nBerikut saya lampirkan foto-foto unit, 1 video tur, rincian spesifikasi, harga penawaran, serta bukti surat legalitasnya di pesan ini. Mohon dibantu verifikasi. Terima kasih!`;
 
                 const waUrl = `https://wa.me/6285179756031?text=${encodeURIComponent(waMessage)}`;
                 window.open(waUrl, '_blank');
