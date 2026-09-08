@@ -425,23 +425,10 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK & Logika -->
+    <!-- Script Terhubung ke Cloudflare D1 -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
-            authDomain: "web-properti-bandung.firebaseapp.com",
-            projectId: "web-properti-bandung",
-            storageBucket: "web-properti-bandung.firebasestorage.app",
-            messagingSenderId: "684311108489",
-            appId: "1:684311108489:web:02e334723acd536656df58"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const propertiRef = collection(db, "properti");
+        // URL API CLOUDFLARE D1
+        const CLOUDFLARE_API_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
 
         document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -457,34 +444,27 @@
         function parsePropertyPrice(priceStr) {
             if (!priceStr) return 0;
             let str = String(priceStr).toLowerCase().replace(/\s+/g, '').replace(/rp/g, '');
-
-            // Buang teks di dalam kurung seperti (nego), (bisa nego), dsb.
             str = str.replace(/\(.*?\)/g, '');
 
-            // Jika murni teks tanpa angka sama sekali
             if (!/\d/.test(str)) {
                 return 0;
             }
 
-            // Cek satuan Miliar terlebih dahulu secara spesifik
             const matchM = str.match(/(\d+(?:[.,]\d+)?)(?:m|miliar|milyar)/i);
             if (matchM) {
                 return parseFloat(matchM[1].replace(',', '.')) * 1000000000;
             }
 
-            // Cek satuan Juta
             const matchJt = str.match(/(\d+(?:[.,]\d+)?)(?:jt|jta|juta)/i);
             if (matchJt) {
                 return parseFloat(matchJt[1].replace(',', '.')) * 1000000;
             }
 
-            // Cek satuan Ribu
             const matchRb = str.match(/(\d+(?:[.,]\d+)?)(?:rb|ribu)/i);
             if (matchRb) {
                 return parseFloat(matchRb[1].replace(',', '.')) * 1000;
             }
 
-            // Angka numerik penuh (misal: 65000000)
             const numOnly = parseInt(str.replace(/[^0-9]/g, ''), 10);
             return numOnly || 0;
         }
@@ -497,7 +477,6 @@
             if (!query) return null;
             const clean = query.toLowerCase();
 
-            // 1. Pola Miliar
             const matchM = clean.match(/(\d+(?:[.,]\d+)?)\s*(?:m|miliar|milyar|milyaran|miliaran)\b/i);
             if (matchM) {
                 const val = parseFloat(matchM[1].replace(',', '.'));
@@ -507,7 +486,6 @@
                 return { target: val * 1000000000, min, max, matchedText: matchM[0], label: `Harga: Rp ${val} Miliar-an` };
             }
 
-            // 2. Pola Juta (contoh: 65jta, 10jtaa, 200jta)
             const matchJt = clean.match(/(\d+(?:[.,]\d+)?)\s*(?:jt|jta|jtaan|jtan|juta|jutaan)\b/i);
             if (matchJt) {
                 const val = parseFloat(matchJt[1].replace(',', '.'));
@@ -855,15 +833,34 @@
             });
         }
 
+        // =========================================================================
+        // BUKA MODAL DETAIL & COUNTER VIEWS KE CLOUDFLARE D1
+        // =========================================================================
         function openPropertyModal(id) {
             const p = allProperties.find(item => item.id === id);
             if (!p) return;
 
-            const sessionViewKey = 'viewed_prop_' + id;
-            if (!sessionStorage.getItem(sessionViewKey)) {
-                sessionStorage.setItem(sessionViewKey, 'true');
-                updateDoc(doc(db, "properti", id), { views: increment(1) }).catch(err => console.warn("Gagal update view count:", err));
-            }
+            // Tambah counter views ke Cloudflare D1
+            fetch(`${CLOUDFLARE_API_URL}/views`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (resData.success && resData.views !== undefined) {
+                    p.views = resData.views;
+                    modalViewsCount.textContent = resData.views;
+
+                    // Update angka views pada kartu properti di katalog
+                    const card = document.querySelector(`.property-card[data-id="${id}"]`);
+                    if (card) {
+                        const viewSpan = card.querySelector('.fa-regular.fa-eye + span');
+                        if (viewSpan) viewSpan.textContent = resData.views;
+                    }
+                }
+            })
+            .catch(err => console.error("Gagal update views D1:", err));
 
             currentModalPropId = p.id;
             modalActiveImages = (Array.isArray(p.images) && p.images.length > 0) ? p.images : [p.image || ''];
@@ -892,7 +889,7 @@
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
             if (modalBarPrice) modalBarPrice.textContent = p.price || '-';
-            modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
+            modalViewsCount.textContent = p.views || 0;
 
             if (p.originalPrice) {
                 modalOriginalPrice.textContent = p.originalPrice;
@@ -1092,28 +1089,33 @@
             if (type && type !== 'Semua Properti' && type !== 'Tipe Properti') selectCategory.value = type;
         }
 
-        onSnapshot(propertiRef, (snapshot) => {
-            const list = [];
-            snapshot.forEach((doc) => {
-                list.push({ id: doc.id, ...doc.data() });
-            });
-            allProperties = list;
-            loadingState.classList.add('hidden');
-            applyFilters();
+        // =========================================================================
+        // AMBIL DATA DARI CLOUDFLARE D1
+        // =========================================================================
+        fetch(`${CLOUDFLARE_API_URL}/properti`)
+            .then(res => {
+                if (!res.ok) throw new Error("Gagal mengambil data katalog dari API Cloudflare D1");
+                return res.json();
+            })
+            .then(data => {
+                allProperties = Array.isArray(data) ? data : [];
+                loadingState.classList.add('hidden');
+                applyFilters();
 
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const sharedId = urlParams.get('id');
-                if (sharedId) {
-                    setTimeout(() => {
-                        openPropertyModal(sharedId);
-                    }, 150);
-                }
-            } catch(e) {}
-        }, (err) => {
-            console.error("Gagal mengambil data katalog:", err);
-            loadingState.innerHTML = `<p class="text-red-500 font-semibold">Gagal memuat katalog properti. Silakan muat ulang.</p>`;
-        });
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const sharedId = urlParams.get('id');
+                    if (sharedId) {
+                        setTimeout(() => {
+                            openPropertyModal(sharedId);
+                        }, 150);
+                    }
+                } catch(e) {}
+            })
+            .catch(err => {
+                console.error("Gagal mengambil data katalog:", err);
+                loadingState.innerHTML = `<p class="text-red-500 font-semibold">Gagal memuat katalog properti. Silakan muat ulang halaman.</p>`;
+            });
 
         // =========================================================================
         // PROSES PENCARIAN & FILTER FLEKSIBEL (PRIORITAS HARGA VALID & RELEVANSI)
@@ -1197,14 +1199,14 @@
                 const pType = (p.type || '');
                 const propNumPrice = parsePropertyPrice(p.price);
 
-                // A. Filter Kesesuaian Harga (Jika user mencari harga tertentu, yang tanpa harga valid disingkirkan)
+                // A. Filter Kesesuaian Harga
                 if (detectedPriceIntent) {
                     if (propNumPrice <= 0) return false;
                     const inRange = (propNumPrice >= detectedPriceIntent.min && propNumPrice <= detectedPriceIntent.max);
                     if (!inRange) return false;
                 }
 
-                // B. Filter Pencocokan Kata Kunci Fleksibel (Skor Relevansi - Minimal 1 kata kunci cocok jika ada kata kunci teks)
+                // B. Filter Pencocokan Kata Kunci
                 let tokenMatches = 0;
                 if (searchTokens.length > 0) {
                     const fullSearchText = `${title} ${location} ${description} ${pCategory} ${badge} ${facilities}`;
@@ -1214,12 +1216,11 @@
                         }
                     });
 
-                    // Jika ada kata kunci teks yang diketik tetapi tidak ada satupun yang cocok
                     if (tokenMatches === 0) return false;
                 }
                 p._relevanceScore = tokenMatches;
 
-                // C. Filter Status Transaksi (Dijual / Disewa)
+                // C. Filter Status Transaksi
                 if (status && pType.toLowerCase() !== status.toLowerCase()) {
                     return false;
                 }
@@ -1274,10 +1275,6 @@
                     return Number(b.views || 0) - Number(a.views || 0);
                 });
             } else {
-                // Default Sorting:
-                // 1. Jika ada filter harga spesifik, urutkan dari selisih angka paling dekat ke target pencarian
-                // 2. Jika ada kata kunci teks, urutkan dari skor kecocokan kata terbanyak
-                // 3. Prioritaskan unit yang punya harga valid dan iklan aktif
                 filtered.sort((a, b) => {
                     if (detectedPriceIntent) {
                         const priceA = parsePropertyPrice(a.price);
@@ -1341,7 +1338,7 @@
                             ${p.badge ? `<span class="px-2.5 py-1 text-xs font-bold rounded-full shadow-sm bg-amber-400 text-slate-900 flex items-center gap-1"><i class="fa-solid fa-tag text-[9px]"></i> ${p.badge}</span>` : ''}
                         </div>
 
-                        <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
+                        <button type="button" class="card-share-btn absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 shadow-md flex items-center justify-center transition backdrop-blur-sm active:scale-90 cursor-pointer" data-id="${p.id}" data-title="${p.title || 'Properti'}" title="Bagikan Produk Ini">
                             <i class="fa-solid fa-share-nodes text-xs"></i>
                         </button>
 
@@ -1350,10 +1347,10 @@
                         </div>
 
                         ${totalPhotos > 1 ? `
-                            <button type="button" class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                            <button type="button" class="card-prev-btn absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button type="button" class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20">
+                            <button type="button" class="card-next-btn absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100 z-20 cursor-pointer">
                                 <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                             <span class="card-counter absolute bottom-4 right-4 bg-black/60 text-white px-2 py-0.5 rounded-md text-[10px] font-bold z-10">
