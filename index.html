@@ -492,8 +492,8 @@
         </div>
     </footer>
 
-    <!-- WIDGET LIVE CHAT MELAYANG DENGAN TEKS 'LIVE CHAT' DI ATAS BALON -->
-    <div id="livechat-widget" class="fixed bottom-6 right-6 z-[160] flex flex-col items-end">
+    <!-- WIDGET LIVE CHAT MELAYANG (z-40 agar berada di bawah modal pop-up produk) -->
+    <div id="livechat-widget" class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
         <!-- Pop-Up Jendela Obrolan -->
         <div id="chat-window" class="hidden flex-col w-[92vw] sm:w-84 md:w-96 h-[540px] bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden mb-3.5 transition-all duration-300">
             
@@ -1058,6 +1058,10 @@
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
 
+            // Sembunyikan balon chat agar tidak menutupi modal katalog produk
+            const livechatEl = document.getElementById('livechat-widget');
+            if (livechatEl) livechatEl.classList.add('hidden');
+
             fireUnifiedPixelEvent('ViewContent', { 
                 content_name: p.title || 'Properti',
                 content_category: p.type || 'Properti',
@@ -1226,6 +1230,10 @@
                     window.history.replaceState({}, '', newUrl.toString());
                 }
             } catch(e) {}
+
+            // Munculkan kembali balon chat setelah modal ditutup
+            const livechatEl = document.getElementById('livechat-widget');
+            if (livechatEl) livechatEl.classList.remove('hidden');
 
             setTimeout(() => {
                 propertyModal.classList.add('hidden');
