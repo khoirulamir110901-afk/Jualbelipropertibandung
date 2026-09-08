@@ -553,7 +553,7 @@
         </div>
     </div>
 
-    <!-- Firebase SDK & Script -->
+    <!-- Script Terintegrasi Cloudflare D1 & Firebase Live Chat -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { 
@@ -561,14 +561,16 @@
             collection, 
             onSnapshot, 
             doc, 
-            updateDoc, 
             setDoc, 
-            addDoc,
-            query,
-            orderBy,
+            addDoc, 
+            query, 
+            orderBy, 
             increment, 
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // URL API CLOUDFLARE D1
+        const CLOUDFLARE_API_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
@@ -581,7 +583,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const propertiRef = collection(db, "properti");
 
         let loadedProperties = [];
         let modalActiveImages = [];
@@ -639,6 +640,7 @@
             return 'fa-solid fa-circle-check';
         }
 
+        // Ambil Hero Image dari Firebase Setting
         const heroSettingDoc = doc(db, "pengaturan", "hero");
         onSnapshot(heroSettingDoc, (docSnap) => {
             if (docSnap.exists()) {
@@ -817,6 +819,9 @@
         modalSlidePrev.addEventListener('click', () => updateModalSlide(modalActiveIndex - 1));
         modalSlideNext.addEventListener('click', () => updateModalSlide(modalActiveIndex + 1));
 
+        // =========================================================================
+        // LOGIKA BUKA MODAL & COUNTER VIEWS CLOUDFLARE D1
+        // =========================================================================
         function openPropertyModal(id) {
             const p = loadedProperties.find(item => item.id === id);
             if (!p) return;
@@ -824,11 +829,27 @@
             const livechatEl = document.getElementById('livechat-widget');
             if (livechatEl) livechatEl.classList.add('hidden');
 
-            const sessionViewKey = 'viewed_prop_' + id;
-            if (!sessionStorage.getItem(sessionViewKey)) {
-                sessionStorage.setItem(sessionViewKey, 'true');
-                updateDoc(doc(db, "properti", id), { views: increment(1) }).catch(() => {});
-            }
+            // Tambah counter views ke Cloudflare D1 & langsung tampilkan hasilnya
+            fetch(`${CLOUDFLARE_API_URL}/views`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(res => res.json())
+            .then(resData => {
+                if (resData.success && resData.views !== undefined) {
+                    p.views = resData.views;
+                    modalViewsCount.textContent = resData.views;
+
+                    // Sinkronkan angka view di kartu properti luar modal
+                    const card = document.querySelector(`.property-card[data-id="${id}"]`);
+                    if (card) {
+                        const viewSpan = card.querySelector('.fa-regular.fa-eye + span');
+                        if (viewSpan) viewSpan.textContent = resData.views;
+                    }
+                }
+            })
+            .catch(err => console.error("Gagal update views D1:", err));
 
             try {
                 if (window.location.protocol.startsWith('http')) {
@@ -858,7 +879,7 @@
             modalLocation.textContent = p.location || 'Bandung';
             modalPrice.textContent = p.price || '-';
             if (modalBarPrice) modalBarPrice.textContent = p.price || '-';
-            modalViewsCount.textContent = (p.views || 0) + (!sessionStorage.getItem(sessionViewKey) ? 1 : 0);
+            modalViewsCount.textContent = p.views || 0;
 
             if (p.originalPrice) {
                 modalOriginalPrice.textContent = p.originalPrice;
@@ -1112,14 +1133,36 @@
             });
         }
 
-        onSnapshot(propertiRef, (snapshot) => {
-            const listProperti = [];
-            snapshot.forEach((dokumen) => {
-                listProperti.push({ id: dokumen.id, ...dokumen.data() });
+        // =========================================================================
+        // AMBIL DATA PROPERTI DARI API CLOUDFLARE D1
+        // =========================================================================
+        fetch(`${CLOUDFLARE_API_URL}/properti`)
+            .then(res => {
+                if (!res.ok) throw new Error("Gagal mengambil data dari API Cloudflare");
+                return res.json();
+            })
+            .then(data => {
+                loadedProperties = data;
+                renderProperti(loadedProperties);
+
+                // Cek apakah ada parameter ?id=... di URL untuk langsung buka modal
+                const urlParams = new URLSearchParams(window.location.search);
+                const directId = urlParams.get('id');
+                if (directId) {
+                    setTimeout(() => openPropertyModal(directId), 300);
+                }
+            })
+            .catch(err => {
+                console.error("Gagal membaca properti dari Cloudflare:", err);
+                const grid = document.getElementById('properties-grid');
+                if (grid) {
+                    grid.innerHTML = `
+                        <div class="col-span-3 text-center py-12 text-rose-500 font-semibold">
+                            <i class="fa-solid fa-triangle-exclamation text-3xl mb-2"></i>
+                            <p>Terjadi kendala saat memuat data properti. Silakan refresh halaman.</p>
+                        </div>`;
+                }
             });
-            loadedProperties = listProperti;
-            renderProperti(loadedProperties);
-        });
 
         // =========================================================================
         // LOGIKA LIVE CHAT
