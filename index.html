@@ -192,7 +192,7 @@
                     <p class="text-sm md:text-base text-blue-50 mb-6 drop-shadow leading-relaxed max-w-2xl mx-auto">
                         Kami bantu pasarkan melalui <span class="font-bold text-white"><i class="fa-brands fa-facebook text-blue-400 mr-0.5"></i> Facebook & <i class="fa-brands fa-instagram text-pink-400 mr-0.5"></i> Instagram</span> setiap Sabtu–Minggu. Menjangkau ratusan-ribuan orang yang berpotensi untuk membeli Properti Anda!
                     </p>
-                    <a href="titip-properti.html" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:-translate-y-1">
+                    <a id="hero-titip-jual-btn" href="titip-properti.html" class="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3.5 rounded-full font-bold transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] hover:-translate-y-1">
                         <i class="fa-solid fa-plus-circle text-lg"></i> Titip Jual Properti
                     </a>
                 </div>
@@ -553,6 +553,90 @@
         </div>
     </div>
 
+    <!-- SCRIPT META PIXEL DINAMIS (CLOUDFLARE WORKERS) -->
+    <script data-cfasync="false">
+        (function() {
+            const WORKERS_BASE_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
+
+            // Injeksi Dasar Meta Pixel
+            function injectMetaPixel(pixelId) {
+                if (!pixelId || window.fbq) return;
+
+                !(function (f, b, e, v, n, t, s) {
+                    if (f.fbq) return;
+                    n = f.fbq = function () {
+                        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+                    };
+                    if (!f._fbq) f._fbq = n;
+                    n.push = n;
+                    n.loaded = !0;
+                    n.version = '2.0';
+                    n.queue = [];
+                    t = b.createElement(e);
+                    t.async = !0;
+                    t.src = v;
+                    s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s);
+                })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+                fbq('init', pixelId);
+                fbq('track', 'PageView');
+
+                // Injeksi Tag Noscript ke Body
+                const noscript = document.createElement('noscript');
+                const img = document.createElement('img');
+                img.height = 1;
+                img.width = 1;
+                img.style.display = 'none';
+                img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
+                noscript.appendChild(img);
+                document.body.appendChild(noscript);
+            }
+
+            // Ambil ID Pixel dari Cloudflare Workers
+            async function fetchAndInitPixel() {
+                try {
+                    // Mencoba fetch dari endpoint pengaturan
+                    const response = await fetch(`${WORKERS_BASE_URL}/pengaturan`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const pixelId = data.metaPixelId || data.meta_pixel_id || data.pixelId || (data.pixel && data.pixel.id);
+                        if (pixelId) {
+                            injectMetaPixel(String(pixelId).trim());
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Gagal memuat setting Pixel dari Cloudflare Workers:", err);
+                }
+            }
+
+            // Pelacakan Tombol Titip Jual di Hero Section
+            function setupEventTracking() {
+                const titipBtn = document.getElementById('hero-titip-jual-btn') || document.querySelector('a[href*="titip-properti.html"]');
+                if (titipBtn) {
+                    titipBtn.addEventListener('click', function() {
+                        if (typeof fbq === 'function') {
+                            fbq('track', 'InitiateCheckout', {
+                                content_name: 'Tombol Titip Jual Properti Beranda'
+                            });
+                        }
+                    });
+                }
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    fetchAndInitPixel();
+                    setupEventTracking();
+                });
+            } else {
+                fetchAndInitPixel();
+                setupEventTracking();
+            }
+        })();
+    </script>
+
     <!-- Script Terintegrasi Cloudflare D1 & Firebase Live Chat -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -829,7 +913,6 @@
             const livechatEl = document.getElementById('livechat-widget');
             if (livechatEl) livechatEl.classList.add('hidden');
 
-            // Tambah counter views ke Cloudflare D1 & langsung tampilkan hasilnya
             fetch(`${CLOUDFLARE_API_URL}/views`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -841,7 +924,6 @@
                     p.views = resData.views;
                     modalViewsCount.textContent = resData.views;
 
-                    // Sinkronkan angka view di kartu properti luar modal
                     const card = document.querySelector(`.property-card[data-id="${id}"]`);
                     if (card) {
                         const viewSpan = card.querySelector('.fa-regular.fa-eye + span');
@@ -1145,7 +1227,6 @@
                 loadedProperties = data;
                 renderProperti(loadedProperties);
 
-                // Cek apakah ada parameter ?id=... di URL untuk langsung buka modal
                 const urlParams = new URLSearchParams(window.location.search);
                 const directId = urlParams.get('id');
                 if (directId) {
