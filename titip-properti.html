@@ -3,826 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Titip Properti - Pasang Iklan Properti Bandung</title>
-
+    <meta name="referrer" content="no-referrer">
+    <title>Titip Jual Properti - Properti Bandung & Sekitarnya</title>
+    
+    <!-- Favicon Rumah Biru -->
     <link rel="icon" type="image/png" href="icon.png">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%232563eb' d='M44.5 13.2c3.1-2.9 7.9-2.9 11 0l34.8 32.2c3.5 3.2 1.3 9.1-3.5 9.1h-4.8v30.5c0 4.4-3.6 8-8 8H67c-1.7 0-3-1.3-3-3V68c0-3.3-2.7-6-6-6h-16c-3.3 0-6 2.7-6 6v22c0 1.7-1.3 3-3 3H16c-4.4 0-8-3.6-8-8V54.5H3.2c-4.8 0-7-5.9-3.5-9.1L34.5 13.2z'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="icon.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        function extractDriveId(input) {
+            if (!input) return '';
+            const str = String(input).trim();
+            if (!str.includes('/') && !str.includes('http')) return str;
+            const match = str.match(/\/d\/([a-zA-Z0-9_-]+)/) || str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : str;
+        }
 
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        function formatMediaUrl(input) {
+            if (!input) return 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
+            const driveId = extractDriveId(input);
+            if ((input.startsWith('http://') || input.startsWith('https://')) && !input.includes('drive.google.com') && !input.includes('googleusercontent.com')) {
+                return input;
+            }
+            return 'https://drive.google.com/thumbnail?id=' + driveId + '&sz=w1200';
         }
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: all 0.3s ease-out;
-        }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-        }
-    </style>
+    </script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between antialiased">
+<body class="bg-gray-50 font-sans text-gray-800 min-h-screen relative flex flex-col justify-between">
 
-    <div id="toast-notif" class="fixed top-5 right-5 z-[200] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold transform transition-all duration-300 opacity-0 -translate-y-3 pointer-events-none">
-        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
-        <span id="toast-text">Berhasil disalin!</span>
-    </div>
-
+    <!-- Header Navigasi -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center">
+            <div class="flex justify-between h-20">
                 <a href="index.html" class="flex items-center group">
                     <i class="fa-solid fa-house text-3xl text-blue-600"></i>
                     <div class="ml-3 flex flex-col">
-                        <span class="font-bold text-xl leading-tight text-slate-900 group-hover:text-blue-600 transition">Properti Bandung</span>
-                        <span class="text-xs text-slate-500 font-medium tracking-wide">& Sekitarnya</span>
+                        <span class="font-bold text-xl leading-tight text-gray-900 group-hover:text-blue-600 transition">Properti Bandung</span>
+                        <span class="text-xs text-gray-500 font-medium tracking-wide">& Sekitarnya</span>
                     </div>
                 </a>
-
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="index.html" class="text-slate-600 hover:text-blue-600 font-medium transition">Beranda</a>
-                    <a href="katalog.html" class="text-slate-600 hover:text-blue-600 font-medium transition">Katalog</a>
-                    <a href="katalog.html?status=Dijual" class="text-slate-600 hover:text-blue-600 font-medium transition">Beli</a>
-                    <a href="katalog.html?status=Disewa" class="text-slate-600 hover:text-blue-600 font-medium transition">Sewa</a>
-                    <a href="titip-properti.html" class="text-blue-600 font-extrabold flex items-center gap-1.5 transition">
-                        <span class="w-2 h-2 rounded-full bg-blue-600"></span> Titip Properti
+                
+                <div class="hidden md:flex items-center space-x-7">
+                    <a href="index.html" class="text-gray-600 font-medium hover:text-blue-600 transition">Beranda</a>
+                    <a href="katalog.html" class="text-gray-600 font-medium hover:text-blue-600 transition">Katalog</a>
+                    <a href="katalog.html?status=Dijual" class="text-gray-600 font-medium hover:text-blue-600 transition">Beli</a>
+                    <a href="katalog.html?status=Disewa" class="text-gray-600 font-medium hover:text-blue-600 transition">Sewa</a>
+                    <a href="titip-properti.html" class="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus-circle text-xs"></i> Titip Properti
                     </a>
-                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-semibold text-sm transition shadow-sm hover:shadow flex items-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> Hubungi Agen
+                    <a href="https://wa.me/6285179756031" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-medium transition shadow-md hover:shadow-lg flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi Agen
                     </a>
                 </div>
 
                 <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-slate-900 focus:outline-none p-2">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 pt-2 pb-5 space-y-2 shadow-lg">
-            <a href="index.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beranda</a>
-            <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Katalog Properti</a>
-            <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Beli (Dijual)</a>
-            <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-slate-700 hover:bg-slate-50 rounded-xl">Sewa (Disewa)</a>
-            <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-blue-600 bg-blue-50 rounded-xl">Titip Properti (Iklan)</a>
-            <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-3 bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold shadow-sm">
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-40">
+            <a href="index.html" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beranda</a>
+            <a href="katalog.html" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Katalog Semua Properti</a>
+            <a href="katalog.html?status=Dijual" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Beli (Dijual)</a>
+            <a href="katalog.html?status=Disewa" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 rounded-md">Sewa (Disewa)</a>
+            <a href="titip-properti.html" class="block px-3 py-2 text-base font-bold text-emerald-600 bg-emerald-50 rounded-md">Titip Properti (Iklan)</a>
+            <a href="https://wa.me/6285179756031" target="_blank" class="block text-center w-full mt-4 bg-blue-600 text-white px-3 py-3 rounded-md font-medium">
                 Hubungi Agen via WhatsApp
             </a>
         </div>
     </nav>
 
-    <header class="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-slate-950 text-white px-4 sm:px-6 lg:px-8 pt-14 pb-12 sm:pt-20 sm:pb-16">
-        <div class="absolute -top-32 -right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-40 -left-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl"></div>
-        <div class="relative max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_.9fr] gap-10 items-center">
-            <div>
-                <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 border border-white/10 text-blue-100 text-[11px] sm:text-xs font-bold backdrop-blur-md mb-5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Layanan Titip Jual & Sewa Properti
-                </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.05] mb-5">Properti Belum Terjual atau Tersewa?<br><span class="text-blue-300">Biar Kami Bantu Pasarkan.</span></h1>
-                <p class="text-blue-100 text-sm sm:text-base lg:text-lg max-w-2xl leading-relaxed mb-7">Anda tetap memegang kendali atas properti. Kami membantu menyiapkan listing, menayangkannya secara prioritas, menjalankan iklan Facebook & Instagram setiap weekend, dan memberikan laporan hasil iklan.</p>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <a href="#paket" class="inline-flex items-center justify-center gap-2 bg-white text-blue-900 hover:bg-blue-50 px-6 py-3.5 rounded-2xl font-extrabold text-sm shadow-xl transition">Lihat Paket Titip Properti <i class="fa-solid fa-arrow-down text-xs"></i></a>
-                    <a href="#konsultasi" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-white px-6 py-3.5 rounded-2xl font-bold text-sm transition"><i class="fa-brands fa-whatsapp"></i> Konsultasi Dulu</a>
-                </div>
-                <div class="flex flex-wrap gap-x-6 gap-y-3 mt-7 text-xs text-blue-100/90">
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i> 30 hari penayangan prioritas</span>
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i> 8 hari iklan weekend</span>
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i> Tanpa komisi penjualan</span>
-                </div>
-            </div>
-            <div class="hidden lg:block">
-                <div class="bg-white rounded-[2rem] p-3 shadow-2xl rotate-1">
-                    <div class="rounded-[1.5rem] bg-slate-100 overflow-hidden">
-                        <div class="h-36 bg-gradient-to-br from-slate-300 via-slate-200 to-slate-400 relative"><div class="absolute inset-0 flex items-center justify-center text-slate-500"><i class="fa-solid fa-house-chimney text-6xl opacity-30"></i></div><div class="absolute top-3 left-3 px-2.5 py-1 bg-white/90 rounded-full text-[10px] font-extrabold text-slate-700">CONTOH LISTING</div></div>
-                        <div class="p-5"><div class="h-2.5 w-2/3 bg-slate-800 rounded mb-2"></div><div class="h-2 w-1/2 bg-slate-300 rounded mb-4"></div><div class="grid grid-cols-3 gap-2 mb-4"><div class="bg-blue-50 rounded-xl p-2 text-center"><b class="block text-blue-700 text-sm">30</b><span class="text-[8px] text-slate-500">HARI</span></div><div class="bg-blue-50 rounded-xl p-2 text-center"><b class="block text-blue-700 text-sm">8</b><span class="text-[8px] text-slate-500">HARI ADS</span></div><div class="bg-emerald-50 rounded-xl p-2 text-center"><b class="block text-emerald-700 text-sm">Rp199K</b><span class="text-[8px] text-slate-500">PAKET</span></div></div><div class="h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white text-xs font-bold">Properti Dipasarkan</div></div>
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 w-full">
+        <!-- Judul & Paket Banner -->
+        <div class="text-center mb-10">
+            <span class="inline-block px-4 py-1.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-xs uppercase tracking-wider mb-3">
+                Program Pemasaran Digital Prioritas
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
+                Pasarkan Properti Anda Tanpa Komisi (0%)
+            </h1>
+            <p class="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+                Tayang di website resmi dan diiklankan melalui <span class="font-bold text-gray-900"><i class="fa-brands fa-facebook text-blue-600"></i> Facebook & <i class="fa-brands fa-instagram text-pink-600"></i> Instagram Ads</span> setiap akhir pekan ke target pasar potensial wilayah Bandung Raya.
+            </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl mb-10 relative overflow-hidden">
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-2 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold">
+                        <i class="fa-solid fa-fire text-amber-400"></i> Paket Iklan Rekomendasi
+                    </div>
+                    <h3 class="text-2xl font-black">Paket Prioritas 30 Hari</h3>
+                    <div class="flex items-baseline justify-center md:justify-start gap-2">
+                        <span class="text-3xl sm:text-4xl font-extrabold text-amber-400">Rp 199.000</span>
+                        <span class="text-sm line-through text-gray-300">Rp 499.000</span>
                     </div>
                 </div>
-            </div>
-        </div>
-    </header>
 
-    <section class="bg-white border-b border-slate-100">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5"><div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div><div class="text-xl sm:text-2xl font-black text-slate-900">30 HARI</div><div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Prioritas Website</div></div>
-            <div><div class="text-xl sm:text-2xl font-black text-slate-900">8 HARI</div><div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Iklan Weekend</div></div>
-            <div><div class="text-xl sm:text-2xl font-black text-slate-900">Rp199K</div><div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Harga Promo</div></div>
-            <div><div class="text-xl sm:text-2xl font-black text-emerald-600">0%</div><div class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Komisi Penjualan</div></div>
-        </div></div>
-    </section>
-
-    <section class="bg-slate-50 border-y border-slate-100 py-14 sm:py-16">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-2xl mb-10"><span class="text-blue-600 text-xs font-black uppercase tracking-[.18em]">Bukan sekadar pasang listing</span><h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">Properti Anda Akan Dipasarkan Seperti Ini</h2><p class="text-sm text-slate-500 mt-3 leading-relaxed">Kami membuat prosesnya jelas sejak awal, sehingga Anda tahu apa yang dikerjakan untuk properti Anda.</p></div>
-            <div class="grid md:grid-cols-4 gap-4">
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm"><div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black mb-5">01</div><h3 class="font-black text-slate-900 mb-2">Siapkan Listing</h3><p class="text-xs text-slate-500 leading-relaxed">Detail properti, foto, harga, dan deskripsi dikonfirmasi bersama admin.</p></div>
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm"><div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black mb-5">02</div><h3 class="font-black text-slate-900 mb-2">Tayang Prioritas</h3><p class="text-xs text-slate-500 leading-relaxed">Listing ditampilkan di website dengan posisi prioritas secara bergilir.</p></div>
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm"><div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black mb-5">03</div><h3 class="font-black text-slate-900 mb-2">Promosi Weekend</h3><p class="text-xs text-slate-500 leading-relaxed">Facebook & Instagram Ads dijalankan setiap Sabtu–Minggu selama 1 bulan.</p></div>
-                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm"><div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black mb-5">04</div><h3 class="font-black text-slate-900 mb-2">Terima Rapor</h3><p class="text-xs text-slate-500 leading-relaxed">Setiap Senin Anda mendapatkan laporan hasil iklan yang berjalan di akhir pekan.</p></div>
-            </div>
-        </div>
-    </section>
-
-    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 w-full">
-        <div class="text-center mb-10 md:mb-12">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">APA YANG SAHABAT PROPERTI DAPATKAN?</h2>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">01 — IKLAN AKTIF</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Properti Anda dipromosikan melalui Facebook & Instagram Ads setiap Sabtu–Minggu selama 1 bulan, total 8 hari iklan.</p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-solid fa-certificate"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">02 — DIKELOLA PRAKTISI PROFESIONAL</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Kampanye iklan ditangani oleh praktisi iklan profesional untuk membantu menjangkau calon buyer potensial.</p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">03 — RAPOR HASIL IKLAN</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Setiap hari Senin, Anda mendapatkan laporan hasil iklan yang telah berjalan pada akhir pekan.</p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">04 — PRIORITAS DI WEBSITE</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Properti Anda mendapatkan kesempatan tampil di posisi prioritas halaman utama website secara bergilir.</p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-solid fa-infinity"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">05 — TAYANG SAMPAI TERJUAL</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Listing properti tetap aktif di website sampai properti Anda laku terjual.</p>
-            </div>
-
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-5 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
-                    <i class="fa-regular fa-handshake"></i>
-                </div>
-                <h3 class="text-sm font-black text-slate-800 mb-2 uppercase tracking-wide">06 — TANPA KOMISI PENJUALAN</h3>
-                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">Tidak ada bagi hasil atau komisi untuk agen kami dari hasil penjualan properti Anda.</p>
-            </div>
-        </div>
-
-        <div class="mt-10 md:mt-14 bg-gradient-to-br from-blue-900 to-slate-900 rounded-3xl p-8 md:p-10 text-center shadow-lg relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-                <div class="w-14 h-14 bg-white/10 text-white rounded-full flex items-center justify-center text-xl mb-5 backdrop-blur-sm border border-white/10">
-                    <i class="fa-regular fa-comments"></i>
-                </div>
-                <h3 class="text-xl sm:text-2xl font-black text-white mb-3 tracking-tight">PEMASARAN KAMI, KENDALI TETAP DI TANGAN ANDA</h3>
-                <p class="text-blue-100 text-sm sm:text-base leading-relaxed mb-6">
-                    Kami fokus membantu memasarkan properti. Saat ada calon buyer yang berminat, mereka dapat berkomunikasi langsung dengan pemilik properti.
-                </p>
-                <div class="inline-flex bg-white/10 border border-white/20 px-5 py-3 rounded-2xl backdrop-blur-md">
-                    <p class="text-white text-xs sm:text-sm font-medium italic">
-                        "Kami fokus pada pemasaran. Anda tetap memiliki kendali atas proses penjualan."
-                    </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-gray-200">
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Listing prioritas website</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> Facebook & IG Ads target Bandung</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 8 Hari boost iklan weekend</div>
+                    <div class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-400"></i> 0% Komisi hasil penjualan</div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section id="paket" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
-        <div class="grid lg:grid-cols-[.8fr_1.2fr] gap-8 items-center">
-            <div><span class="text-blue-600 text-xs font-black uppercase tracking-[.18em]">Satu paket, biaya jelas</span><h2 class="text-3xl sm:text-4xl font-black text-slate-900 mt-2 leading-tight">Titip Properti 30 Hari</h2><p class="text-sm text-slate-500 mt-4 leading-relaxed">Cocok untuk pemilik yang ingin propertinya mendapatkan pemasaran tambahan tanpa membayar komisi dari hasil penjualan.</p><div class="mt-6 flex items-center gap-3 text-xs text-slate-500"><span class="line-through">Rp499.000</span><span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-extrabold">HEMAT Rp300.000</span></div></div>
-            <div class="bg-white rounded-[2rem] border-2 border-blue-100 shadow-xl p-6 sm:p-8 relative overflow-hidden"><div class="absolute top-0 right-0 bg-blue-600 text-white px-4 py-2 rounded-bl-2xl text-[10px] font-black tracking-widest">PROMO</div><div class="flex items-end gap-2 mb-6"><span class="text-4xl sm:text-5xl font-black text-blue-700">Rp199.000</span><span class="text-sm text-slate-400 mb-2">/ paket</span></div><div class="grid sm:grid-cols-2 gap-3 text-sm text-slate-700"><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Prioritas website selama 30 hari</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Facebook & Instagram Ads</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Total 8 hari iklan weekend</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Rapor hasil iklan setiap Senin</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Tayang sampai terjual</span></div><div class="flex gap-2"><i class="fa-solid fa-check text-emerald-500 mt-0.5"></i><span>Tanpa komisi penjualan</span></div></div><a href="#konsultasi" class="mt-7 w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-600/20 transition">Mulai Titip Properti <i class="fa-solid fa-arrow-right text-xs"></i></a></div>
-        </div>
-    </section>
+        <!-- Form Titip Properti -->
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-100 pb-4">
+                <i class="fa-solid fa-file-signature text-blue-600"></i> Formulir Pengajuan Listing
+            </h2>
 
-    <main id="konsultasi" class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 flex-1 w-full">
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 sm:p-8 space-y-6">
-
-            <div class="text-center space-y-2 pb-4 border-b border-slate-100">
-                <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto text-xl shadow-xs">
-                    <i class="fa-solid fa-clipboard-question"></i>
-                </div>
-                <h2 class="text-lg sm:text-xl font-extrabold text-slate-900 leading-snug">
-                    Apakah Anda sudah konfirmasi detail properti di WhatsApp?
-                </h2>
-                <p class="text-xs sm:text-sm text-slate-500">
-                    (Foto, deskripsi, harga, & draft listing sudah dibuat oleh admin)
-                </p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button type="button" id="btn-choice-sudah" class="p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-blue-600 bg-blue-50/60 shadow-sm">
-                    <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-xs">
-                        <i class="fa-solid fa-check"></i>
+            <form id="titip-properti-form" class="space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Nama Lengkap Pemilik *</label>
+                        <input type="text" id="owner_name" required placeholder="Contoh: Budi Gunawan" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition">
                     </div>
                     <div>
-                        <span class="block text-sm sm:text-base font-black text-blue-900">SUDAH</span>
-                        <span class="text-[11px] text-blue-700 font-medium">Lanjut Pembayaran</span>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Nomor WhatsApp Aktif *</label>
+                        <input type="tel" id="owner_wa" required placeholder="Contoh: 081234567890" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition">
                     </div>
-                </button>
+                </div>
 
-                <button type="button" id="btn-choice-belum" class="p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer">
-                    <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base">
-                        <i class="fa-solid fa-comments"></i>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Jenis Properti *</label>
+                        <select id="prop_type" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition cursor-pointer font-medium">
+                            <option value="Rumah">Rumah Tinggal</option>
+                            <option value="Tanah">Tanah / Kavling</option>
+                            <option value="Ruko">Ruko / Rukan</option>
+                            <option value="Apartemen">Apartemen</option>
+                            <option value="Villa">Villa</option>
+                        </select>
                     </div>
                     <div>
-                        <span class="block text-sm sm:text-base font-black text-slate-800">BELUM</span>
-                        <span class="text-[11px] text-slate-500 font-medium">Konsultasi Dulu</span>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Status Penawaran *</label>
+                        <select id="listing_status" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition cursor-pointer font-medium">
+                            <option value="Dijual">Dijual</option>
+                            <option value="Disewa">Disewa</option>
+                        </select>
                     </div>
-                </button>
-            </div>
+                </div>
 
-            <div id="section-sudah" class="space-y-4 pt-2">
-                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-info text-blue-600 text-sm mt-0.5 shrink-0"></i>
-                    <div class="w-full">
-                        <span class="block text-[11px] font-extrabold text-blue-800 uppercase tracking-widest mb-1.5">Promo Sahabat Properti</span>
-                        <div class="flex flex-wrap items-center gap-1.5 mb-1">
-                            <span class="text-xs font-medium text-slate-500">Harga Paket <span class="line-through decoration-slate-400">Rp499.000</span></span>
-                            <i class="fa-solid fa-arrow-right text-[10px] text-slate-400"></i>
-                            <span class="text-sm font-black text-blue-700">Promo Rp199.000</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="inline-flex px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded border border-emerald-200/60">Hemat Rp300.000</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 leading-relaxed border-t border-blue-200/50 pt-2 mt-2">
-                            Setelah data dikonfirmasi, Anda akan diarahkan ke pembayaran.
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Harga Penawaran (Rp) *</label>
+                        <input type="text" id="prop_price" required placeholder="Contoh: 850 Juta / 45 Juta per tahun" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Wilayah / Lokasi *</label>
+                        <input type="text" id="prop_location" required placeholder="Contoh: Dago, Bandung Utara" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Rincian & Spesifikasi Properti</label>
+                    <textarea id="prop_desc" rows="4" placeholder="Sebutkan luas tanah, luas bangunan, jumlah kamar tidur, legalitas (SHM/HGB), daya listrik, serta keunggulan lainnya..." class="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition"></textarea>
+                </div>
+
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3 text-xs sm:text-sm text-amber-900">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong>Pengiriman Dokumen & Media:</strong>
+                        <p class="mt-1 text-amber-800 leading-relaxed text-xs">
+                            Setelah menekan tombol di bawah, Anda akan diarahkan ke WhatsApp Admin. Foto-foto unit, video tur, serta kelengkapan dokumen legalitas dapat langsung dikirimkan melalui ruang obrolan WhatsApp.
                         </p>
                     </div>
                 </div>
 
-                <form id="form-sudah" class="space-y-3.5">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-nama">
-                            Nama Pemilik Properti <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <input type="text" id="sudah-nama" required placeholder="Contoh: Bpk. Hendra Wijaya" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-wa">
-                            No. WhatsApp Aktif <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <i class="fa-brands fa-whatsapp absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                            <input type="tel" id="sudah-wa" required placeholder="Contoh: 081234567890" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="sudah-properti">
-                            Nama Properti Anda <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <i class="fa-solid fa-house-chimney absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <input type="text" id="sudah-properti" required placeholder="Contoh: Rumah Hook Dago Asri 2 Lantai" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" class="w-full py-3.5 px-5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2">
-                            <span>Lanjut Pembayaran (Rp199.000)</span>
-                            <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="section-belum" class="hidden space-y-4 pt-2">
-                <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200 flex items-start gap-3">
-                    <i class="fa-solid fa-lightbulb text-amber-600 text-sm mt-0.5 shrink-0"></i>
-                    <p class="text-xs text-amber-950 leading-relaxed">
-                        Belum punya draft listing? Isi formulir ringkas ini, admin kami akan langsung membantu menyiapkan foto, harga, dan deskripsi properti Anda di WhatsApp.
-                    </p>
-                </div>
-
-                <form id="form-belum" class="space-y-3.5">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="belum-nama">
-                            Nama Lengkap <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-                            <input type="text" id="belum-nama" required placeholder="Masukkan nama Anda..." class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1" for="belum-wa">
-                            No. WhatsApp <span class="text-rose-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <i class="fa-brands fa-whatsapp absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-                            <input type="tel" id="belum-wa" required placeholder="Contoh: 081234567890" class="w-full pl-9 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition">
-                        </div>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-whatsapp text-lg"></i>
-                            <span>Konsultasi via WhatsApp</span>
-                        </button>
-                        <p class="text-[11px] text-center text-slate-400 mt-2">
-                            Otomatis terhubung ke chat WhatsApp Admin untuk mengirimkan materi (foto, harga, deskripsi).
-                        </p>
-                    </div>
-                </form>
-            </div>
-
+                <button type="submit" id="submit-titip-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold py-4 rounded-2xl transition duration-200 shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-3 text-base cursor-pointer">
+                    <i class="fa-brands fa-whatsapp text-2xl"></i> Kirim Pengajuan via WhatsApp
+                </button>
+            </form>
         </div>
     </main>
 
-    <div id="payment-modal" class="fixed inset-0 z-[100] bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        <div id="payment-card" class="bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[92vh] overflow-y-auto flex flex-col relative modal-enter my-auto border border-slate-100 p-6 sm:p-7 space-y-5">
-            
-            <button id="close-payment-modal" type="button" class="absolute top-4 right-4 z-30 bg-slate-100 hover:bg-slate-200 text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
-                <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
-
-            <div class="text-center pt-2">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-bold mb-2">
-                    <i class="fa-solid fa-shield-halved"></i> Pembayaran Paket Titip Properti
-                </span>
-                <h3 class="text-xl font-black text-slate-900">Selesaikan Pembayaran</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Transfer sebelum batas waktu berakhir untuk verifikasi instan</p>
-            </div>
-
-            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 text-center flex items-center justify-between px-5">
-                <div class="flex items-center gap-2 text-rose-700 text-xs font-bold">
-                    <i class="fa-regular fa-clock text-base animate-pulse"></i>
-                    <span>Sisa Waktu Pembayaran:</span>
-                </div>
-                <div id="countdown-display" class="font-mono text-xl font-black text-rose-600 tracking-wider">
-                    05:00
-                </div>
-            </div>
-
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 text-center shadow-sm relative">
-                <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-widest rounded-full mb-3">
-                    Promo Sahabat Properti
-                </span>
-                
-                <div class="flex flex-col items-center justify-center">
-                    <span class="text-xs font-semibold text-slate-400 mb-1">
-                        Harga Paket <span class="line-through decoration-slate-300">Rp499.000</span>
-                    </span>
-                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Pembayaran</span>
-                    <span class="text-4xl font-black text-blue-600 tracking-tight leading-none mb-2">Rp199.000</span>
-                    <span class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-100">Hemat Rp300.000</span>
-                </div>
-
-                <div class="mt-4 pt-4 border-t border-slate-100 text-left space-y-2">
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-check text-emerald-500 text-xs mt-0.5"></i>
-                        <span class="text-xs font-bold text-slate-700">Penayangan Prioritas 30 Hari</span>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-plus text-blue-500 text-[10px] mt-1 shrink-0"></i>
-                        <span class="text-xs text-slate-600 leading-relaxed">Iklan Facebook & Instagram aktif setiap Sabtu–Minggu selama 1 bulan</span>
-                    </div>
-                    <div class="flex items-start gap-2">
-                        <i class="fa-solid fa-plus text-blue-500 text-[10px] mt-1 shrink-0"></i>
-                        <span class="text-xs text-slate-600">Laporan hasil iklan</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                
-                <div class="border border-slate-200 rounded-2xl p-4 sm:p-5 text-center bg-white shadow-xs">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-qrcode text-blue-600"></i> Scan QRIS Nasional
-                        </span>
-                        <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-bold">Semua Bank & E-Wallet</span>
-                    </div>
-
-                    <div class="w-full max-w-sm mx-auto p-2 sm:p-3 border-2 border-slate-200 rounded-2xl bg-white flex flex-col items-center justify-center relative my-2 shadow-sm">
-                        <img src="https://lh3.googleusercontent.com/d/12QAvmryPmdb6DBy5jMuaMmX87XrrwY6I" 
-                             alt="QRIS Properti Bandung" 
-                             class="w-full h-auto max-h-[500px] object-contain rounded-xl"
-                             onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://drive.google.com/thumbnail?id=12QAvmryPmdb6DBy5jMuaMmX87XrrwY6I&sz=w1200';}">
-                    </div>
-                    <p class="text-xs text-slate-500 font-medium mt-2">Buka m-Banking atau E-Wallet Anda (BCA, Mandiri, BRI, BSI, GoPay, OVO, DANA) lalu Scan QR di atas</p>
-                </div>
-
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
-                            <i class="fa-solid fa-building-columns text-slate-600"></i> No. Rekening & E-Wallet
-                        </span>
-                        <span class="text-[10px] text-slate-500 font-semibold">Klik salin untuk transfer</span>
-                    </div>
-
-                    <div class="space-y-2">
-                        
-                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded">BSI</span>
-                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Syariah Indonesia</span>
-                                </div>
-                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">7132946037</span>
-                            </div>
-                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="7132946037" data-name="BSI">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Salin</span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-black rounded">BRI</span>
-                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Rakyat Indonesia</span>
-                                </div>
-                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">0598-01-047153-50-0</span>
-                            </div>
-                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="059801047153500" data-name="BRI">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Salin</span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 bg-blue-800 text-white text-[10px] font-black rounded">BCA</span>
-                                    <span class="text-xs font-bold text-slate-800 truncate">Bank Central Asia</span>
-                                </div>
-                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">2832369021</span>
-                            </div>
-                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="2832369021" data-name="BCA">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Salin</span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 bg-sky-100 text-sky-700 text-[10px] font-black rounded">DANA</span>
-                                    <span class="text-xs font-bold text-slate-800 truncate">Dompet Digital DANA</span>
-                                </div>
-                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">081224140860</span>
-                            </div>
-                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="081224140860" data-name="DANA">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Salin</span>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 shadow-2xs">
-                            <div class="min-w-0 pr-2">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="px-1.5 py-0.5 bg-teal-100 text-teal-800 text-[10px] font-black rounded">GoPay</span>
-                                    <span class="text-xs font-bold text-slate-800 truncate">GoPay / Gojek</span>
-                                </div>
-                                <span class="font-mono text-sm font-extrabold text-slate-900 block mt-0.5">081224140860</span>
-                            </div>
-                            <button type="button" class="copy-account-btn shrink-0 px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 text-xs font-bold rounded-lg transition flex items-center gap-1" data-copy="081224140860" data-name="GoPay">
-                                <i class="fa-solid fa-copy"></i>
-                                <span>Salin</span>
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="pt-1">
-                <button type="button" id="confirm-payment-wa-btn" class="w-full py-3.5 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-black rounded-2xl text-sm sm:text-base transition duration-150 shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2.5">
-                    <i class="fa-brands fa-whatsapp text-xl"></i>
-                    <span>Konfirmasi Pembayaran</span>
-                </button>
-                <p class="text-[11px] text-center text-slate-400 mt-2">
-                    Mengirim pesan konfirmasi bukti transfer otomatis ke WhatsApp Admin.
-                </p>
-            </div>
-
-        </div>
-    </div>
-
-    <section class="bg-slate-50 border-t border-slate-100 py-14 sm:py-16"><div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"><div class="text-center mb-9"><span class="text-blue-600 text-xs font-black uppercase tracking-[.18em]">Sebelum menitipkan properti</span><h2 class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">Pertanyaan yang Sering Ditanyakan</h2></div><div class="space-y-3">
-        <details class="bg-white rounded-2xl border border-slate-200 p-5 group"><summary class="cursor-pointer list-none font-bold text-slate-800 flex justify-between gap-4">Berapa lama properti saya dipasarkan? <i class="fa-solid fa-chevron-down text-slate-400 text-xs mt-1 group-open:rotate-180 transition"></i></summary><p class="text-sm text-slate-500 leading-relaxed mt-3 pr-6">Paket memiliki penayangan prioritas selama 30 hari. Iklan Facebook & Instagram dijalankan setiap Sabtu–Minggu selama 1 bulan, total 8 hari iklan.</p></details>
-        <details class="bg-white rounded-2xl border border-slate-200 p-5 group"><summary class="cursor-pointer list-none font-bold text-slate-800 flex justify-between gap-4">Apakah ada komisi jika properti terjual? <i class="fa-solid fa-chevron-down text-slate-400 text-xs mt-1 group-open:rotate-180 transition"></i></summary><p class="text-sm text-slate-500 leading-relaxed mt-3 pr-6">Tidak ada komisi penjualan untuk agen kami dari hasil penjualan properti sesuai paket layanan yang ditawarkan.</p></details>
-        <details class="bg-white rounded-2xl border border-slate-200 p-5 group"><summary class="cursor-pointer list-none font-bold text-slate-800 flex justify-between gap-4">Apa yang harus saya siapkan? <i class="fa-solid fa-chevron-down text-slate-400 text-xs mt-1 group-open:rotate-180 transition"></i></summary><p class="text-sm text-slate-500 leading-relaxed mt-3 pr-6">Admin akan membantu mengonfirmasi foto, harga, deskripsi, dan detail listing melalui WhatsApp sebelum properti dipasarkan.</p></details>
-        <details class="bg-white rounded-2xl border border-slate-200 p-5 group"><summary class="cursor-pointer list-none font-bold text-slate-800 flex justify-between gap-4">Apakah saya tetap berhubungan langsung dengan calon buyer? <i class="fa-solid fa-chevron-down text-slate-400 text-xs mt-1 group-open:rotate-180 transition"></i></summary><p class="text-sm text-slate-500 leading-relaxed mt-3 pr-6">Ya. Konsep layanan ini adalah pemasaran; calon buyer dapat berkomunikasi langsung dengan pemilik properti.</p></details>
-        <details class="bg-white rounded-2xl border border-slate-200 p-5 group"><summary class="cursor-pointer list-none font-bold text-slate-800 flex justify-between gap-4">Bagaimana saya mengetahui hasil iklannya? <i class="fa-solid fa-chevron-down text-slate-400 text-xs mt-1 group-open:rotate-180 transition"></i></summary><p class="text-sm text-slate-500 leading-relaxed mt-3 pr-6">Rapor hasil iklan diberikan setiap hari Senin untuk aktivitas iklan yang berjalan pada akhir pekan.</p></details>
-    </div></div></section>
-
-    <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-                <div class="space-y-4">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-house text-3xl text-blue-500"></i>
-                        <div class="ml-3 flex flex-col">
-                            <span class="font-bold text-xl leading-tight text-white">Properti Bandung</span>
-                            <span class="text-xs text-gray-400 font-medium tracking-wide">& Sekitarnya</span>
-                        </div>
-                    </div>
-                    <p class="text-sm text-gray-400 leading-relaxed mt-4">
-                        Mitra terpercaya Anda dalam urusan jual, beli, dan sewa properti di wilayah Bandung Raya. Kami menjadikan proses pemasaran rumah lebih cepat dan tepat sasaran.
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Tautan Cepat</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="index.html" class="hover:text-blue-400 transition">Beranda</a></li>
-                        <li><a href="titip-properti.html" class="text-blue-400 font-semibold">Titip Properti</a></li>
-                        <li><a href="katalog.html?status=Dijual" class="hover:text-blue-400 transition">Properti Dijual</a></li>
-                        <li><a href="katalog.html?status=Disewa" class="hover:text-blue-400 transition">Properti Disewa</a></li>
-                        <li><a href="katalog.html" class="hover:text-blue-400 transition">Semua Katalog</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Area Populer</h4>
-                    <ul class="space-y-3 text-sm">
-                        <li><a href="katalog.html?q=Dago" class="hover:text-blue-400 transition">Rumah di Dago</a></li>
-                        <li><a href="katalog.html?q=Buah Batu" class="hover:text-blue-400 transition">Rumah di Buah Batu</a></li>
-                        <li><a href="katalog.html?q=Lembang" class="hover:text-blue-400 transition">Villa di Lembang</a></li>
-                        <li><a href="katalog.html?q=Pasteur" class="hover:text-blue-400 transition">Tanah di Pasteur</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-6 uppercase text-sm tracking-wider">Hubungi Kami</h4>
-                    <ul class="space-y-4 text-sm">
-                        <li class="flex items-center">
-                            <i class="fa-solid fa-envelope mr-3 text-blue-500 shrink-0"></i>
-                            <a href="mailto:khoirul.amir110901@gmail.com" class="hover:text-white transition break-all">khoirul.amir110901@gmail.com</a>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fa-solid fa-phone mr-3 text-blue-500 shrink-0"></i>
-                            <a href="tel:085179756031" class="hover:text-white transition">0851-7975-6031</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-gray-800 pt-8 mt-8 text-center md:flex md:justify-between md:text-left text-sm text-gray-500">
-                <p>
-                    <a href="admin.html" class="hover:text-white transition cursor-pointer font-bold text-gray-400 text-lg mx-1" title="Masuk ke Panel Admin">
-                        ©
-                    </a>
-                    <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.
-                </p>
-                <div class="mt-4 md:mt-0 space-x-4">
-                    <a href="syarat-ketentuan.html" class="hover:text-gray-300">Syarat & Ketentuan</a>
-                    <a href="kebijakan-privasi.html" class="hover:text-gray-300">Kebijakan Privasi</a>
-                </div>
-            </div>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 pt-12 pb-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>&copy; <span id="year"></span> Jual Beli Properti Bandung & Sekitarnya.</p>
         </div>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- SCRIPT META PIXEL DINAMIS (CLOUDFLARE WORKERS) -->
+    <script data-cfasync="false">
+        (function() {
+            const WORKERS_BASE_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
 
-        // Konfigurasi Firebase Proyek Anda
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
-            authDomain: "web-properti-bandung.firebaseapp.com",
-            projectId: "web-properti-bandung",
-            storageBucket: "web-properti-bandung.firebasestorage.app",
-            messagingSenderId: "684311108489",
-            appId: "1:684311108489:web:02e334723acd536656df58"
-        };
+            // 1. Injeksi Dasar Meta Pixel
+            function injectMetaPixel(pixelId) {
+                if (!pixelId || window.fbq) return;
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+                !(function (f, b, e, v, n, t, s) {
+                    if (f.fbq) return;
+                    n = f.fbq = function () {
+                        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+                    };
+                    if (!f._fbq) f._fbq = n;
+                    n.push = n;
+                    n.loaded = !0;
+                    n.version = '2.0';
+                    n.queue = [];
+                    t = b.createElement(e);
+                    t.async = !0;
+                    t.src = v;
+                    s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s);
+                })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
+                fbq('init', pixelId);
+                fbq('track', 'PageView');
+
+                // Injeksi Tag Noscript ke Body
+                const noscript = document.createElement('noscript');
+                const img = document.createElement('img');
+                img.height = 1;
+                img.width = 1;
+                img.style.display = 'none';
+                img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
+                noscript.appendChild(img);
+                document.body.appendChild(noscript);
+            }
+
+            // 2. Ambil ID Pixel dari Cloudflare Workers
+            async function fetchAndInitPixel() {
+                try {
+                    const response = await fetch(`${WORKERS_BASE_URL}/pengaturan`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        const pixelId = data.meta_pixel_id || data.metaPixelId || data.pixelId;
+                        if (pixelId) {
+                            injectMetaPixel(String(pixelId).trim());
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Gagal memuat setting Pixel dari Workers:", err);
+                }
+            }
+
+            // 3. Pelacakan Form Submit Event (Lead Conversion)
+            function setupConversionTracking() {
+                const form = document.getElementById('titip-properti-form');
+                if (!form) return;
+
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const name = document.getElementById('owner_name').value.trim();
+                    const wa = document.getElementById('owner_wa').value.trim();
+                    const type = document.getElementById('prop_type').value;
+                    const status = document.getElementById('listing_status').value;
+                    const price = document.getElementById('prop_price').value.trim();
+                    const location = document.getElementById('prop_location').value.trim();
+                    const desc = document.getElementById('prop_desc').value.trim();
+
+                    // Pemicu Event Meta Pixel Lead
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Lead', {
+                            content_name: 'Formulir Titip Jual Properti',
+                            content_category: type,
+                            value: 199000,
+                            currency: 'IDR'
+                        });
+                    }
+
+                    // Format pesan ke WhatsApp Agen Resmi
+                    const text = `Halo Admin Properti Bandung,\nSaya ingin mengajukan *Titip Jual Properti (Paket Rp199rb)*:\n\n` +
+                                 `• *Nama Pemilik*: ${name}\n` +
+                                 `• *No. WhatsApp*: ${wa}\n` +
+                                 `• *Jenis*: ${type} (${status})\n` +
+                                 `• *Harga*: ${price}\n` +
+                                 `• *Lokasi*: ${location}\n` +
+                                 `• *Deskripsi*: ${desc || '-'}\n\n` +
+                                 `Foto-foto unit, video tur, serta sertifikat legalitas akan segera saya lampirkan di pesan ini. Mohon diproses. Terima kasih!`;
+
+                    const waUrl = `https://wa.me/6285179756031?text=${encodeURIComponent(text)}`;
+                    
+                    // Alihkan ke WhatsApp
+                    window.location.href = waUrl;
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    fetchAndInitPixel();
+                    setupConversionTracking();
+                });
+            } else {
+                fetchAndInitPixel();
+                setupConversionTracking();
+            }
+        })();
+
+        // Menu Mobile & Tahun
         document.getElementById('year').textContent = new Date().getFullYear();
-
-        const ADMIN_WA_NUMBER = "6285179756031";
-
-        // Mobile Menu Toggle
         const menuBtn = document.getElementById('mobile-menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const menuIcon = document.getElementById('menu-icon');
 
-        if (menuBtn) {
+        if (menuBtn && mobileMenu) {
             menuBtn.addEventListener('click', () => {
                 mobileMenu.classList.toggle('hidden');
-                if (mobileMenu.classList.contains('hidden')) {
-                    menuIcon.classList.replace('fa-xmark', 'fa-bars');
-                } else {
-                    menuIcon.classList.replace('fa-bars', 'fa-xmark');
-                }
+                menuIcon.classList.toggle('fa-bars');
+                menuIcon.classList.toggle('fa-xmark');
             });
         }
-
-        // Toast Helper
-        function showToast(msg) {
-            const toast = document.getElementById('toast-notif');
-            const text = document.getElementById('toast-text');
-            text.textContent = msg;
-            toast.classList.remove('opacity-0', '-translate-y-3');
-            toast.classList.add('opacity-100', 'translate-y-0');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', '-translate-y-3');
-            }, 3000);
-        }
-
-        // Salin Rekening & E-Wallet Otomatis
-        document.querySelectorAll('.copy-account-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const copyText = btn.getAttribute('data-copy');
-                const name = btn.getAttribute('data-name');
-                const tempInput = document.createElement('input');
-                tempInput.value = copyText;
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                try {
-                    document.execCommand('copy');
-                    showToast(`Nomor ${name} (${copyText}) berhasil disalin!`);
-                } catch(e) {
-                    showToast("Gagal menyalin nomor rekening.");
-                }
-                document.body.removeChild(tempInput);
-            });
-        });
-
-        // Tab Switcher: [ SUDAH ] vs [ BELUM ]
-        const btnChoiceSudah = document.getElementById('btn-choice-sudah');
-        const btnChoiceBelum = document.getElementById('btn-choice-belum');
-        const sectionSudah = document.getElementById('section-sudah');
-        const sectionBelum = document.getElementById('section-belum');
-
-        function setChoice(choice) {
-            if (choice === 'sudah') {
-                btnChoiceSudah.className = "p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-blue-600 bg-blue-50/60 shadow-sm";
-                btnChoiceSudah.querySelector('div').className = "w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-xs";
-                btnChoiceSudah.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-blue-900";
-                btnChoiceSudah.querySelector('span:last-child').className = "text-[11px] text-blue-700 font-medium";
-
-                btnChoiceBelum.className = "p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer";
-                btnChoiceBelum.querySelector('div').className = "w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base";
-                btnChoiceBelum.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-slate-800";
-                btnChoiceBelum.querySelector('span:last-child').className = "text-[11px] text-slate-500 font-medium";
-
-                sectionSudah.classList.remove('hidden');
-                sectionBelum.classList.add('hidden');
-            } else {
-                btnChoiceBelum.className = "p-4 rounded-2xl border-2 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer border-emerald-600 bg-emerald-50/60 shadow-sm";
-                btnChoiceBelum.querySelector('div').className = "w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-base shadow-xs";
-                btnChoiceBelum.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-emerald-900";
-                btnChoiceBelum.querySelector('span:last-child').className = "text-[11px] text-emerald-700 font-medium";
-
-                btnChoiceSudah.className = "p-4 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all flex flex-col items-center justify-center gap-2 group text-center cursor-pointer";
-                btnChoiceSudah.querySelector('div').className = "w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-base";
-                btnChoiceSudah.querySelector('span:first-child').className = "block text-sm sm:text-base font-black text-slate-800";
-                btnChoiceSudah.querySelector('span:last-child').className = "text-[11px] text-slate-500 font-medium";
-
-                sectionBelum.classList.remove('hidden');
-                sectionSudah.classList.add('hidden');
-            }
-        }
-
-        btnChoiceSudah.addEventListener('click', () => setChoice('sudah'));
-        btnChoiceBelum.addEventListener('click', () => setChoice('belum'));
-
-        // Form [ BELUM ]: Konsultasi via WhatsApp (Kirim Materi)
-        const formBelum = document.getElementById('form-belum');
-        formBelum.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('belum-nama').value.trim();
-            const wa = document.getElementById('belum-wa').value.trim();
-
-            const message = encodeURIComponent(
-                `Halo Admin Properti Bandung, saya ingin konsultasi dan titip jual/sewa properti saya.\n\n` +
-                `Nama Lengkap: ${nama}\n` +
-                `No. WhatsApp: ${wa}\n\n` +
-                `Saya ingin mengirim materi (foto, harga, dan deskripsi properti) untuk dibuatkan draft listingnya. Terima kasih!`
-            );
-
-            window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${message}`, '_blank');
-        });
-
-        // Form [ SUDAH ]: Buka Pop-up Pembayaran (Rp199.000) & Jalankan Countdown 05:00
-        const formSudah = document.getElementById('form-sudah');
-        const paymentModal = document.getElementById('payment-modal');
-        const paymentCard = document.getElementById('payment-card');
-        const closePaymentModal = document.getElementById('close-payment-modal');
-        const countdownDisplay = document.getElementById('countdown-display');
-        const confirmPaymentWaBtn = document.getElementById('confirm-payment-wa-btn');
-
-        let countdownInterval = null;
-        let validatedData = { nama: '', wa: '', properti: '' };
-
-        function startCountdown() {
-            clearInterval(countdownInterval);
-            let totalSeconds = 5 * 60; // 05:00 Menit
-
-            const updateDisplay = () => {
-                const minutes = Math.floor(totalSeconds / 60);
-                const seconds = totalSeconds % 60;
-                countdownDisplay.textContent = 
-                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                
-                if (totalSeconds <= 0) {
-                    clearInterval(countdownInterval);
-                    countdownDisplay.textContent = "00:00 (Habis)";
-                } else {
-                    totalSeconds--;
-                }
-            };
-
-            updateDisplay();
-            countdownInterval = setInterval(updateDisplay, 1000);
-        }
-
-        formSudah.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            validatedData.nama = document.getElementById('sudah-nama').value.trim();
-            validatedData.wa = document.getElementById('sudah-wa').value.trim();
-            validatedData.properti = document.getElementById('sudah-properti').value.trim();
-
-            const btn = e.target.querySelector('button[type="submit"]');
-            const origHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Memproses...';
-            btn.disabled = true;
-
-            try {
-                // Simpan ke Firebase HANYA untuk Form "Sudah Lanjut Pembayaran"
-                await addDoc(collection(db, "leads_titip"), {
-                    nama: validatedData.nama,
-                    wa: validatedData.wa,
-                    properti: validatedData.properti,
-                    status: "Lanjut Pembayaran",
-                    createdAt: serverTimestamp()
-                });
-            } catch (err) {
-                console.error("Gagal simpan lead:", err);
-            }
-
-            btn.innerHTML = origHtml;
-            btn.disabled = false;
-
-            // Buka Modal & Mulai Hitung Mundur 05:00
-            paymentModal.classList.remove('hidden');
-            paymentModal.classList.add('flex');
-            requestAnimationFrame(() => {
-                paymentCard.classList.add('modal-enter-active');
-            });
-            document.body.style.overflow = 'hidden';
-            startCountdown();
-        });
-
-        function closeModal() {
-            paymentCard.classList.remove('modal-enter-active');
-            setTimeout(() => {
-                paymentModal.classList.add('hidden');
-                paymentModal.classList.remove('flex');
-                document.body.style.overflow = '';
-            }, 200);
-        }
-
-        closePaymentModal.addEventListener('click', closeModal);
-        paymentModal.addEventListener('click', (e) => {
-            if (e.target === paymentModal) closeModal();
-        });
-
-        // Tombol "Konfirmasi Pembayaran" -> Redirect WhatsApp Admin
-        // Pesan Otomatis: "halo ka,saya mau konfirmasi bukti pembayaranya"
-        confirmPaymentWaBtn.addEventListener('click', () => {
-            const baseText = "halo ka,saya mau konfirmasi bukti pembayaranya";
-            let detailText = "";
-            if (validatedData.nama || validatedData.properti) {
-                detailText = `\n\nNama Pemilik: ${validatedData.nama || '-'}\nNo. WhatsApp: ${validatedData.wa || '-'}\nNama Properti: ${validatedData.properti || '-'}\nTotal: Rp 199.000`;
-            }
-            const message = encodeURIComponent(baseText + detailText);
-            window.open(`https://wa.me/${ADMIN_WA_NUMBER}?text=${message}`, '_blank');
-        });
     </script>
 </body>
 </html>
