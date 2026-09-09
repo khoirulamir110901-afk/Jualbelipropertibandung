@@ -553,12 +553,13 @@
         </div>
     </div>
 
-    <!-- SCRIPT META PIXEL DINAMIS (CLOUDFLARE WORKERS) -->
+    <!-- SCRIPT META PIXEL DINAMIS (FIX DOUBLE PAGEVIEW & EVENT CLICK) -->
     <script data-cfasync="false">
         (function() {
             const WORKERS_BASE_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
+            let isPixelReady = false;
 
-            // Injeksi Dasar Meta Pixel
+            // 1. Inisialisasi Meta Pixel
             function injectMetaPixel(pixelId) {
                 if (!pixelId || window.fbq) return;
 
@@ -579,31 +580,22 @@
                     s.parentNode.insertBefore(t, s);
                 })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-                fbq('init', pixelId);
-                fbq('track', 'PageView');
-
-                // Injeksi Tag Noscript ke Body
-                const noscript = document.createElement('noscript');
-                const img = document.createElement('img');
-                img.height = 1;
-                img.width = 1;
-                img.style.display = 'none';
-                img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
-                noscript.appendChild(img);
-                document.body.appendChild(noscript);
+                // Ambil ID pertama jika tersimpan beberapa ID dengan koma
+                const cleanId = pixelId.split(',')[0].trim();
+                fbq('init', cleanId);
+                fbq('track', 'PageView'); // Tepat 1x saat inisialisasi
+                isPixelReady = true;
             }
 
-            // Ambil ID Pixel dari Cloudflare Workers
+            // 2. Ambil ID Pixel dari Cloudflare Workers D1
             async function fetchAndInitPixel() {
                 try {
-                    // Mencoba fetch dari endpoint pengaturan
                     const response = await fetch(`${WORKERS_BASE_URL}/pengaturan`);
                     if (response.ok) {
                         const data = await response.json();
-                        const pixelId = data.metaPixelId || data.meta_pixel_id || data.pixelId || (data.pixel && data.pixel.id);
+                        const pixelId = data.meta_pixel_id || data.metaPixelId || data.pixelId;
                         if (pixelId) {
                             injectMetaPixel(String(pixelId).trim());
-                            return;
                         }
                     }
                 } catch (err) {
@@ -611,18 +603,24 @@
                 }
             }
 
-            // Pelacakan Tombol Titip Jual di Hero Section
+            // 3. Pelacakan Tombol Titip Jual dengan Delay Mikro Navigasi
             function setupEventTracking() {
-                const titipBtn = document.getElementById('hero-titip-jual-btn') || document.querySelector('a[href*="titip-properti.html"]');
-                if (titipBtn) {
-                    titipBtn.addEventListener('click', function() {
-                        if (typeof fbq === 'function') {
+                const titipButtons = document.querySelectorAll('a[href*="titip-properti.html"]');
+                titipButtons.forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const targetUrl = this.getAttribute('href');
+                        if (window.fbq && isPixelReady) {
+                            e.preventDefault(); // Beri waktu Meta mencatat event
                             fbq('track', 'InitiateCheckout', {
-                                content_name: 'Tombol Titip Jual Properti Beranda'
+                                content_name: 'Tombol Titip Jual Properti Beranda',
+                                content_category: 'Pemasaran Properti'
                             });
+                            setTimeout(function() {
+                                window.location.href = targetUrl;
+                            }, 180);
                         }
                     });
-                }
+                });
             }
 
             if (document.readyState === 'loading') {
