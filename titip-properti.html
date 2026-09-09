@@ -548,12 +548,11 @@
         </div>
     </footer>
 
-    <!-- SCRIPT META PIXEL DINAMIS (CLOUDFLARE WORKERS) -->
+    <!-- SCRIPT META PIXEL DINAMIS (HANYA 1X PAGEVIEW) -->
     <script data-cfasync="false">
         (function() {
             const WORKERS_BASE_URL = "https://api-properti-bandung.khoirul-amir110901.workers.dev";
 
-            // Injeksi Dasar Meta Pixel
             function injectMetaPixel(pixelId) {
                 if (!pixelId || window.fbq) return;
 
@@ -574,21 +573,11 @@
                     s.parentNode.insertBefore(t, s);
                 })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-                fbq('init', pixelId);
-                fbq('track', 'PageView');
-
-                // Injeksi Tag Noscript
-                const noscript = document.createElement('noscript');
-                const img = document.createElement('img');
-                img.height = 1;
-                img.width = 1;
-                img.style.display = 'none';
-                img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
-                noscript.appendChild(img);
-                document.body.appendChild(noscript);
+                const cleanId = pixelId.split(',')[0].trim();
+                fbq('init', cleanId);
+                fbq('track', 'PageView'); // Tepat 1x PageView aktif
             }
 
-            // Ambil ID Pixel dari Cloudflare Workers D1
             async function fetchAndInitPixel() {
                 try {
                     const response = await fetch(`${WORKERS_BASE_URL}/pengaturan`);
@@ -600,7 +589,7 @@
                         }
                     }
                 } catch (err) {
-                    console.warn("Gagal memuat setting Pixel dari Cloudflare Workers:", err);
+                    console.warn("Gagal memuat setting Pixel:", err);
                 }
             }
 
@@ -617,7 +606,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase Proyek Anda
         const firebaseConfig = {
             apiKey: "AIzaSyA-nLdzL59lYRZ5Wiy3LFG0QG6mYwj85HI",
             authDomain: "web-properti-bandung.firebaseapp.com",
@@ -759,7 +747,7 @@
 
         function startCountdown() {
             clearInterval(countdownInterval);
-            let totalSeconds = 5 * 60; // 05:00 Menit
+            let totalSeconds = 5 * 60;
 
             const updateDisplay = () => {
                 const minutes = Math.floor(totalSeconds / 60);
@@ -801,7 +789,6 @@
             }
 
             try {
-                // Simpan ke Firebase HANYA untuk Form "Sudah Lanjut Pembayaran"
                 await addDoc(collection(db, "leads_titip"), {
                     nama: validatedData.nama,
                     wa: validatedData.wa,
@@ -816,7 +803,6 @@
             btn.innerHTML = origHtml;
             btn.disabled = false;
 
-            // Buka Modal & Mulai Hitung Mundur 05:00
             paymentModal.classList.remove('hidden');
             paymentModal.classList.add('flex');
             requestAnimationFrame(() => {
